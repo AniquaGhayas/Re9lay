@@ -1,21 +1,26 @@
+/*
+2D Space Shooter - Session Logger (HH_mm_ss_fff Timestamp Format)
+Saves CSV files to Public Documents folder on Android.
+*/
+
 using UnityEngine;
 using System;
 using System.IO;
 using System.Text;
-using System.Collections.Generic;
 
 public class SessionLogger : MonoBehaviour
 {
     public static SessionLogger Instance { get; private set; }
 
     [Header("Logging Settings")]
-    public float samplingInterval = 0.05f; // 20 Hz logging rate
+    public float samplingInterval = 0.05f; // 50ms interval (20 Hz sampling rate)
     public bool isLoggingActive = false;
 
     private string currentFilePath;
     private StringBuilder csvBuffer = new StringBuilder();
     private float nextSampleTime = 0f;
     private float sessionStartTime = 0f;
+    private DateTime sessionStartClockTime;
 
     void Awake()
     {
@@ -30,9 +35,30 @@ public class SessionLogger : MonoBehaviour
 
     public void StartLoggingSession()
     {
-        string timestamp = DateTime.Now.ToString("yyyyMMDD_HHmmss");
-        string filename = $"session_{timestamp}.csv";
-        currentFilePath = Path.Combine(Application.persistentDataPath, filename);
+        sessionStartClockTime = DateTime.Now;
+        string timestampStr = sessionStartClockTime.ToString("yyyyMMdd_HHmmss");
+        string filename = $"session_{timestampStr}.csv";
+
+        string logDir = Path.Combine(Application.persistentDataPath, "SessionLogs");
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+        try {
+            string publicDocs = "/storage/emulated/0/Documents/NeuroPlayLogs";
+            if (!Directory.Exists(publicDocs)) {
+                Directory.CreateDirectory(publicDocs);
+            }
+            logDir = publicDocs;
+        } catch (Exception ex) {
+            Debug.LogWarning("[SessionLogger] Fallback to persistentDataPath: " + ex.Message);
+        }
+#endif
+
+        if (!Directory.Exists(logDir))
+        {
+            Directory.CreateDirectory(logDir);
+        }
+
+        currentFilePath = Path.Combine(logDir, filename);
 
         csvBuffer.Clear();
         // Write CSV Header
@@ -42,7 +68,7 @@ public class SessionLogger : MonoBehaviour
         nextSampleTime = Time.time;
         isLoggingActive = true;
 
-        Debug.Log($"[SessionLogger] Started new logging session: {currentFilePath}");
+        Debug.Log($"[SessionLogger] Started logging session at {sessionStartClockTime:HH_mm_ss_fff} -> Saved to: {currentFilePath}");
     }
 
     void Update()
@@ -58,7 +84,9 @@ public class SessionLogger : MonoBehaviour
 
     private void LogCurrentSample()
     {
-        float relativeTimestamp = Time.time - sessionStartTime;
+        float elapsedSeconds = Time.time - sessionStartTime;
+        DateTime currentClockTime = sessionStartClockTime.AddSeconds(elapsedSeconds);
+        string clockTimeStr = currentClockTime.ToString("HH_mm_ss_fff"); // Format: HH_mm_ss_fff (e.g. 02_37_15_125)
 
         float pitch = 0f, roll = 0f;
         int emg = 0, shoot = 0;
@@ -86,7 +114,7 @@ public class SessionLogger : MonoBehaviour
         float speed = 1.0f;
         if (DifficultyManager.Instance != null) speed = DifficultyManager.Instance.CurrentSpeedMultiplier;
 
-        csvBuffer.AppendLine($"{relativeTimestamp:F3},{pitch:F2},{roll:F2},{emg},{playerX:F3},{playerY:F3},{score},{speed:F2},{shoot}");
+        csvBuffer.AppendLine($"{clockTimeStr},{pitch:F2},{roll:F2},{emg},{playerX:F3},{playerY:F3},{score},{speed:F2},{shoot}");
     }
 
     public void StopLoggingSession()

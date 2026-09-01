@@ -5,6 +5,10 @@ public class BluetoothInputManager : MonoBehaviour
 {
     public static BluetoothInputManager Instance { get; private set; }
 
+    [Header("Bluetooth Device Targeting")]
+    public string targetDeviceName = "HC-05";
+    public string targetMACAddress = "";
+
     [Header("Current Sensor Data")]
     public float pitch = 0f;
     public float roll = 0f;
@@ -21,6 +25,9 @@ public class BluetoothInputManager : MonoBehaviour
     public int simulatedContractedEMG = 750;
     public int simulatedRelaxedEMG = 150;
 
+    private bool loggedConnectionSuccess = false;
+    private float nextLogTime = 0f;
+
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -30,6 +37,11 @@ public class BluetoothInputManager : MonoBehaviour
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
+    }
+
+    void Start()
+    {
+        Debug.Log("🎮 [BluetoothInputManager] System Initialized. Target Device: " + targetDeviceName + " | Simulation Mode: " + useSimulation);
     }
 
     void Update()
@@ -44,11 +56,18 @@ public class BluetoothInputManager : MonoBehaviour
         {
             EvaluateShootState(emgThresh);
         }
+
+        // Print Telemetry stream log in Unity Console every 3 seconds
+        if (Time.time >= nextLogTime)
+        {
+            string modeStr = isConnected ? "Bluetooth (HC-05)" : "Editor Simulation Mode (WASD/Spacebar)";
+            Debug.Log($"📡 [BluetoothInputManager] [{modeStr}] Telemetry Stream -> Pitch: {pitch:F1}°, Roll: {roll:F1}°, EMG: {emgValue}, ShootState: {shoot} ({(shoot == 1 ? "SHOOTING" : "READY")})");
+            nextLogTime = Time.time + 3.0f;
+        }
     }
 
     private void HandleKeyboardSimulation(int threshold)
     {
-        // Keyboard WASD / Arrow Keys simulate tilt angles for testing
         float h = Input.GetAxisRaw("Horizontal");
         float v = Input.GetAxisRaw("Vertical");
 
@@ -58,7 +77,6 @@ public class BluetoothInputManager : MonoBehaviour
         roll = h * (threshX + 10.0f);
         pitch = v * (threshY + 10.0f);
 
-        // Simulated EMG Contraction (Spacebar or Left Click)
         if (Input.GetKey(KeyCode.Space) || Input.GetButton("Fire1"))
         {
             emgValue = simulatedContractedEMG;
@@ -85,13 +103,6 @@ public class BluetoothInputManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Returns 4-directional movement vector based on tilt thresholds:
-    /// Move Right if roll > tiltXThreshold (+32)
-    /// Move Left if roll < -tiltXThreshold (-32)
-    /// Move Up if pitch > tiltYThreshold (+32)
-    /// Move Down if pitch < -tiltYThreshold (-32)
-    /// </summary>
     public Vector2 GetMoveDirection()
     {
         float threshX = (GameSettings.Instance != null) ? GameSettings.Instance.tiltXThreshold : 32.0f;
@@ -121,16 +132,36 @@ public class BluetoothInputManager : MonoBehaviour
                 if (float.TryParse(parts[1], out float parsedRoll)) roll = parsedRoll;
                 if (int.TryParse(parts[2], out int parsedEMG)) emgValue = parsedEMG;
 
-                isConnected = true;
-                connectionStatus = "Connected";
+                if (!isConnected)
+                {
+                    isConnected = true;
+                    connectionStatus = "Connected to " + targetDeviceName;
+                    if (!loggedConnectionSuccess)
+                    {
+                        Debug.Log($"✅ [BluetoothInputManager] Bluetooth Connected Successfully to device '{targetDeviceName}'!");
+                        loggedConnectionSuccess = true;
+                    }
+                }
 
                 int threshold = (GameSettings.Instance != null) ? GameSettings.Instance.emgThreshold : 400;
                 EvaluateShootState(threshold);
             }
+            else
+            {
+                Debug.LogWarning($"⚠️ [BluetoothInputManager] Received malformed data packet: '{dataLine}'");
+            }
         }
         catch (Exception ex)
         {
-            Debug.LogWarning("Bluetooth parse error: " + ex.Message + " | Line: " + dataLine);
+            Debug.LogError($"❌ [BluetoothInputManager] Bluetooth Data Parsing Error: {ex.Message} | Packet: '{dataLine}'");
         }
+    }
+
+    public void OnBluetoothDisconnected()
+    {
+        isConnected = false;
+        loggedConnectionSuccess = false;
+        connectionStatus = "Disconnected";
+        Debug.LogWarning($"⚠️ [BluetoothInputManager] Bluetooth Disconnected from device '{targetDeviceName}'. Re-entering Simulation Mode.");
     }
 }

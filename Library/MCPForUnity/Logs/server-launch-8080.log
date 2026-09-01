@@ -1,4 +1,3 @@
-Installed 72 packages in 1.02s
 
 
 +-----------------------------------------------------------------------------+
@@ -22,526 +21,453 @@ Installed 72 packages in 1.02s
 +-----------------------------------------------------------------------------+
 
 
-[09/01/26 22:39:42] INFO     Starting MCP server               transport.py:361
+[09/02/26 01:09:12] INFO     Starting MCP server               transport.py:361
                              'mcp-for-unity-server' with                       
                              transport 'http' on                               
                              http://127.0.0.1:8080/mcp                         
-INFO:     Started server process [31176]
+INFO:     Started server process [3548]
 INFO:     Waiting for application startup.
-2026-09-01 22:39:43,451 - mcp.server.streamable_http_manager - INFO - StreamableHTTP session manager started
+2026-09-02 01:09:12,765 - mcp.server.streamable_http_manager - INFO - StreamableHTTP session manager started
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://127.0.0.1:8080 (Press CTRL+C to quit)
-INFO:     127.0.0.1:49910 - "WebSocket /hub/plugin" [accepted]
+INFO:     127.0.0.1:65360 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-01 22:39:44,012 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-01 22:39:44,335 - transport.plugin_hub - INFO - Registered 35 tools for session aebc680d-d7b7-4a3b-b623-646eb586eb5f
-2026-09-01 22:39:44,335 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-01 22:40:05,370 - mcp.server.streamable_http_manager - INFO - Created new transport with session ID: e99e24eb00df4e14af96ed6d8e77b0e0
-INFO:     127.0.0.1:61087 - "POST /mcp HTTP/1.1" 400 Bad Request
-2026-09-01 22:40:05,379 - mcp.server.streamable_http_manager - INFO - Created new transport with session ID: bb5ddc2acf1740a5854492c8a277fdb8
-INFO:     127.0.0.1:61087 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:61087 - "GET /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:61088 - "POST /mcp HTTP/1.1" 202 Accepted
-INFO:     127.0.0.1:61088 - "GET /.well-known/oauth-protected-resource/mcp HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:61088 - "GET /.well-known/oauth-protected-resource HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:61088 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:61991 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:61992 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:61993 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:61992 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:61993 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:61997 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:63437 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-01 22:41:06,282 - transport.plugin_hub - INFO - Plugin session aebc680d-d7b7-4a3b-b623-646eb586eb5f disconnected (1005)
-INFO:     127.0.0.1:63437 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:63460 - "WebSocket /hub/plugin" [accepted]
+2026-09-02 01:09:13,491 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 01:09:13,837 - transport.plugin_hub - INFO - Registered 35 tools for session f619a006-0e54-471c-8ea6-7e007270393c
+2026-09-02 01:09:13,837 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
+2026-09-02 01:10:11,840 - mcp.server.streamable_http_manager - INFO - Created new transport with session ID: 4990a7b530154aa6ac7f02b241cd2fbb
+INFO:     127.0.0.1:64211 - "POST /mcp HTTP/1.1" 400 Bad Request
+2026-09-02 01:10:11,852 - mcp.server.streamable_http_manager - INFO - Created new transport with session ID: 731671d705f245a6a31f80f9749cdcff
+INFO:     127.0.0.1:64211 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64211 - "GET /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64212 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     127.0.0.1:64212 - "GET /.well-known/oauth-protected-resource/mcp HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64212 - "GET /.well-known/oauth-protected-resource HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64212 - "POST /mcp HTTP/1.1" 200 OK
+2026-09-02 01:11:37,657 - transport.plugin_hub - INFO - Plugin session f619a006-0e54-471c-8ea6-7e007270393c disconnected (1005)
+INFO:     127.0.0.1:54196 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-01 22:41:15,292 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-01 22:41:16,754 - transport.plugin_hub - INFO - Registered 35 tools for session a89e55c2-2cef-44b0-af9d-ad31ef4acfd5
-2026-09-01 22:41:16,755 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-01 22:41:16,756 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:63461 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:63437 - "POST /mcp HTTP/1.1" 200 OK
-[09/01/26 22:41:21] WARNING  Invalid arguments for tool          server.py:1325
-                             'find_gameobjects': [{'type':                     
-                             'missing_argument', 'loc':                        
-                             ('search_term',), 'msg': 'Missing                 
-                             required argument', 'input': {}}]                 
-INFO:     127.0.0.1:63461 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:59700 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:59702 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:59702 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:59702 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60668 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60669 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60670 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60675 - "POST /mcp HTTP/1.1" 200 OK
-[09/01/26 22:41:42] WARNING  Invalid arguments for tool          server.py:1325
-                             'manage_components': [{'type':                    
-                             'missing_argument', 'loc':                        
-                             ('component_type',), 'msg':                       
-                             'Missing required argument',                      
-                             'input': {'action': 'add',                        
-                             'component_name': 'GameSettings',                 
-                             'target': '_NeuroPlayManagers'}},                 
-                             {'type':                                          
-                             'unexpected_keyword_argument',                    
-                             'loc': ('component_name',), 'msg':                
-                             'Unexpected keyword argument',                    
-                             'input': 'GameSettings'}]                         
-INFO:     127.0.0.1:60676 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60677 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60677 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60681 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60685 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50229 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50229 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50229 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60944 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60945 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:49685 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-01 22:44:04,812 - transport.plugin_hub - INFO - Plugin session a89e55c2-2cef-44b0-af9d-ad31ef4acfd5 disconnected (1005)
-INFO:     127.0.0.1:60069 - "WebSocket /hub/plugin" [accepted]
+2026-09-02 01:11:43,111 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 01:11:43,515 - transport.plugin_hub - INFO - Registered 35 tools for session fb4c38ea-4865-4d33-8a7a-90b650dd4176
+2026-09-02 01:11:43,515 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
+2026-09-02 01:11:43,517 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
+INFO:     127.0.0.1:54197 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54902 - "POST /mcp HTTP/1.1" 200 OK
+2026-09-02 01:27:19,187 - transport.plugin_hub - INFO - Plugin session fb4c38ea-4865-4d33-8a7a-90b650dd4176 disconnected (1005)
+INFO:     127.0.0.1:54915 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-01 22:44:11,487 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-01 22:44:11,863 - transport.plugin_hub - INFO - Registered 35 tools for session 566ceea5-2ba2-4330-8826-cfc53894d02e
-2026-09-01 22:44:11,864 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-01 22:44:11,864 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:60070 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-01 22:46:46,565 - transport.plugin_hub - INFO - Plugin session 566ceea5-2ba2-4330-8826-cfc53894d02e disconnected (1005)
-INFO:     127.0.0.1:51270 - "WebSocket /hub/plugin" [accepted]
+2026-09-02 01:27:24,531 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 01:27:26,171 - transport.plugin_hub - INFO - Registered 35 tools for session ca6f77c3-8373-4122-95ec-2fea35fb43e2
+2026-09-02 01:27:26,172 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
+2026-09-02 01:27:26,173 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
+INFO:     127.0.0.1:54916 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54929 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49301 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49306 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53731 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53733 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49756 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49758 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49760 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49762 - "POST /mcp HTTP/1.1" 200 OK
+2026-09-02 01:32:43,251 - transport.plugin_hub - INFO - Plugin session ca6f77c3-8373-4122-95ec-2fea35fb43e2 disconnected (1005)
+INFO:     127.0.0.1:49765 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49767 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-01 22:46:52,551 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-01 22:46:52,944 - transport.plugin_hub - INFO - Registered 35 tools for session 2363e129-4db9-445e-bff2-2f503ecb371b
-2026-09-01 22:46:52,944 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-01 22:46:52,945 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:51271 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:57818 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-01 22:47:56,676 - transport.plugin_hub - INFO - Plugin session 2363e129-4db9-445e-bff2-2f503ecb371b disconnected (1005)
-INFO:     127.0.0.1:57830 - "WebSocket /hub/plugin" [accepted]
+2026-09-02 01:32:48,221 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 01:32:49,361 - transport.plugin_hub - INFO - Registered 35 tools for session fe7c7879-7182-4b77-9d4e-de995835050e
+2026-09-02 01:32:49,361 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
+2026-09-02 01:32:49,362 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
+INFO:     127.0.0.1:49778 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49791 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56327 - "POST /mcp HTTP/1.1" 200 OK
+2026-09-02 01:33:02,473 - transport.plugin_hub - INFO - Plugin session fe7c7879-7182-4b77-9d4e-de995835050e disconnected (1005)
+INFO:     127.0.0.1:55607 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-01 22:48:01,618 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-01 22:48:02,804 - transport.plugin_hub - INFO - Registered 35 tools for session 12aac460-fb54-4aae-938b-9663423a632a
-2026-09-01 22:48:02,804 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-01 22:48:02,805 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:57831 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:57831 - "POST /mcp HTTP/1.1" 200 OK
-[09/01/26 22:48:05] WARNING  Invalid arguments for tool          server.py:1325
-                             'manage_components': [{'type':                    
-                             'literal_error', 'loc':                           
-                             ('action',), 'msg': "Input should                 
-                             be 'add', 'remove' or                             
-                             'set_property'", 'input': 'list',                 
-                             'ctx': {'expected': "'add',                       
-                             'remove' or 'set_property'"}},                    
-                             {'type': 'missing_argument', 'loc':               
-                             ('component_type',), 'msg':                       
-                             'Missing required argument',                      
-                             'input': {'action': 'list',                       
-                             'target': '36020'}}]                              
-INFO:     127.0.0.1:53984 - "POST /mcp HTTP/1.1" 200 OK
-[09/01/26 22:48:10] WARNING  Invalid arguments for tool          server.py:1325
-                             'execute_code': [{'type':                         
-                             'missing_argument', 'loc':                        
-                             ('action',), 'msg': 'Missing                      
-                             required argument', 'input':                      
-                             {'code': 'using UnityEngine;\nusing               
-                             UnityEditor;\n\npublic class                      
-                             SpriteChecker {\n    public static                
-                             string CheckSprites() {\n                         
-                             System.Text.StringBuilder sb = new                
-                             System.Text.StringBuilder();\n                    
-                             SpriteRenderer[] renderers =                      
-                             Object.FindObjectsOfType<SpriteRend               
-                             erer>(true);\n                                    
-                             sb.AppendLine("Found " +                          
-                             renderers.Length + "                              
-                             SpriteRenderers in scene:");\n                    
-                             foreach (var sr in renderers) {\n                 
-                             string spriteName = sr.sprite !=                  
-                             null ? sr.sprite.name : "NULL";\n                 
-                             sb.AppendLine("- GameObject \'" +                 
-                             sr.gameObject.name + "\': Sprite =                
-                             " + spriteName);\n        }\n\n                   
-                             // Check prefabs in Assets/Prefab\n               
-                             string[] prefabGuids =                            
-                             AssetDatabase.FindAssets("t:Prefab"               
-                             , new[] { "Assets/Prefab" });\n                   
-                             sb.AppendLine("\\nChecking Prefabs                
-                             in Assets/Prefab:");\n                            
-                             foreach (string guid in                           
-                             prefabGuids) {\n            string                
-                             path =                                            
-                             AssetDatabase.GUIDToAssetPath(guid)               
-                             ;\n            GameObject prefab =                
-                             AssetDatabase.LoadAssetAtPath<GameO               
-                             bject>(path);\n            if                     
-                             (prefab != null) {\n                              
-                             SpriteRenderer sr =                               
-                             prefab.GetComponentInChildren<Sprit               
-                             eRenderer>(true);\n                               
-                             string spriteName = (sr != null &&                
-                             sr.sprite != null) ? sr.sprite.name               
-                             : (sr == null ?                                   
-                             "NO_SPRITE_RENDERER" : "NULL");\n                 
-                             sb.AppendLine("- Prefab \'" +                     
-                             prefab.name + "\': Sprite = " +                   
-                             spriteName);\n            }\n                     
-                             }\n        return sb.ToString();\n                
-                             }\n}\nreturn                                      
-                             SpriteChecker.CheckSprites();\n'}}]               
-INFO:     127.0.0.1:53985 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:53986 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:53986 - "POST /mcp HTTP/1.1" 200 OK
-[09/01/26 22:48:12] WARNING  Invalid arguments for tool          server.py:1325
-                             'execute_code': [{'type':                         
-                             'literal_error', 'loc':                           
-                             ('action',), 'msg': "Input should                 
-                             be 'execute', 'get_history',                      
-                             'replay' or 'clear_history'",                     
-                             'input': 'run', 'ctx': {'expected':               
-                             "'execute', 'get_history', 'replay'               
-                             or 'clear_history'"}}]                            
-INFO:     127.0.0.1:53986 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:53986 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:57152 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:57155 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-01 22:50:21,713 - transport.plugin_hub - INFO - Plugin session 12aac460-fb54-4aae-938b-9663423a632a disconnected (1005)
-INFO:     127.0.0.1:51390 - "WebSocket /hub/plugin" [accepted]
+2026-09-02 01:33:08,794 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 01:33:26,904 - transport.plugin_hub - INFO - Registered 35 tools for session 1965f9de-57f2-4a1c-8a1a-1722a9b089db
+2026-09-02 01:33:26,904 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
+2026-09-02 01:33:26,904 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
+INFO:     127.0.0.1:55608 - "POST /mcp HTTP/1.1" 200 OK
+2026-09-02 01:33:31,884 - transport.plugin_hub - INFO - Plugin session 1965f9de-57f2-4a1c-8a1a-1722a9b089db disconnected (1005)
+INFO:     127.0.0.1:59564 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-01 22:50:27,500 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-01 22:50:27,903 - transport.plugin_hub - INFO - Registered 35 tools for session 7af3916d-5ad1-4b09-a62d-87afd792a989
-2026-09-01 22:50:27,904 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-01 22:50:27,905 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:51391 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:64084 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:64086 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:64088 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:64091 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:64093 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-01 22:52:34,060 - transport.plugin_hub - INFO - Plugin session 7af3916d-5ad1-4b09-a62d-87afd792a989 disconnected (1005)
-INFO:     127.0.0.1:64095 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:64110 - "WebSocket /hub/plugin" [accepted]
+2026-09-02 01:33:37,347 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 01:33:37,686 - transport.plugin_hub - INFO - Registered 35 tools for session 92b6144e-92ee-4421-861a-77449be957cc
+2026-09-02 01:33:37,686 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
+2026-09-02 01:33:37,687 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
+INFO:     127.0.0.1:59566 - "POST /mcp HTTP/1.1" 200 OK
+2026-09-02 01:34:35,192 - transport.plugin_hub - INFO - Plugin session 92b6144e-92ee-4421-861a-77449be957cc disconnected (1005)
+INFO:     127.0.0.1:53376 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-01 22:52:40,461 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-INFO:     127.0.0.1:64125 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:64125 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-01 22:53:09,465 - transport.plugin_hub - INFO - Registered 35 tools for session 2d8c1b91-3d23-4fcd-8ac3-54e8d49176ef
-2026-09-01 22:53:09,465 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-01 22:53:09,466 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:51351 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-01 22:53:20,415 - transport.plugin_hub - INFO - Plugin session 2d8c1b91-3d23-4fcd-8ac3-54e8d49176ef disconnected (1005)
-INFO:     127.0.0.1:62306 - "WebSocket /hub/plugin" [accepted]
+2026-09-02 01:34:40,393 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 01:34:40,718 - transport.plugin_hub - INFO - Registered 35 tools for session f8c9f3af-ab00-4c97-8e3a-aff760bb1468
+2026-09-02 01:34:40,719 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
+2026-09-02 01:34:40,720 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
+INFO:     127.0.0.1:53377 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52791 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52791 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54177 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54179 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54181 - "POST /mcp HTTP/1.1" 200 OK
+2026-09-02 01:35:37,912 - transport.plugin_hub - INFO - Plugin session f8c9f3af-ab00-4c97-8e3a-aff760bb1468 disconnected (1005)
+INFO:     127.0.0.1:54181 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54194 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-01 22:53:25,529 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-01 22:53:25,536 - transport.plugin_hub - INFO - Registered 35 tools for session 014ec90a-cb7c-43e0-9087-6851e6e0dd12
-2026-09-01 22:53:25,536 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-01 22:53:25,537 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:62307 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:64125 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:53726 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-01 23:16:30,808 - transport.plugin_hub - INFO - Plugin session 014ec90a-cb7c-43e0-9087-6851e6e0dd12 disconnected (1005)
-INFO:     127.0.0.1:53740 - "WebSocket /hub/plugin" [accepted]
+2026-09-02 01:35:43,055 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 01:35:44,219 - transport.plugin_hub - INFO - Registered 35 tools for session 2b7cc626-2f86-42f3-a568-6a4d27f1f021
+2026-09-02 01:35:44,220 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
+2026-09-02 01:35:44,220 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
+INFO:     127.0.0.1:54195 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54208 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54208 - "POST /mcp HTTP/1.1" 200 OK
+2026-09-02 01:35:56,317 - transport.plugin_hub - INFO - Plugin session 2b7cc626-2f86-42f3-a568-6a4d27f1f021 disconnected (1005)
+INFO:     127.0.0.1:54208 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54211 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-01 23:16:36,632 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-01 23:16:37,865 - transport.plugin_hub - INFO - Registered 35 tools for session f3e936ad-a205-45e2-9fb1-91042798eda5
-2026-09-01 23:16:37,865 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-01 23:16:37,866 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:53741 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:53741 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:53755 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:53757 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:53757 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-01 23:17:58,647 - transport.plugin_hub - INFO - Plugin session f3e936ad-a205-45e2-9fb1-91042798eda5 disconnected (1005)
-INFO:     127.0.0.1:54777 - "WebSocket /hub/plugin" [accepted]
+2026-09-02 01:36:01,875 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+INFO:     127.0.0.1:64293 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64296 - "POST /mcp HTTP/1.1" 200 OK
+2026-09-02 01:36:41,825 - transport.plugin_hub - INFO - Plugin session d0adb60a-7b22-4b14-8d9c-bcefe55fd300 disconnected (1005)
+INFO:     127.0.0.1:64298 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-01 23:18:04,394 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-01 23:18:04,766 - transport.plugin_hub - INFO - Registered 35 tools for session d98c8a99-3edc-42a3-9e4b-d8e5ce21e597
-2026-09-01 23:18:04,767 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-01 23:18:04,767 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:54778 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54065 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54067 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54069 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54069 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54069 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54069 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-01 23:19:35,982 - transport.plugin_hub - INFO - Plugin session d98c8a99-3edc-42a3-9e4b-d8e5ce21e597 disconnected (1005)
-INFO:     127.0.0.1:54086 - "WebSocket /hub/plugin" [accepted]
+2026-09-02 01:36:46,959 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 01:37:26,950 - transport.plugin_hub - INFO - Plugin session 1ae8639e-d780-4a09-9e9b-fef90de6b39f disconnected (1005)
+INFO:     127.0.0.1:51154 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-01 23:19:42,695 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-01 23:19:46,165 - transport.plugin_hub - INFO - Registered 35 tools for session c76c18b5-bb15-4ec6-b320-c53f4e697007
-2026-09-01 23:19:46,165 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-01 23:19:46,166 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:54099 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-01 23:19:56,466 - transport.plugin_hub - INFO - Plugin session c76c18b5-bb15-4ec6-b320-c53f4e697007 disconnected (1005)
-INFO:     127.0.0.1:54103 - "WebSocket /hub/plugin" [accepted]
+2026-09-02 01:37:32,006 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 01:37:46,235 - services.tools.refresh_unity - WARNING - refresh_unity: Timed out after 60s waiting for editor to become ready
+2026-09-02 01:38:12,012 - transport.plugin_hub - INFO - Plugin session 08f21563-426b-48bf-94d4-f05bfba13e8f disconnected (1005)
+INFO:     127.0.0.1:54411 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-01 23:20:02,072 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-01 23:20:02,409 - transport.plugin_hub - INFO - Registered 35 tools for session ebb5936d-4bb4-4798-985e-e31ef77f3009
-2026-09-01 23:20:02,410 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-01 23:20:02,410 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:54105 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62482 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-01 23:21:36,239 - transport.plugin_hub - INFO - Plugin session ebb5936d-4bb4-4798-985e-e31ef77f3009 disconnected (1005)
-INFO:     127.0.0.1:62486 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62497 - "WebSocket /hub/plugin" [accepted]
+2026-09-02 01:38:17,037 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 01:38:57,047 - transport.plugin_hub - INFO - Plugin session 013d8c8d-c823-4c43-a7af-4be169fa5707 disconnected (1005)
+INFO:     127.0.0.1:54412 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-01 23:21:41,290 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-01 23:21:42,958 - transport.plugin_hub - INFO - Registered 35 tools for session ba20a289-da36-487a-b857-40d4e82c3b80
-2026-09-01 23:21:42,958 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-01 23:21:42,959 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:62499 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-01 23:21:45,220 - transport.plugin_hub - INFO - Plugin session ba20a289-da36-487a-b857-40d4e82c3b80 disconnected (1005)
-INFO:     127.0.0.1:62486 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62511 - "WebSocket /hub/plugin" [accepted]
+2026-09-02 01:39:02,069 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 01:39:42,070 - transport.plugin_hub - INFO - Plugin session b041be82-c4f6-487e-aff3-239cbf443700 disconnected (1005)
+INFO:     127.0.0.1:51845 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-01 23:21:51,233 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-01 23:21:51,603 - transport.plugin_hub - INFO - Registered 35 tools for session ed9f9cbc-6347-45c7-88eb-3e6ee7b20467
-2026-09-01 23:21:51,603 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-01 23:21:51,604 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:62513 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62486 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-01 23:21:57,967 - transport.plugin_hub - INFO - Plugin session ed9f9cbc-6347-45c7-88eb-3e6ee7b20467 disconnected (1005)
-INFO:     127.0.0.1:62486 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58000 - "WebSocket /hub/plugin" [accepted]
+2026-09-02 01:39:47,097 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 01:39:49,782 - transport.plugin_hub - INFO - Registered 35 tools for session eb4471c4-4aa3-40b4-9aab-55ab2bb34a2d
+2026-09-02 01:39:49,783 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
+2026-09-02 01:39:49,783 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
+INFO:     127.0.0.1:51846 - "POST /mcp HTTP/1.1" 200 OK
+2026-09-02 01:39:59,336 - transport.plugin_hub - INFO - Plugin session eb4471c4-4aa3-40b4-9aab-55ab2bb34a2d disconnected (1005)
+INFO:     127.0.0.1:55756 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-01 23:22:04,181 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-01 23:22:04,545 - transport.plugin_hub - INFO - Registered 35 tools for session 0180f670-9b46-44ac-aed7-328e7e576ef2
-2026-09-01 23:22:04,545 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-01 23:22:04,546 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:62188 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-01 23:22:06,891 - transport.plugin_hub - INFO - Plugin session 0180f670-9b46-44ac-aed7-328e7e576ef2 disconnected (1005)
-INFO:     127.0.0.1:62210 - "WebSocket /hub/plugin" [accepted]
+2026-09-02 01:40:09,435 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 01:40:14,304 - transport.plugin_hub - INFO - Registered 35 tools for session 8f218c7d-7ea3-41e2-b627-41bfa4aa061f
+2026-09-02 01:40:14,304 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
+2026-09-02 01:40:14,306 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
+INFO:     127.0.0.1:55769 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62408 - "POST /mcp HTTP/1.1" 200 OK
+2026-09-02 01:43:01,546 - transport.plugin_hub - INFO - Plugin session 8f218c7d-7ea3-41e2-b627-41bfa4aa061f disconnected (1005)
+INFO:     127.0.0.1:49260 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-01 23:22:12,079 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-01 23:22:13,835 - transport.plugin_hub - INFO - Registered 35 tools for session 08c1633b-b2f8-4df0-83bf-fe25db3c6497
-2026-09-01 23:22:13,835 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-01 23:22:13,836 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:62212 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62486 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62486 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-01 23:22:22,958 - transport.plugin_hub - INFO - Plugin session 08c1633b-b2f8-4df0-83bf-fe25db3c6497 disconnected (1005)
-INFO:     127.0.0.1:62229 - "WebSocket /hub/plugin" [accepted]
+2026-09-02 01:43:10,392 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 01:43:12,532 - transport.plugin_hub - INFO - Registered 35 tools for session 3b7230b8-abd7-4a7e-a2ef-828b83520c51
+2026-09-02 01:43:12,533 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
+2026-09-02 01:43:12,536 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
+INFO:     127.0.0.1:52972 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52921 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52924 - "POST /mcp HTTP/1.1" 200 OK
+2026-09-02 01:43:26,694 - transport.plugin_hub - INFO - Plugin session 3b7230b8-abd7-4a7e-a2ef-828b83520c51 disconnected (1005)
+INFO:     127.0.0.1:52930 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-01 23:22:29,938 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-01 23:22:32,879 - transport.plugin_hub - INFO - Registered 35 tools for session 46454d45-0a63-4ccd-b2b0-ca448d65aa59
-2026-09-01 23:22:32,880 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-01 23:22:32,881 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:62240 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-01 23:24:05,631 - transport.plugin_hub - INFO - Plugin session 46454d45-0a63-4ccd-b2b0-ca448d65aa59 disconnected (1005)
-INFO:     127.0.0.1:54366 - "WebSocket /hub/plugin" [accepted]
+2026-09-02 01:43:38,087 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 01:43:38,531 - transport.plugin_hub - INFO - Registered 35 tools for session 864804c4-284b-410e-bcba-9c36d5b4e480
+2026-09-02 01:43:38,532 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
+2026-09-02 01:43:38,533 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
+INFO:     127.0.0.1:52931 - "POST /mcp HTTP/1.1" 200 OK
+2026-09-02 01:44:34,447 - transport.plugin_hub - INFO - Plugin session 864804c4-284b-410e-bcba-9c36d5b4e480 disconnected (1005)
+INFO:     127.0.0.1:51284 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-01 23:24:11,488 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-01 23:24:11,883 - transport.plugin_hub - INFO - Registered 35 tools for session 9ddafac7-2d97-4fb6-a370-947908916d9e
-2026-09-01 23:24:11,883 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-01 23:24:11,884 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:54368 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:65198 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:65200 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:65202 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:65202 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-01 23:27:38,382 - transport.plugin_hub - INFO - Plugin session 9ddafac7-2d97-4fb6-a370-947908916d9e disconnected (1005)
-INFO:     127.0.0.1:65202 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:65217 - "WebSocket /hub/plugin" [accepted]
+2026-09-02 01:44:46,430 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 01:44:47,067 - transport.plugin_hub - INFO - Registered 35 tools for session 68b1dfd3-8858-4320-80f9-979af4de9bfb
+2026-09-02 01:44:47,068 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
+2026-09-02 01:44:47,069 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
+INFO:     127.0.0.1:51295 - "POST /mcp HTTP/1.1" 200 OK
+2026-09-02 01:45:02,716 - transport.plugin_hub - INFO - Plugin session 68b1dfd3-8858-4320-80f9-979af4de9bfb disconnected (1005)
+INFO:     127.0.0.1:58696 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-01 23:27:43,338 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-01 23:27:45,018 - transport.plugin_hub - INFO - Registered 35 tools for session 451de912-3709-4527-bd4f-4685c39486af
-2026-09-01 23:27:45,018 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-01 23:27:45,019 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:65218 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:65218 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-01 23:27:49,901 - transport.plugin_hub - INFO - Plugin session 451de912-3709-4527-bd4f-4685c39486af disconnected (1005)
-INFO:     127.0.0.1:65235 - "WebSocket /hub/plugin" [accepted]
+2026-09-02 01:45:13,346 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 01:45:14,128 - transport.plugin_hub - INFO - Registered 35 tools for session 431f68f2-d79d-43a9-b686-359c4b876de6
+2026-09-02 01:45:14,129 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
+2026-09-02 01:45:14,131 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
+INFO:     127.0.0.1:58698 - "POST /mcp HTTP/1.1" 200 OK
+2026-09-02 01:45:45,319 - transport.plugin_hub - INFO - Plugin session 431f68f2-d79d-43a9-b686-359c4b876de6 disconnected (1005)
+INFO:     127.0.0.1:58721 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-01 23:27:56,834 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-01 23:27:58,412 - transport.plugin_hub - INFO - Registered 35 tools for session 98fbdcb3-e93a-414c-b261-7d1fdf442b0c
-2026-09-01 23:27:58,413 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-01 23:27:58,413 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:65237 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-01 23:28:14,490 - transport.plugin_hub - INFO - Plugin session 98fbdcb3-e93a-414c-b261-7d1fdf442b0c disconnected (1005)
-INFO:     127.0.0.1:53884 - "WebSocket /hub/plugin" [accepted]
+2026-09-02 01:45:55,940 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 01:45:56,635 - transport.plugin_hub - INFO - Registered 35 tools for session 46551d8e-ad4d-46fc-b031-ef668d17ab74
+2026-09-02 01:45:56,636 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
+2026-09-02 01:45:56,639 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
+INFO:     127.0.0.1:58732 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64961 - "POST /mcp HTTP/1.1" 200 OK
+2026-09-02 01:48:19,430 - transport.plugin_hub - INFO - Plugin session 46551d8e-ad4d-46fc-b031-ef668d17ab74 disconnected (1005)
+INFO:     127.0.0.1:64973 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-01 23:28:20,674 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-01 23:28:21,051 - transport.plugin_hub - INFO - Registered 35 tools for session fe038d37-3105-4da8-8c28-a3e0ba11c9c0
-2026-09-01 23:28:21,052 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-01 23:28:21,053 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:53885 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:55992 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-01 23:30:51,162 - transport.plugin_hub - INFO - Plugin session fe038d37-3105-4da8-8c28-a3e0ba11c9c0 disconnected (1005)
-INFO:     127.0.0.1:56000 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:56011 - "WebSocket /hub/plugin" [accepted]
+2026-09-02 01:48:27,743 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 01:48:30,288 - transport.plugin_hub - INFO - Registered 35 tools for session b3336cf4-0d5f-4cb6-8dc2-ec7f92eee009
+2026-09-02 01:48:30,289 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
+2026-09-02 01:48:30,290 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
+INFO:     127.0.0.1:64974 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64961 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64961 - "POST /mcp HTTP/1.1" 200 OK
+2026-09-02 01:48:42,913 - transport.plugin_hub - INFO - Plugin session b3336cf4-0d5f-4cb6-8dc2-ec7f92eee009 disconnected (1005)
+INFO:     127.0.0.1:64994 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-01 23:30:56,619 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-01 23:30:58,127 - transport.plugin_hub - INFO - Registered 35 tools for session 316e307f-6f3a-49de-93a2-39054a039df0
-2026-09-01 23:30:58,127 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-01 23:30:58,128 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:56012 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:61921 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:61923 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:61923 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:61923 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-01 23:31:22,397 - transport.plugin_hub - INFO - Plugin session 316e307f-6f3a-49de-93a2-39054a039df0 disconnected (1005)
-INFO:     127.0.0.1:61942 - "WebSocket /hub/plugin" [accepted]
+2026-09-02 01:48:54,186 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 01:48:54,998 - transport.plugin_hub - INFO - Registered 35 tools for session fbc776ec-659d-455f-8423-96dceeed5d2d
+2026-09-02 01:48:55,000 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
+2026-09-02 01:48:55,001 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
+INFO:     127.0.0.1:64995 - "POST /mcp HTTP/1.1" 200 OK
+2026-09-02 01:50:54,855 - transport.plugin_hub - INFO - Plugin session fbc776ec-659d-455f-8423-96dceeed5d2d disconnected (1005)
+INFO:     127.0.0.1:62236 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-01 23:31:28,953 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-01 23:31:30,698 - transport.plugin_hub - INFO - Registered 35 tools for session 347d87c3-b283-4839-b71f-906b241446b3
-2026-09-01 23:31:30,698 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-01 23:31:30,699 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:61953 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-01 23:31:55,190 - transport.plugin_hub - INFO - Plugin session 347d87c3-b283-4839-b71f-906b241446b3 disconnected (1005)
-INFO:     127.0.0.1:61966 - "WebSocket /hub/plugin" [accepted]
+2026-09-02 01:51:06,565 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 01:51:46,469 - transport.plugin_hub - INFO - Plugin session 18d15a97-8266-4ee1-b721-e9f0ca2c0249 disconnected (1005)
+INFO:     127.0.0.1:55139 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-01 23:32:01,296 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-01 23:32:01,672 - transport.plugin_hub - INFO - Registered 35 tools for session a09dce1b-3b94-4b30-bc4e-41997ed1f956
-2026-09-01 23:32:01,672 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-01 23:32:01,673 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:61967 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-01 23:32:10,479 - transport.plugin_hub - INFO - Plugin session a09dce1b-3b94-4b30-bc4e-41997ed1f956 disconnected (1005)
-INFO:     127.0.0.1:52995 - "WebSocket /hub/plugin" [accepted]
+2026-09-02 01:51:51,660 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 01:52:31,649 - transport.plugin_hub - INFO - Plugin session 6d24ea03-3c7a-404c-83fa-1d8c6d4407dd disconnected (1005)
+INFO:     127.0.0.1:51749 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-01 23:32:16,516 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-01 23:32:16,886 - transport.plugin_hub - INFO - Registered 35 tools for session 8271df59-ba34-416c-b280-8ee44d4cf523
-2026-09-01 23:32:16,887 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-01 23:32:16,888 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:52997 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-01 23:34:53,137 - transport.plugin_hub - INFO - Plugin session 8271df59-ba34-416c-b280-8ee44d4cf523 disconnected (1005)
-INFO:     127.0.0.1:64790 - "WebSocket /hub/plugin" [accepted]
+2026-09-02 01:52:36,752 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 01:53:16,729 - transport.plugin_hub - INFO - Plugin session 08625bd4-fef4-4ab4-b66c-cfbeabd3e32b disconnected (1005)
+INFO:     127.0.0.1:52915 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-01 23:34:59,301 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-01 23:34:59,685 - transport.plugin_hub - INFO - Registered 35 tools for session abd6ec84-bdd7-4ebc-94f0-4f25d140c841
-2026-09-01 23:34:59,686 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-01 23:34:59,687 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:64791 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:59205 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-01 23:39:59,435 - transport.plugin_hub - INFO - Plugin session abd6ec84-bdd7-4ebc-94f0-4f25d140c841 disconnected (1005)
-INFO:     127.0.0.1:61643 - "WebSocket /hub/plugin" [accepted]
+2026-09-02 01:53:21,826 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 01:53:25,364 - transport.plugin_hub - INFO - Registered 35 tools for session 57e2243a-91e2-4f70-bae9-5dac2be72133
+2026-09-02 01:53:25,364 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
+2026-09-02 01:53:25,366 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
+INFO:     127.0.0.1:52919 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52090 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52090 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51581 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49283 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49283 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49286 - "POST /mcp HTTP/1.1" 200 OK
+2026-09-02 02:01:48,719 - transport.plugin_hub - INFO - Plugin session 57e2243a-91e2-4f70-bae9-5dac2be72133 disconnected (1005)
+INFO:     127.0.0.1:64095 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-01 23:40:05,047 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-01 23:40:06,444 - transport.plugin_hub - INFO - Registered 35 tools for session 7a038dbe-64b9-48f0-8f7f-771a4991cb3c
-2026-09-01 23:40:06,445 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-01 23:40:06,446 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:61644 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:59205 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60527 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60527 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-01 23:44:25,686 - transport.plugin_hub - INFO - Plugin session 7a038dbe-64b9-48f0-8f7f-771a4991cb3c disconnected (1005)
-INFO:     127.0.0.1:60541 - "WebSocket /hub/plugin" [accepted]
+2026-09-02 02:01:58,651 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 02:02:00,599 - transport.plugin_hub - INFO - Registered 35 tools for session ea1911e2-6da2-408c-a2f5-933c206d9467
+2026-09-02 02:02:00,600 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
+2026-09-02 02:02:00,601 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
+INFO:     127.0.0.1:64096 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64096 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61283 - "POST /mcp HTTP/1.1" 200 OK
+2026-09-02 02:02:13,335 - transport.plugin_hub - INFO - Plugin session ea1911e2-6da2-408c-a2f5-933c206d9467 disconnected (1005)
+INFO:     127.0.0.1:61289 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-01 23:44:31,507 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-01 23:44:32,928 - transport.plugin_hub - INFO - Registered 35 tools for session 237eaca9-204b-4f75-83f5-8a9cd2a36b05
-2026-09-01 23:44:32,929 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-01 23:44:32,930 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:60542 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54910 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54912 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54914 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-01 23:44:51,427 - transport.plugin_hub - INFO - Plugin session 237eaca9-204b-4f75-83f5-8a9cd2a36b05 disconnected (1005)
-INFO:     127.0.0.1:54919 - "WebSocket /hub/plugin" [accepted]
+2026-09-02 02:02:25,026 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 02:03:04,935 - transport.plugin_hub - INFO - Plugin session ac614c2c-374a-4a77-8f86-671309dd0229 disconnected (1005)
+INFO:     127.0.0.1:63011 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-01 23:44:57,772 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-01 23:45:37,719 - transport.plugin_hub - INFO - Plugin session 20eb6699-ae28-4414-9ab4-7b637b175efc disconnected (1005)
-INFO:     127.0.0.1:59721 - "WebSocket /hub/plugin" [accepted]
+2026-09-02 02:03:10,240 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 02:03:50,211 - transport.plugin_hub - INFO - Plugin session 09de69d6-e6ee-41c2-b1b8-ff4c397f994c disconnected (1005)
+INFO:     127.0.0.1:50124 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-01 23:45:38,316 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-01 23:45:38,349 - transport.plugin_hub - INFO - Registered 35 tools for session 6d895ee1-2ae0-483e-b606-afa159b0da13
-2026-09-01 23:45:38,350 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-01 23:45:38,350 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:59722 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-01 23:45:40,649 - transport.plugin_hub - INFO - Plugin session 6d895ee1-2ae0-483e-b606-afa159b0da13 disconnected (1005)
-INFO:     127.0.0.1:59737 - "WebSocket /hub/plugin" [accepted]
+2026-09-02 02:03:55,281 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 02:04:35,287 - transport.plugin_hub - INFO - Plugin session b2b7c28d-4741-483c-98d3-4183ada052c9 disconnected (1005)
+INFO:     127.0.0.1:62762 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-01 23:45:46,507 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-01 23:45:46,973 - transport.plugin_hub - INFO - Registered 35 tools for session 48a8977e-72ce-4ea9-8950-5ecac7199c48
-2026-09-01 23:45:46,974 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-01 23:45:46,974 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:59739 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-01 23:47:39,896 - transport.plugin_hub - INFO - Plugin session 48a8977e-72ce-4ea9-8950-5ecac7199c48 disconnected (1005)
-INFO:     127.0.0.1:58309 - "WebSocket /hub/plugin" [accepted]
+2026-09-02 02:04:40,364 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 02:05:20,337 - transport.plugin_hub - INFO - Plugin session 4ae2af2c-53b2-4566-8f54-7cf03ee0fbe2 disconnected (1005)
+INFO:     127.0.0.1:53442 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-01 23:47:45,512 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-01 23:47:45,867 - transport.plugin_hub - INFO - Registered 35 tools for session 9d3b43ab-f459-4c85-8405-4b3a2e475407
-2026-09-01 23:47:45,868 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-01 23:47:45,869 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:58311 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-01 23:50:22,974 - transport.plugin_hub - INFO - Plugin session 9d3b43ab-f459-4c85-8405-4b3a2e475407 disconnected (1005)
-INFO:     127.0.0.1:60345 - "WebSocket /hub/plugin" [accepted]
+2026-09-02 02:05:25,453 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 02:06:05,419 - transport.plugin_hub - INFO - Plugin session 670b4a36-10aa-42ce-a533-e8a9ec0264be disconnected (1005)
+INFO:     127.0.0.1:51964 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-01 23:50:29,212 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-01 23:50:29,621 - transport.plugin_hub - INFO - Registered 35 tools for session e8511ef6-9023-43d1-bc8f-85be301a6d3b
-2026-09-01 23:50:29,621 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-01 23:50:29,622 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:60347 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-01 23:50:40,233 - transport.plugin_hub - INFO - Plugin session e8511ef6-9023-43d1-bc8f-85be301a6d3b disconnected (1005)
-INFO:     127.0.0.1:60361 - "WebSocket /hub/plugin" [accepted]
+2026-09-02 02:06:10,481 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 02:06:50,477 - transport.plugin_hub - INFO - Plugin session 44334391-8848-40e4-8573-9e538887202a disconnected (1005)
+INFO:     127.0.0.1:51966 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-01 23:50:46,007 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-01 23:50:46,373 - transport.plugin_hub - INFO - Registered 35 tools for session f1106e88-c42f-48ef-83b7-e13393335f65
-2026-09-01 23:50:46,373 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-01 23:50:46,374 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:60363 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:65455 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:57984 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:57390 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-01 23:53:43,182 - transport.plugin_hub - INFO - Plugin session f1106e88-c42f-48ef-83b7-e13393335f65 disconnected (1005)
-INFO:     127.0.0.1:57403 - "WebSocket /hub/plugin" [accepted]
+2026-09-02 02:06:55,548 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 02:07:35,538 - transport.plugin_hub - INFO - Plugin session 155db4e0-9994-480d-bad1-e4ecb65ae6a0 disconnected (1005)
+INFO:     127.0.0.1:63868 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-01 23:53:49,032 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-01 23:53:50,602 - transport.plugin_hub - INFO - Registered 35 tools for session 570338ec-3525-43be-9a77-0e79a386185a
-2026-09-01 23:53:50,603 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-01 23:53:50,603 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:57404 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:57404 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:57418 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-01 23:54:01,122 - transport.plugin_hub - INFO - Plugin session 570338ec-3525-43be-9a77-0e79a386185a disconnected (1005)
-INFO:     127.0.0.1:52543 - "WebSocket /hub/plugin" [accepted]
+2026-09-02 02:07:40,622 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 02:08:20,598 - transport.plugin_hub - INFO - Plugin session b07b4933-10bd-4e71-876a-a2cbb216e731 disconnected (1005)
+INFO:     127.0.0.1:51949 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-01 23:54:07,998 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-01 23:54:38,669 - transport.plugin_hub - INFO - Registered 35 tools for session a9232f0a-71d8-4b13-8158-b8650a1c76ef
-2026-09-01 23:54:38,669 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-01 23:54:38,670 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:51142 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:59533 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-01 23:58:36,000 - transport.plugin_hub - INFO - Plugin session a9232f0a-71d8-4b13-8158-b8650a1c76ef disconnected (1005)
-INFO:     127.0.0.1:52025 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:52027 - "WebSocket /hub/plugin" [accepted]
+2026-09-02 02:08:25,687 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 02:09:05,668 - transport.plugin_hub - INFO - Plugin session 230ed602-0c3d-449c-91a6-72f6bb56c3ea disconnected (1005)
+INFO:     127.0.0.1:63363 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-01 23:58:41,223 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-01 23:58:42,510 - transport.plugin_hub - INFO - Registered 35 tools for session ab666229-91df-4f07-94bf-6ab0ef36ee86
-2026-09-01 23:58:42,511 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-01 23:58:42,512 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:52038 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:52040 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:51660 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:51662 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-01 23:59:18,821 - transport.plugin_hub - INFO - Plugin session ab666229-91df-4f07-94bf-6ab0ef36ee86 disconnected (1005)
-INFO:     127.0.0.1:51680 - "WebSocket /hub/plugin" [accepted]
+2026-09-02 02:09:10,746 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 02:09:50,737 - transport.plugin_hub - INFO - Plugin session e736f9f6-87cf-49a6-a876-fe7d701973d5 disconnected (1005)
+INFO:     127.0.0.1:50283 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-01 23:59:24,991 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-01 23:59:50,394 - transport.plugin_hub - INFO - Registered 35 tools for session 554124ad-2a63-423c-b2e6-f8ce993c6835
-2026-09-01 23:59:50,395 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-01 23:59:50,396 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:51683 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:55393 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-02 00:00:51,917 - transport.plugin_hub - INFO - Plugin session 554124ad-2a63-423c-b2e6-f8ce993c6835 disconnected (1005)
-INFO:     127.0.0.1:55406 - "WebSocket /hub/plugin" [accepted]
+2026-09-02 02:09:55,822 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 02:10:35,815 - transport.plugin_hub - INFO - Plugin session c4a378c6-ecda-41e9-b17b-fb0d1cd11021 disconnected (1005)
+INFO:     127.0.0.1:63232 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-02 00:00:57,703 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-02 00:00:59,018 - transport.plugin_hub - INFO - Registered 35 tools for session 7a1a0150-8e30-4cec-bd8a-343259a5dbe6
-2026-09-02 00:00:59,018 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-02 00:00:59,020 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:55407 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:55407 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62394 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60120 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60124 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-02 00:05:57,253 - transport.plugin_hub - INFO - Plugin session 7a1a0150-8e30-4cec-bd8a-343259a5dbe6 disconnected (1005)
-INFO:     127.0.0.1:59337 - "WebSocket /hub/plugin" [accepted]
+2026-09-02 02:10:40,872 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 02:11:20,874 - transport.plugin_hub - INFO - Plugin session 830d2798-73ab-4748-ae43-2cd4116367c6 disconnected (1005)
+INFO:     127.0.0.1:63954 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-02 00:06:10,167 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-02 00:06:11,652 - transport.plugin_hub - INFO - Registered 35 tools for session 9f87af0a-fdd1-4a18-b66a-11263c4f8a3a
-2026-09-02 00:06:11,652 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-02 00:06:11,653 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:59338 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:59338 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-02 00:10:41,638 - transport.plugin_hub - INFO - Plugin session 9f87af0a-fdd1-4a18-b66a-11263c4f8a3a disconnected (1005)
+2026-09-02 02:11:25,924 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 02:12:05,901 - transport.plugin_hub - INFO - Plugin session ece4541f-0c3a-45e2-8a15-4bfb6680f7e0 disconnected (1005)
+INFO:     127.0.0.1:56907 - "WebSocket /hub/plugin" [accepted]
+INFO:     connection open
+2026-09-02 02:12:10,990 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 02:12:50,986 - transport.plugin_hub - INFO - Plugin session b7c06d5f-85b5-49b1-bab1-2b8ac3844dce disconnected (1005)
+INFO:     127.0.0.1:53652 - "WebSocket /hub/plugin" [accepted]
+INFO:     connection open
+2026-09-02 02:12:56,038 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 02:13:36,041 - transport.plugin_hub - INFO - Plugin session 684ef1be-b547-483c-9f6a-2350ae0e3936 disconnected (1005)
+INFO:     127.0.0.1:53308 - "WebSocket /hub/plugin" [accepted]
+INFO:     connection open
+2026-09-02 02:13:41,103 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 02:14:21,095 - transport.plugin_hub - INFO - Plugin session c190dae5-ae26-4b35-b905-18f2bf415498 disconnected (1005)
+INFO:     127.0.0.1:63353 - "WebSocket /hub/plugin" [accepted]
+INFO:     connection open
+2026-09-02 02:14:26,162 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 02:15:06,154 - transport.plugin_hub - INFO - Plugin session 9772e7cd-e7c4-4791-ba07-469c31bd3667 disconnected (1005)
+INFO:     127.0.0.1:63621 - "WebSocket /hub/plugin" [accepted]
+INFO:     connection open
+2026-09-02 02:15:11,258 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 02:15:51,244 - transport.plugin_hub - INFO - Plugin session 1958045e-4aa8-4b7f-9183-e8aed589f466 disconnected (1005)
+INFO:     127.0.0.1:63622 - "WebSocket /hub/plugin" [accepted]
+INFO:     connection open
+2026-09-02 02:15:56,341 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 02:16:36,318 - transport.plugin_hub - INFO - Plugin session 8d57c464-93e1-4b9f-bd19-83b5c048e97c disconnected (1005)
+INFO:     127.0.0.1:55739 - "WebSocket /hub/plugin" [accepted]
+INFO:     connection open
+2026-09-02 02:16:41,377 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 02:17:21,380 - transport.plugin_hub - INFO - Plugin session 567232df-3960-401e-a0e4-ee87dcbadae6 disconnected (1005)
+INFO:     127.0.0.1:53973 - "WebSocket /hub/plugin" [accepted]
+INFO:     connection open
+2026-09-02 02:17:26,425 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 02:17:50,143 - transport.plugin_hub - INFO - Registered 35 tools for session 3bf35fd6-66b7-49ef-a8bb-1acf3f353df4
+2026-09-02 02:17:50,143 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
+2026-09-02 02:17:50,145 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
+INFO:     127.0.0.1:61829 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59330 - "POST /mcp HTTP/1.1" 200 OK
+2026-09-02 02:21:10,262 - transport.plugin_hub - INFO - Plugin session 3bf35fd6-66b7-49ef-a8bb-1acf3f353df4 disconnected (1005)
+INFO:     127.0.0.1:60057 - "WebSocket /hub/plugin" [accepted]
+INFO:     connection open
+2026-09-02 02:21:19,842 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 02:21:21,851 - transport.plugin_hub - INFO - Registered 35 tools for session 8dab1662-5cbb-4278-9a80-f236894f0a0d
+2026-09-02 02:21:21,852 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
+2026-09-02 02:21:21,853 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
+INFO:     127.0.0.1:57194 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51475 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51477 - "POST /mcp HTTP/1.1" 200 OK
+2026-09-02 02:21:36,843 - transport.plugin_hub - INFO - Plugin session 8dab1662-5cbb-4278-9a80-f236894f0a0d disconnected (1005)
+INFO:     127.0.0.1:61591 - "WebSocket /hub/plugin" [accepted]
+INFO:     connection open
+2026-09-02 02:21:49,340 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 02:22:29,236 - transport.plugin_hub - INFO - Plugin session 5d706251-b1f3-4554-9de9-52a761bcda3e disconnected (1005)
+INFO:     127.0.0.1:53273 - "WebSocket /hub/plugin" [accepted]
+INFO:     connection open
+2026-09-02 02:22:34,425 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+INFO:     127.0.0.1:53274 - "POST /mcp HTTP/1.1" 200 OK
+2026-09-02 02:23:14,431 - transport.plugin_hub - INFO - Plugin session 03035693-dd5b-43b7-9f5b-af0c2735203d disconnected (1005)
+INFO:     127.0.0.1:59054 - "WebSocket /hub/plugin" [accepted]
+INFO:     connection open
+2026-09-02 02:23:19,483 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 02:23:46,227 - transport.plugin_hub - INFO - Registered 35 tools for session bcf4a99b-45b8-4940-8cc8-b94246193424
+2026-09-02 02:23:46,228 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
+2026-09-02 02:23:46,228 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
+INFO:     127.0.0.1:59055 - "POST /mcp HTTP/1.1" 200 OK
+2026-09-02 02:23:47,837 - transport.plugin_hub - INFO - Plugin session bcf4a99b-45b8-4940-8cc8-b94246193424 disconnected (1005)
+INFO:     127.0.0.1:59070 - "WebSocket /hub/plugin" [accepted]
+INFO:     connection open
+2026-09-02 02:23:56,156 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 02:23:58,259 - transport.plugin_hub - INFO - Registered 35 tools for session 6f9ff10e-f688-4c36-9275-c40c9605ecd4
+2026-09-02 02:23:58,260 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
+2026-09-02 02:23:58,261 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
+INFO:     127.0.0.1:59072 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59072 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51304 - "POST /mcp HTTP/1.1" 200 OK
+2026-09-02 02:27:56,579 - transport.plugin_hub - INFO - Plugin session 6f9ff10e-f688-4c36-9275-c40c9605ecd4 disconnected (1005)
+INFO:     127.0.0.1:49696 - "WebSocket /hub/plugin" [accepted]
+INFO:     connection open
+2026-09-02 02:28:04,759 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 02:28:44,653 - transport.plugin_hub - INFO - Plugin session 3fb1ecfe-4742-4dbe-bae9-2317fdae5e39 disconnected (1005)
+INFO:     127.0.0.1:63791 - "WebSocket /hub/plugin" [accepted]
+INFO:     connection open
+2026-09-02 02:28:50,060 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 02:28:57,531 - services.tools.refresh_unity - WARNING - refresh_unity: Timed out after 60s waiting for editor to become ready
+INFO:     127.0.0.1:60021 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60023 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60025 - "POST /mcp HTTP/1.1" 200 OK
+2026-09-02 02:29:30,021 - transport.plugin_hub - INFO - Plugin session 55f8fc82-a20d-428f-b4bb-1c2553d52aa4 disconnected (1005)
+INFO:     127.0.0.1:60026 - "WebSocket /hub/plugin" [accepted]
+INFO:     connection open
+2026-09-02 02:29:35,154 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 02:30:15,132 - transport.plugin_hub - INFO - Plugin session 9a87a9ce-d672-4b55-9482-a913b625f891 disconnected (1005)
+INFO:     127.0.0.1:64440 - "WebSocket /hub/plugin" [accepted]
+INFO:     connection open
+2026-09-02 02:30:20,246 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 02:30:34,550 - services.tools.refresh_unity - WARNING - refresh_unity: Timed out after 60s waiting for editor to become ready
+2026-09-02 02:31:00,224 - transport.plugin_hub - INFO - Plugin session a3b0e8ca-b25c-46fe-aa70-4112ded77d5f disconnected (1005)
+INFO:     127.0.0.1:54549 - "WebSocket /hub/plugin" [accepted]
+INFO:     connection open
+2026-09-02 02:31:05,280 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 02:31:45,283 - transport.plugin_hub - INFO - Plugin session b454620f-2a5d-4ab9-857a-676d67f938d4 disconnected (1005)
+INFO:     127.0.0.1:54551 - "WebSocket /hub/plugin" [accepted]
+INFO:     connection open
+2026-09-02 02:31:50,351 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 02:32:29,562 - transport.plugin_hub - INFO - Registered 35 tools for session 2f4386c6-338a-4162-8482-10b213d80b85
+2026-09-02 02:32:29,563 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
+2026-09-02 02:32:29,564 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
+INFO:     127.0.0.1:59571 - "POST /mcp HTTP/1.1" 200 OK
+2026-09-02 02:32:31,566 - transport.plugin_hub - INFO - Plugin session 2f4386c6-338a-4162-8482-10b213d80b85 disconnected (1005)
+INFO:     127.0.0.1:59588 - "WebSocket /hub/plugin" [accepted]
+INFO:     connection open
+2026-09-02 02:32:41,911 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 02:32:42,541 - transport.plugin_hub - INFO - Registered 35 tools for session 551da6c3-9777-4c65-94f6-d33541cdec85
+2026-09-02 02:32:42,542 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
+2026-09-02 02:32:42,543 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
+INFO:     127.0.0.1:59592 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58441 - "POST /mcp HTTP/1.1" 200 OK
+2026-09-02 02:38:01,920 - transport.plugin_hub - INFO - Plugin session 551da6c3-9777-4c65-94f6-d33541cdec85 disconnected (1005)
+INFO:     127.0.0.1:64544 - "WebSocket /hub/plugin" [accepted]
+INFO:     connection open
+2026-09-02 02:38:11,484 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 02:38:51,462 - transport.plugin_hub - INFO - Plugin session addaf00a-8290-4e89-807e-02ab9d29c81b disconnected (1005)
+INFO:     127.0.0.1:60986 - "WebSocket /hub/plugin" [accepted]
+INFO:     connection open
+2026-09-02 02:38:56,588 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 02:39:04,216 - services.tools.refresh_unity - WARNING - refresh_unity: Timed out after 60s waiting for editor to become ready
+INFO:     127.0.0.1:63110 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63112 - "POST /mcp HTTP/1.1" 200 OK
+2026-09-02 02:39:36,558 - transport.plugin_hub - INFO - Plugin session c0eecc38-da73-497b-a287-b7ab2a51a7b7 disconnected (1005)
+INFO:     127.0.0.1:63116 - "WebSocket /hub/plugin" [accepted]
+INFO:     connection open
+2026-09-02 02:39:41,679 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 02:40:21,654 - transport.plugin_hub - INFO - Plugin session a31275c7-b1bc-41f0-825c-f4f726f190e8 disconnected (1005)
+INFO:     127.0.0.1:53765 - "WebSocket /hub/plugin" [accepted]
+INFO:     connection open
+2026-09-02 02:40:26,188 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 02:40:26,328 - transport.plugin_hub - INFO - Registered 35 tools for session d200b04f-95e0-4aca-b99a-b135ade1802e
+2026-09-02 02:40:26,329 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
+2026-09-02 02:40:26,332 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
+INFO:     127.0.0.1:53767 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53771 - "POST /mcp HTTP/1.1" 200 OK
+2026-09-02 02:40:56,547 - transport.plugin_hub - INFO - Plugin session d200b04f-95e0-4aca-b99a-b135ade1802e disconnected (1005)
+INFO:     127.0.0.1:53773 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58818 - "WebSocket /hub/plugin" [accepted]
+INFO:     connection open
+2026-09-02 02:41:04,888 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 02:41:06,741 - transport.plugin_hub - INFO - Registered 35 tools for session 1e35773e-50a8-415c-badb-831da3f34a46
+2026-09-02 02:41:06,742 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
+2026-09-02 02:41:06,743 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
+INFO:     127.0.0.1:58819 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58832 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58835 - "POST /mcp HTTP/1.1" 200 OK
+2026-09-02 02:41:20,657 - transport.plugin_hub - INFO - Plugin session 1e35773e-50a8-415c-badb-831da3f34a46 disconnected (1005)
+INFO:     127.0.0.1:51226 - "WebSocket /hub/plugin" [accepted]
+INFO:     connection open
+2026-09-02 02:41:29,591 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-02 02:41:30,163 - transport.plugin_hub - INFO - Registered 35 tools for session a0058124-d840-4039-8a90-5a8a0a00a101
+2026-09-02 02:41:30,163 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
+2026-09-02 02:41:30,164 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
+INFO:     127.0.0.1:51227 - "POST /mcp HTTP/1.1" 200 OK
+2026-09-02 02:46:06,350 - transport.plugin_hub - INFO - Plugin session a0058124-d840-4039-8a90-5a8a0a00a101 disconnected (1005)

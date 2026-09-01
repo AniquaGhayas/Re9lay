@@ -51,14 +51,17 @@ public class DynamicScreenBoundaries : MonoBehaviour
         float screenWidth = maxWorldX - minWorldX;
         float screenHeight = maxWorldY - minWorldY;
 
-        // Position 4 physical BoxCollider2D walls matching the exact screen edges
-        PositionWall("Floor", new Vector3(0, minWorldY - 0.25f, 0), new Vector3(screenWidth + 2f, 0.5f, 1f));
-        PositionWall("Ceiling", new Vector3(0, maxWorldY + 0.25f, 0), new Vector3(screenWidth + 2f, 0.5f, 1f));
-        PositionWall("LeftWall", new Vector3(minWorldX - 0.25f, 0, 0), new Vector3(0.5f, screenHeight + 2f, 1f));
-        PositionWall("RightWall", new Vector3(maxWorldX + 0.25f, 0, 0), new Vector3(0.5f, screenHeight + 2f, 1f));
+        Transform sceneryTransform = null;
+        GameObject sceneryObj = GameObject.Find("Scenery");
+        if (sceneryObj != null) sceneryTransform = sceneryObj.transform;
 
-        // Dynamically scale background containers to cover full screen width on any device
-        ScaleBackgroundContainer("Stars", screenWidth);
+        // Position 4 physical BoxCollider2D walls matching exact screen edges under Scenery parent
+        PositionWall("Floor", new Vector3(0, minWorldY - 0.25f, 0), new Vector3(screenWidth + 2f, 0.5f, 1f), sceneryTransform);
+        PositionWall("Ceiling", new Vector3(0, maxWorldY + 0.25f, 0), new Vector3(screenWidth + 2f, 0.5f, 1f), sceneryTransform);
+        PositionWall("LeftWall", new Vector3(minWorldX - 0.25f, 0, 0), new Vector3(0.5f, screenHeight + 2f, 1f), sceneryTransform);
+        PositionWall("RightWall", new Vector3(maxWorldX + 0.25f, 0, 0), new Vector3(0.5f, screenHeight + 2f, 1f), sceneryTransform);
+
+        // Dynamically scale Background container to cover full screen width on any device
         ScaleBackgroundContainer("Background", screenWidth);
     }
 
@@ -72,13 +75,18 @@ public class DynamicScreenBoundaries : MonoBehaviour
         }
     }
 
-    private void PositionWall(string wallName, Vector3 targetPos, Vector3 targetScale)
+    private void PositionWall(string wallName, Vector3 targetPos, Vector3 targetScale, Transform parent)
     {
         GameObject wall = GameObject.Find(wallName);
         if (wall == null)
         {
             wall = new GameObject(wallName);
             wall.AddComponent<BoxCollider2D>();
+        }
+
+        if (parent != null && wall.transform.parent != parent)
+        {
+            wall.transform.SetParent(parent);
         }
 
         wall.transform.position = targetPos;

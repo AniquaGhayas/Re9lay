@@ -1,5 +1,8 @@
 /*
-2D Space Shooter - Responsive Matrix GUI (Perfect Scaling on Any Mobile Phone / Device)
+2D Space Shooter - NeuroPlay 2.0 3-Panel UI System with Element Hiding
+Panel 1: Main Menu (Hides Player, Enemies, Bullets)
+Panel 2: Gameplay (Shows Player, Enemies, Bullets)
+Panel 3: Game Over (Hides Player, Enemies, Bullets)
 */
 
 using UnityEngine;
@@ -7,130 +10,287 @@ using UnityEngine.UI;
 
 public class GUI : MonoBehaviour {
 
-	public static GUI Instance { get; private set; }
+    public static GUI Instance { get; private set; }
 
-	public int currentScore = 0;
-	public bool isGameOver;
+    public enum UIPanel { MainMenu = 1, Gameplay = 2, GameOver = 3 }
+    [Header("Active Panel State")]
+    public UIPanel currentPanel = UIPanel.MainMenu;
 
-	private Text livesText;
-	private Text scoreText;
-	private Text gameOverText;
-	private Text instructionsText;
+    public int currentScore = 0;
+    public bool isGameOver = false;
 
-	// Virtual Reference Resolution for Matrix Scaling (Portrait Mode)
-	private readonly float virtualWidth = 400f;
-	private readonly float virtualHeight = 700f;
+    private Text livesText;
+    private Text scoreText;
+    private Text gameOverText;
+    private Text instructionsText;
 
-	void Awake() {
-		if (Instance != null && Instance != this) {
-			Destroy(this);
-			return;
-		}
-		Instance = this;
-	}
+    private readonly float virtualWidth = 400f;
+    private readonly float virtualHeight = 700f;
 
-	void Start () {
-		// Disable old Canvas UI text elements
-		GameObject livesObj = GameObject.Find("Lives");
-		if (livesObj != null) {
-			livesText = livesObj.GetComponent<Text>();
-			if (livesText != null) livesText.enabled = false;
-		}
+    void Awake() {
+        if (Instance != null && Instance != this) {
+            Destroy(this);
+            return;
+        }
+        Instance = this;
+    }
 
-		GameObject scoreObj = GameObject.Find("Score");
-		if (scoreObj != null) {
-			scoreText = scoreObj.GetComponent<Text>();
-			if (scoreText != null) scoreText.enabled = false;
-		}
+    void Start () {
+        // Disable old Canvas UI text elements
+        GameObject livesObj = GameObject.Find("Lives");
+        if (livesObj != null) {
+            livesText = livesObj.GetComponent<Text>();
+            if (livesText != null) livesText.enabled = false;
+        }
 
-		GameObject gameOverObj = GameObject.Find("GameOver");
-		if (gameOverObj != null) {
-			gameOverText = gameOverObj.GetComponent<Text>();
-		}
+        GameObject scoreObj = GameObject.Find("Score");
+        if (scoreObj != null) {
+            scoreText = scoreObj.GetComponent<Text>();
+            if (scoreText != null) scoreText.enabled = false;
+        }
 
-		GameObject instructObj = GameObject.Find("Instructions");
-		if (instructObj != null) {
-			instructionsText = instructObj.GetComponent<Text>();
-			if (instructionsText != null) instructionsText.enabled = false;
-		}
-	}
+        GameObject gameOverObj = GameObject.Find("GameOver");
+        if (gameOverObj != null) {
+            gameOverText = gameOverObj.GetComponent<Text>();
+            if (gameOverText != null) gameOverText.enabled = false;
+        }
 
-	void Update () {
-		GameObject player = GameObject.Find("Player");
-		if (player != null) {
-			playerController pc = player.GetComponent<playerController>();
-			if (pc != null) {
-				isGameOver = pc.isGameOver;
-			}
-		}
+        GameObject instructObj = GameObject.Find("Instructions");
+        if (instructObj != null) {
+            instructionsText = instructObj.GetComponent<Text>();
+            if (instructionsText != null) instructionsText.enabled = false;
+        }
 
-		if (gameOverText != null) gameOverText.enabled = isGameOver;
-	}
+        // Start at Panel 1 (Main Menu)
+        ShowMainMenu();
+    }
 
-	void OnGUI() {
-		if (Instance != this) return;
+    public void ShowMainMenu() {
+        currentPanel = UIPanel.MainMenu;
+        isGameOver = false;
+        Time.timeScale = 0f;
+        SetGameplayElementsVisible(false);
+    }
 
-		// Apply GUI Matrix Scaling so UI scales 100% perfectly on any Phone, Tablet or Monitor
-		Matrix4x4 origMatrix = UnityEngine.GUI.matrix;
-		Vector3 scale = new Vector3(Screen.width / virtualWidth, Screen.height / virtualHeight, 1.0f);
-		UnityEngine.GUI.matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, scale);
+    public void StartGameplay() {
+        currentPanel = UIPanel.Gameplay;
+        currentScore = 0;
+        isGameOver = false;
+        Time.timeScale = 1.0f;
 
-		float totalSeconds = 0f;
-		if (GameManager.Instance != null) {
-			totalSeconds = GameManager.Instance.sessionTimer;
-		} else {
-			totalSeconds = Time.timeSinceLevelLoad;
-		}
+        SetGameplayElementsVisible(true);
 
-		int minutes = Mathf.FloorToInt(totalSeconds / 60f);
-		int seconds = Mathf.FloorToInt(totalSeconds % 60f);
-		string timeFormatted = string.Format("{0:00}:{1:00}", minutes, seconds);
+        GameObject player = GameObject.Find("Player");
+        if (player != null) {
+            player.transform.position = new Vector3(0f, -3.4f, 0f);
+            playerController pc = player.GetComponent<playerController>();
+            if (pc != null) pc.isGameOver = false;
+        }
 
-		// 1. Single Top-Center Score & Time Display
-		GUIStyle headerStyle = new GUIStyle(UnityEngine.GUI.skin.label);
-		headerStyle.fontSize = 18;
-		headerStyle.fontStyle = FontStyle.Bold;
-		headerStyle.alignment = TextAnchor.MiddleCenter;
-		headerStyle.normal.textColor = Color.yellow;
+        if (DifficultyManager.Instance != null) {
+            DifficultyManager.Instance.ResetDifficulty();
+        }
 
-		string headerText = $"SCORE: {currentScore}    |    TIME: {timeFormatted}";
-		UnityEngine.GUI.Label(new Rect(0f, 10f, virtualWidth, 30f), headerText, headerStyle);
+        if (GameManager.Instance != null) {
+            GameManager.Instance.StartNewSession();
+        }
+    }
 
-		// 2. Compact Telemetry HUD Box (Positioned Top-Left below score header)
-		GUILayout.BeginArea(new Rect(10f, 45f, 175f, 75f), UnityEngine.GUI.skin.box);
-		
-		GUIStyle titleStyle = new GUIStyle(UnityEngine.GUI.skin.label);
-		titleStyle.fontSize = 11;
-		titleStyle.fontStyle = FontStyle.Bold;
-		titleStyle.normal.textColor = Color.white;
-		GUILayout.Label("NEUROPLAY 2.0", titleStyle);
+    public void TriggerGameOver() {
+        currentPanel = UIPanel.GameOver;
+        isGameOver = true;
+        Time.timeScale = 0f;
 
-		float speed = 1.0f;
-		if (DifficultyManager.Instance != null) {
-			speed = DifficultyManager.Instance.CurrentSpeedMultiplier;
-		}
+        SetGameplayElementsVisible(false);
 
-		GUIStyle infoStyle = new GUIStyle(UnityEngine.GUI.skin.label);
-		infoStyle.fontSize = 10;
-		infoStyle.normal.textColor = Color.white;
+        if (GameManager.Instance != null) {
+            GameManager.Instance.OnPlayerGameOver();
+        }
+    }
 
-		GUILayout.Label($"Speed: {speed:F2}x", infoStyle);
+    public static void SetGameplayElementsVisible(bool visible) {
+        // Toggle Player Sprite Visibility
+        GameObject player = GameObject.Find("Player");
+        if (player != null) {
+            foreach (var sr in player.GetComponentsInChildren<SpriteRenderer>(true)) {
+                sr.enabled = visible;
+            }
+        }
 
-		bool isShooting = Input.GetKey(KeyCode.Space) || Input.GetButton("Fire1");
-		string shootStatus = isShooting ? "<color=green>SHOOTING</color>" : "<color=yellow>READY</color>";
-		GUILayout.Label($"Weapon: {shootStatus}", infoStyle);
-		GUILayout.Label("Controls: WASD", infoStyle);
-		GUILayout.EndArea();
+        // Clear active enemy and bullet objects when in Menu or Game Over panels
+        if (!visible) {
+            foreach (var alien in Object.FindObjectsOfType<alienController>()) {
+                Destroy(alien.gameObject);
+            }
+            foreach (var bullet in Object.FindObjectsOfType<Bullet>()) {
+                Destroy(bullet.gameObject);
+            }
+        }
+    }
 
-		// 3. Pause Menu Overlay
-		if (GameManager.Instance != null && GameManager.Instance.isPaused) {
-			UnityEngine.GUI.Box(new Rect(virtualWidth / 2f - 100f, virtualHeight / 2f - 50f, 200f, 100f), "PAUSED");
-			if (UnityEngine.GUI.Button(new Rect(virtualWidth / 2f - 80f, virtualHeight / 2f, 160f, 30f), "Resume Session")) {
-				GameManager.Instance.TogglePause();
-			}
-		}
+    void Update() {
+        GameObject player = GameObject.Find("Player");
+        if (player != null) {
+            playerController pc = player.GetComponent<playerController>();
+            if (pc != null && pc.isGameOver && currentPanel == UIPanel.Gameplay) {
+                TriggerGameOver();
+            }
+        }
+    }
 
-		// Restore original GUI matrix
-		UnityEngine.GUI.matrix = origMatrix;
-	}
+    void OnGUI() {
+        if (Instance != this) return;
+
+        Matrix4x4 origMatrix = UnityEngine.GUI.matrix;
+        Vector3 scale = new Vector3(Screen.width / virtualWidth, Screen.height / virtualHeight, 1.0f);
+        UnityEngine.GUI.matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, scale);
+
+        switch (currentPanel) {
+            case UIPanel.MainMenu:
+                DrawPanel1_MainMenu();
+                break;
+            case UIPanel.Gameplay:
+                DrawPanel2_Gameplay();
+                break;
+            case UIPanel.GameOver:
+                DrawPanel3_GameOver();
+                break;
+        }
+
+        UnityEngine.GUI.matrix = origMatrix;
+    }
+
+    // --- PANEL 1: MAIN MENU ---
+    private void DrawPanel1_MainMenu() {
+        UnityEngine.GUI.Box(new Rect(20f, 100f, 360f, 480f), "");
+
+        GUIStyle titleStyle = new GUIStyle(UnityEngine.GUI.skin.label);
+        titleStyle.fontSize = 24;
+        titleStyle.fontStyle = FontStyle.Bold;
+        titleStyle.alignment = TextAnchor.MiddleCenter;
+        titleStyle.normal.textColor = Color.yellow;
+        UnityEngine.GUI.Label(new Rect(20f, 130f, 360f, 40f), "NEUROPLAY 2.0", titleStyle);
+
+        GUIStyle subTitleStyle = new GUIStyle(UnityEngine.GUI.skin.label);
+        subTitleStyle.fontSize = 12;
+        subTitleStyle.alignment = TextAnchor.MiddleCenter;
+        subTitleStyle.normal.textColor = Color.cyan;
+        UnityEngine.GUI.Label(new Rect(20f, 175f, 360f, 30f), "Gamified IoT Rehabilitation System", subTitleStyle);
+
+        GUIStyle bodyStyle = new GUIStyle(UnityEngine.GUI.skin.label);
+        bodyStyle.fontSize = 11;
+        bodyStyle.alignment = TextAnchor.MiddleCenter;
+        bodyStyle.normal.textColor = Color.white;
+        bodyStyle.wordWrap = true;
+        UnityEngine.GUI.Label(new Rect(40f, 220f, 320f, 140f),
+            "<b>REHABILITATION GOALS:</b>\n" +
+            "• Tilt Wearable Glove or WASD to Move\n" +
+            "• Contract Muscle or Hold Spacebar to Shoot\n" +
+            "• Destroy incoming alien targets to score\n" +
+            "• Dynamic adaptive speed scales every 10 points", bodyStyle);
+
+        GUIStyle btnStyle = new GUIStyle(UnityEngine.GUI.skin.button);
+        btnStyle.fontSize = 14;
+        btnStyle.fontStyle = FontStyle.Bold;
+        btnStyle.normal.textColor = Color.white;
+
+        if (UnityEngine.GUI.Button(new Rect(60f, 420f, 280f, 55f), "START REHABILITATION SESSION", btnStyle)) {
+            StartGameplay();
+        }
+    }
+
+    // --- PANEL 2: ACTUAL GAMEPLAY & HUD ---
+    private void DrawPanel2_Gameplay() {
+        float totalSeconds = 0f;
+        if (GameManager.Instance != null) {
+            totalSeconds = GameManager.Instance.sessionTimer;
+        } else {
+            totalSeconds = Time.timeSinceLevelLoad;
+        }
+
+        int minutes = Mathf.FloorToInt(totalSeconds / 60f);
+        int seconds = Mathf.FloorToInt(totalSeconds % 60f);
+        string timeFormatted = string.Format("{0:00}:{1:00}", minutes, seconds);
+
+        GUIStyle headerStyle = new GUIStyle(UnityEngine.GUI.skin.label);
+        headerStyle.fontSize = 18;
+        headerStyle.fontStyle = FontStyle.Bold;
+        headerStyle.alignment = TextAnchor.MiddleCenter;
+        headerStyle.normal.textColor = Color.yellow;
+        string headerText = $"SCORE: {currentScore}    |    TIME: {timeFormatted}";
+        UnityEngine.GUI.Label(new Rect(0f, 10f, virtualWidth, 30f), headerText, headerStyle);
+
+        GUILayout.BeginArea(new Rect(10f, 45f, 175f, 75f), UnityEngine.GUI.skin.box);
+        
+        GUIStyle titleStyle = new GUIStyle(UnityEngine.GUI.skin.label);
+        titleStyle.fontSize = 11;
+        titleStyle.fontStyle = FontStyle.Bold;
+        titleStyle.normal.textColor = Color.white;
+        GUILayout.Label("NEUROPLAY 2.0", titleStyle);
+
+        float speed = 1.0f;
+        if (DifficultyManager.Instance != null) {
+            speed = DifficultyManager.Instance.CurrentSpeedMultiplier;
+        }
+
+        GUIStyle infoStyle = new GUIStyle(UnityEngine.GUI.skin.label);
+        infoStyle.fontSize = 10;
+        infoStyle.normal.textColor = Color.white;
+
+        GUILayout.Label($"Speed: {speed:F2}x", infoStyle);
+
+        bool isShooting = Input.GetKey(KeyCode.Space) || Input.GetButton("Fire1");
+        string shootStatus = isShooting ? "<color=green>SHOOTING</color>" : "<color=yellow>READY</color>";
+        GUILayout.Label($"Weapon: {shootStatus}", infoStyle);
+        GUILayout.Label("Controls: WASD / Tilt", infoStyle);
+        GUILayout.EndArea();
+
+        if (GameManager.Instance != null && GameManager.Instance.isPaused) {
+            UnityEngine.GUI.Box(new Rect(virtualWidth / 2f - 100f, virtualHeight / 2f - 50f, 200f, 100f), "PAUSED");
+            if (UnityEngine.GUI.Button(new Rect(virtualWidth / 2f - 80f, virtualHeight / 2f, 160f, 30f), "Resume Session")) {
+                GameManager.Instance.TogglePause();
+            }
+        }
+    }
+
+    // --- PANEL 3: GAME OVER & RESTART ---
+    private void DrawPanel3_GameOver() {
+        UnityEngine.GUI.Box(new Rect(20f, 140f, 360f, 400f), "");
+
+        GUIStyle titleStyle = new GUIStyle(UnityEngine.GUI.skin.label);
+        titleStyle.fontSize = 22;
+        titleStyle.fontStyle = FontStyle.Bold;
+        titleStyle.alignment = TextAnchor.MiddleCenter;
+        titleStyle.normal.textColor = Color.red;
+        UnityEngine.GUI.Label(new Rect(20f, 170f, 360f, 40f), "SESSION COMPLETED", titleStyle);
+
+        float totalSeconds = 0f;
+        if (GameManager.Instance != null) {
+            totalSeconds = GameManager.Instance.sessionTimer;
+        }
+
+        int minutes = Mathf.FloorToInt(totalSeconds / 60f);
+        int seconds = Mathf.FloorToInt(totalSeconds % 60f);
+
+        GUIStyle statsStyle = new GUIStyle(UnityEngine.GUI.skin.label);
+        statsStyle.fontSize = 14;
+        statsStyle.fontStyle = FontStyle.Bold;
+        statsStyle.alignment = TextAnchor.MiddleCenter;
+        statsStyle.normal.textColor = Color.white;
+
+        UnityEngine.GUI.Label(new Rect(20f, 230f, 360f, 30f), $"Final Score: {currentScore}", statsStyle);
+        UnityEngine.GUI.Label(new Rect(20f, 270f, 360f, 30f), $"Duration: {minutes:00}:{seconds:00}", statsStyle);
+
+        GUIStyle btnStyle = new GUIStyle(UnityEngine.GUI.skin.button);
+        btnStyle.fontSize = 14;
+        btnStyle.fontStyle = FontStyle.Bold;
+
+        if (UnityEngine.GUI.Button(new Rect(70f, 350f, 260f, 50f), "RESTART SESSION", btnStyle)) {
+            StartGameplay();
+        }
+
+        if (UnityEngine.GUI.Button(new Rect(70f, 420f, 260f, 40f), "MAIN MENU", btnStyle)) {
+            ShowMainMenu();
+        }
+    }
 }

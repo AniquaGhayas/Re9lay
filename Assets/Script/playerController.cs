@@ -1,5 +1,5 @@
 /*
-2D Space Shooter - Player Controller (Zero Gravity WASD Movement)
+2D Space Shooter - Dual Input Player Controller (HC-05 Bluetooth Glove + WASD/Spacebar)
 */
 
 using UnityEngine;
@@ -26,8 +26,8 @@ public class playerController : MonoBehaviour {
 	void Start() {
 		rb = GetComponent<Rigidbody2D>();
 		if (rb != null) {
-			rb.gravityScale = 0f; // Zero gravity so player can move smoothly in Y-axis
-			rb.freezeRotation = true; // Lock rotation physics
+			rb.gravityScale = 0f;
+			rb.freezeRotation = true;
 		}
 	}
 
@@ -43,15 +43,26 @@ public class playerController : MonoBehaviour {
 			return;
 		}
 
-		HandleWASDMovement();
-		HandleSpacebarShooting();
+		HandleMovement();
+		HandleShooting();
 	}
 
-	void HandleWASDMovement () {
-		float h = Input.GetAxisRaw("Horizontal"); // A/D or Left/Right
-		float v = Input.GetAxisRaw("Vertical");   // W/S or Up/Down
+	void HandleMovement () {
+		Vector3 moveDir = Vector3.zero;
 
-		Vector3 moveDir = new Vector3(h, v, 0f).normalized;
+		// 1. Read HC-05 Bluetooth IMU Tilt direction (pitch & roll vs 32.0 threshold)
+		if (BluetoothInputManager.Instance != null) {
+			Vector2 btDir = BluetoothInputManager.Instance.GetMoveDirection();
+			moveDir = new Vector3(btDir.x, btDir.y, 0f);
+		}
+
+		// 2. Read Keyboard WASD / Arrow Keys fallback if no tilt input
+		if (moveDir == Vector3.zero) {
+			float h = Input.GetAxisRaw("Horizontal"); // A/D or Left/Right
+			float v = Input.GetAxisRaw("Vertical");   // W/S or Up/Down
+			moveDir = new Vector3(h, v, 0f).normalized;
+		}
+
 		Vector3 newPos = transform.position + moveDir * moveSpeed * Time.deltaTime;
 
 		float minX = -1.8f, maxX = 1.8f, minY = -3.6f, maxY = 3.6f;
@@ -67,21 +78,19 @@ public class playerController : MonoBehaviour {
 
 		transform.position = newPos;
 
-		// Ensure velocity is reset so gravity physics doesn't interfere
 		if (rb != null) {
 			rb.velocity = Vector2.zero;
 		}
 	}
 
-	void HandleSpacebarShooting () {
+	void HandleShooting () {
+		// Evaluates shooting from BOTH HC-05 EMG muscle contraction (shoot == 1) AND Spacebar key
 		bool isSpacePressed = Input.GetKey(KeyCode.Space) || Input.GetButton("Fire1");
+		bool isEMGContracted = (BluetoothInputManager.Instance != null && BluetoothInputManager.Instance.shoot == 1);
 
-		if (BluetoothInputManager.Instance != null) {
-			BluetoothInputManager.Instance.shoot = isSpacePressed ? 1 : 0;
-			BluetoothInputManager.Instance.isContracted = isSpacePressed;
-		}
+		bool shouldShoot = isSpacePressed || isEMGContracted;
 
-		if (isSpacePressed && Time.time >= timestamp) {
+		if (shouldShoot && Time.time >= timestamp) {
 			Instantiate(playerBullet, transform.position + new Vector3(playerBulletXOffset, playerBulletYOffset, 0), Quaternion.Euler(0, 0, 90f));
 			timestamp = Time.time + timeBetweenShots;
 		}
