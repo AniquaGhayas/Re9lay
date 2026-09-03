@@ -1,8 +1,8 @@
 /*
-2D Space Shooter - NeuroPlay 2.0 3-Panel UI System with Element Hiding
-Panel 1: Main Menu (Hides Player, Enemies, Bullets)
-Panel 2: Gameplay (Shows Player, Enemies, Bullets)
-Panel 3: Game Over (Hides Player, Enemies, Bullets)
+2D Space Shooter - NeuroPlay 2.0 3-Panel UI System with Bluetooth Status Badge
+Panel 1: Main Menu (Bluetooth Connection Status Indicator)
+Panel 2: Gameplay (Real-time Telemetry HUD with Bluetooth Connection Badge)
+Panel 3: Game Over & Session Summary
 */
 
 using UnityEngine;
@@ -109,7 +109,6 @@ public class GUI : MonoBehaviour {
     }
 
     public static void SetGameplayElementsVisible(bool visible) {
-        // Toggle Player Sprite Visibility
         GameObject player = GameObject.Find("Player");
         if (player != null) {
             foreach (var sr in player.GetComponentsInChildren<SpriteRenderer>(true)) {
@@ -117,7 +116,6 @@ public class GUI : MonoBehaviour {
             }
         }
 
-        // Clear active enemy and bullet objects when in Menu or Game Over panels
         if (!visible) {
             foreach (var alien in Object.FindObjectsOfType<alienController>()) {
                 Destroy(alien.gameObject);
@@ -162,20 +160,33 @@ public class GUI : MonoBehaviour {
 
     // --- PANEL 1: MAIN MENU ---
     private void DrawPanel1_MainMenu() {
-        UnityEngine.GUI.Box(new Rect(20f, 100f, 360f, 480f), "");
+        UnityEngine.GUI.Box(new Rect(20f, 90f, 360f, 500f), "");
 
         GUIStyle titleStyle = new GUIStyle(UnityEngine.GUI.skin.label);
         titleStyle.fontSize = 24;
         titleStyle.fontStyle = FontStyle.Bold;
         titleStyle.alignment = TextAnchor.MiddleCenter;
         titleStyle.normal.textColor = Color.yellow;
-        UnityEngine.GUI.Label(new Rect(20f, 130f, 360f, 40f), "NEUROPLAY 2.0", titleStyle);
+        UnityEngine.GUI.Label(new Rect(20f, 115f, 360f, 40f), "NEUROPLAY 2.0", titleStyle);
 
         GUIStyle subTitleStyle = new GUIStyle(UnityEngine.GUI.skin.label);
         subTitleStyle.fontSize = 12;
         subTitleStyle.alignment = TextAnchor.MiddleCenter;
         subTitleStyle.normal.textColor = Color.cyan;
-        UnityEngine.GUI.Label(new Rect(20f, 175f, 360f, 30f), "Gamified IoT Rehabilitation System", subTitleStyle);
+        UnityEngine.GUI.Label(new Rect(20f, 155f, 360f, 25f), "Gamified IoT Rehabilitation System", subTitleStyle);
+
+        // Bluetooth Connection Confirmation Indicator Badge
+        bool isBTConnected = (BluetoothInputManager.Instance != null && BluetoothInputManager.Instance.isConnected);
+        string targetDevice = (BluetoothInputManager.Instance != null) ? BluetoothInputManager.Instance.targetDeviceName : "HC-05";
+        string btBadgeStr = isBTConnected 
+            ? $"<color=lime><b>● BLUETOOTH CONNECTED ({targetDevice})</b></color>" 
+            : $"<color=yellow><b>○ BT SIMULATION MODE (WASD)</b></color>";
+
+        GUIStyle btStyle = new GUIStyle(UnityEngine.GUI.skin.label);
+        btStyle.fontSize = 11;
+        btStyle.alignment = TextAnchor.MiddleCenter;
+        btStyle.richText = true;
+        UnityEngine.GUI.Label(new Rect(20f, 185f, 360f, 25f), btBadgeStr, btStyle);
 
         GUIStyle bodyStyle = new GUIStyle(UnityEngine.GUI.skin.label);
         bodyStyle.fontSize = 11;
@@ -194,7 +205,7 @@ public class GUI : MonoBehaviour {
         btnStyle.fontStyle = FontStyle.Bold;
         btnStyle.normal.textColor = Color.white;
 
-        if (UnityEngine.GUI.Button(new Rect(60f, 420f, 280f, 55f), "START REHABILITATION SESSION", btnStyle)) {
+        if (UnityEngine.GUI.Button(new Rect(60f, 430f, 280f, 55f), "START REHABILITATION SESSION", btnStyle)) {
             StartGameplay();
         }
     }
@@ -220,7 +231,8 @@ public class GUI : MonoBehaviour {
         string headerText = $"SCORE: {currentScore}    |    TIME: {timeFormatted}";
         UnityEngine.GUI.Label(new Rect(0f, 10f, virtualWidth, 30f), headerText, headerStyle);
 
-        GUILayout.BeginArea(new Rect(10f, 45f, 175f, 75f), UnityEngine.GUI.skin.box);
+        // Telemetry HUD Box with Live Bluetooth Status Badge
+        GUILayout.BeginArea(new Rect(10f, 45f, 185f, 90f), UnityEngine.GUI.skin.box);
         
         GUIStyle titleStyle = new GUIStyle(UnityEngine.GUI.skin.label);
         titleStyle.fontSize = 11;
@@ -228,21 +240,27 @@ public class GUI : MonoBehaviour {
         titleStyle.normal.textColor = Color.white;
         GUILayout.Label("NEUROPLAY 2.0", titleStyle);
 
+        bool isBTConnected = (BluetoothInputManager.Instance != null && BluetoothInputManager.Instance.isConnected);
+        string btStatusStr = isBTConnected 
+            ? "<color=lime>● BT: CONNECTED</color>" 
+            : "<color=yellow>○ BT: SIMULATION</color>";
+
+        GUIStyle infoStyle = new GUIStyle(UnityEngine.GUI.skin.label);
+        infoStyle.fontSize = 10;
+        infoStyle.richText = true;
+        infoStyle.normal.textColor = Color.white;
+
+        GUILayout.Label(btStatusStr, infoStyle);
+
         float speed = 1.0f;
         if (DifficultyManager.Instance != null) {
             speed = DifficultyManager.Instance.CurrentSpeedMultiplier;
         }
-
-        GUIStyle infoStyle = new GUIStyle(UnityEngine.GUI.skin.label);
-        infoStyle.fontSize = 10;
-        infoStyle.normal.textColor = Color.white;
-
         GUILayout.Label($"Speed: {speed:F2}x", infoStyle);
 
-        bool isShooting = Input.GetKey(KeyCode.Space) || Input.GetButton("Fire1");
+        bool isShooting = Input.GetKey(KeyCode.Space) || Input.GetButton("Fire1") || (BluetoothInputManager.Instance != null && BluetoothInputManager.Instance.shoot == 1);
         string shootStatus = isShooting ? "<color=green>SHOOTING</color>" : "<color=yellow>READY</color>";
         GUILayout.Label($"Weapon: {shootStatus}", infoStyle);
-        GUILayout.Label("Controls: WASD / Tilt", infoStyle);
         GUILayout.EndArea();
 
         if (GameManager.Instance != null && GameManager.Instance.isPaused) {

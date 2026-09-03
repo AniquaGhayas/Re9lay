@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using System.Threading;
 
 public class BluetoothInputManager : MonoBehaviour
 {
@@ -27,6 +28,13 @@ public class BluetoothInputManager : MonoBehaviour
 
     private bool loggedConnectionSuccess = false;
     private float nextLogTime = 0f;
+    private readonly object lockObj = new object();
+    private string pendingDataLine = "";
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+    private Thread btThread;
+    private bool stopBTThread = false;
+#endif
 
     void Awake()
     {
@@ -42,10 +50,31 @@ public class BluetoothInputManager : MonoBehaviour
     void Start()
     {
         Debug.Log("🎮 [BluetoothInputManager] System Initialized. Target Device: " + targetDeviceName + " | Simulation Mode: " + useSimulation);
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+        useSimulation = false;
+        StartAndroidBluetoothThread();
+#endif
     }
 
     void Update()
     {
+        // Process queued data line from background thread safely on Unity main thread
+        string lineToProcess = "";
+        lock (lockObj)
+        {
+            if (!string.IsNullOrEmpty(pendingDataLine))
+            {
+                lineToProcess = pendingDataLine;
+                pendingDataLine = "";
+            }
+        }
+
+        if (!string.IsNullOrEmpty(lineToProcess))
+        {
+            ProcessDataLine(lineToProcess);
+        }
+
         int emgThresh = (GameSettings.Instance != null) ? GameSettings.Instance.emgThreshold : 400;
 
         if (useSimulation || !isConnected)
@@ -65,6 +94,114 @@ public class BluetoothInputManager : MonoBehaviour
             nextLogTime = Time.time + 3.0f;
         }
     }
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+    private void StartAndroidBluetoothThread()
+    {
+        stopBTThread = false;
+        btThread = new Thread(AndroidBluetoothWorkerLoop);
+        btThread.IsBackground = true;
+        btThread.Start();
+    }
+
+    private void AndroidBluetoothWorkerLoop()
+    {
+        Debug.Log("[BluetoothInputManager] Android Native Bluetooth worker thread started...");
+        while (!stopBTThread)
+        {
+            try
+            {
+                using (AndroidJavaClass btAdapterClass = new AndroidJavaClass("android.bluetooth.BluetoothAdapter"))
+                {
+                    using (AndroidJavaObject btAdapter = btAdapterClass.CallStatic<AndroidJavaObject>("getDefaultAdapter"))
+                    {
+                        if (btAdapter == null || !btAdapter.Call<bool>("isEnabled"))
+                        {
+                            Thread.Sleep(2000);
+                            continue;
+                        }
+
+                        using (AndroidJavaObject bondedDevices = btAdapter.Call<AndroidJavaObject>("getBondedDevices"))
+                        {
+                            using (AndroidJavaObject iterator = bondedDevices.Call<AndroidJavaObject>("iterator"))
+                            {
+                                AndroidJavaObject targetDevice = null;
+                                while (iterator.Call<bool>("hasNext"))
+                                {
+                                    using (AndroidJavaObject device = iterator.Call<AndroidJavaObject>("next"))
+                                    {
+                                        string devName = device.Call<string>("getName");
+                                        string devAddr = device.Call<string>("getAddress");
+
+                                        if ((!string.IsNullOrEmpty(devName) && devName.Contains(targetDeviceName)) ||
+                                            (!string.IsNullOrEmpty(targetMACAddress) && devAddr == targetMACAddress))
+                                        {
+                                            targetDevice = device;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                if (targetDevice != null)
+                                {
+                                    using (AndroidJavaClass uuidClass = new AndroidJavaClass("java.util.UUID"))
+                                    {
+                                        using (AndroidJavaObject sppUuid = uuidClass.CallStatic<AndroidJavaObject>("fromString", "00001101-0000-1000-8000-00805F9B34FB"))
+                                        {
+                                            using (AndroidJavaObject socket = targetDevice.Call<AndroidJavaObject>("createRfcommSocketToServiceRecord", sppUuid))
+                                            {
+                                                socket.Call("connect");
+                                                using (AndroidJavaObject inputStream = socket.Call<AndroidJavaObject>("getInputStream"))
+                                                {
+                                                    using (AndroidJavaObject isReader = new AndroidJavaObject("java.io.InputStreamReader", inputStream))
+                                                    {
+                                                        using (AndroidJavaObject bufferedReader = new AndroidJavaObject("java.io.BufferedReader", isReader))
+                                                        {
+                                                            while (!stopBTThread)
+                                                            {
+                                                                string line = bufferedReader.Call<string>("readLine");
+                                                                if (line != null)
+                                                                {
+                                                                    lock (lockObj)
+                                                                    {
+                                                                        pendingDataLine = line;
+                                                                    }
+                                                                }
+                                                                else
+                                                                {
+                                                                    break; // End of stream / disconnected
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Disconnected or connection error, wait and retry connection
+                isConnected = false;
+                Thread.Sleep(3000);
+            }
+        }
+    }
+
+    void OnDestroy()
+    {
+        stopBTThread = true;
+        if (btThread != null && btThread.IsAlive)
+        {
+            btThread.Abort();
+        }
+    }
+#endif
 
     private void HandleKeyboardSimulation(int threshold)
     {
