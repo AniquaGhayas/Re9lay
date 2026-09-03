@@ -1,6 +1,12 @@
 using UnityEngine;
 using System;
+using System.IO.Ports;
 using System.Threading;
+using System.Globalization;
+
+#if UNITY_ANDROID
+using UnityEngine.Android;
+#endif
 
 public class BluetoothInputManager : MonoBehaviour
 {
@@ -9,6 +15,8 @@ public class BluetoothInputManager : MonoBehaviour
     [Header("Bluetooth Device Targeting")]
     public string targetDeviceName = "HC-05";
     public string targetMACAddress = "";
+    public string editorCOMPort = "COM7"; // Windows COM port when HC-05 paired to PC
+    public int baudRate = 9600;
 
     [Header("Current Sensor Data")]
     public float pitch = 0f;
@@ -22,7 +30,7 @@ public class BluetoothInputManager : MonoBehaviour
     public string connectionStatus = "Disconnected (Simulation Mode Active)";
 
     [Header("Simulation Controls (Editor Mode)")]
-    public bool useSimulation = true;
+    public bool useSimulation = false; // Set to false to test live Bluetooth in Editor
     public int simulatedContractedEMG = 750;
     public int simulatedRelaxedEMG = 150;
 
@@ -31,10 +39,8 @@ public class BluetoothInputManager : MonoBehaviour
     private readonly object lockObj = new object();
     private string pendingDataLine = "";
 
-#if UNITY_ANDROID && !UNITY_EDITOR
     private Thread btThread;
     private bool stopBTThread = false;
-#endif
 
     void Awake()
     {
@@ -51,15 +57,42 @@ public class BluetoothInputManager : MonoBehaviour
     {
         Debug.Log("🎮 [BluetoothInputManager] System Initialized. Target Device: " + targetDeviceName + " | Simulation Mode: " + useSimulation);
 
-#if UNITY_ANDROID && !UNITY_EDITOR
+        RequestAndroidPermissions();
+
+#if UNITY_EDITOR
+        if (!useSimulation)
+        {
+            StartEditorSerialThread();
+        }
+#elif UNITY_ANDROID
         useSimulation = false;
         StartAndroidBluetoothThread();
 #endif
     }
 
+    private void RequestAndroidPermissions()
+    {
+#if UNITY_ANDROID && !UNITY_EDITOR
+        try
+        {
+            if (!Permission.HasUserAuthorizedPermission("android.permission.BLUETOOTH_CONNECT"))
+            {
+                Permission.RequestUserPermission("android.permission.BLUETOOTH_CONNECT");
+            }
+            if (!Permission.HasUserAuthorizedPermission("android.permission.BLUETOOTH_SCAN"))
+            {
+                Permission.RequestUserPermission("android.permission.BLUETOOTH_SCAN");
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning("[BluetoothInputManager] Permission Request Note: " + ex.Message);
+        }
+#endif
+    }
+
     void Update()
     {
-        // Process queued data line from background thread safely on Unity main thread
         string lineToProcess = "";
         lock (lockObj)
         {
@@ -86,7 +119,6 @@ public class BluetoothInputManager : MonoBehaviour
             EvaluateShootState(emgThresh);
         }
 
-        // Print Telemetry stream log in Unity Console every 3 seconds
         if (Time.time >= nextLogTime)
         {
             string modeStr = isConnected ? "Bluetooth (HC-05)" : "Editor Simulation Mode (WASD/Spacebar)";
@@ -94,6 +126,80 @@ public class BluetoothInputManager : MonoBehaviour
             nextLogTime = Time.time + 3.0f;
         }
     }
+
+#if UNITY_EDITOR
+    private void StartEditorSerialThread()
+    {
+        stopBTThread = false;
+        btThread = new Thread(EditorSerialWorkerLoop);
+        btThread.IsBackground = true;
+        btThread.Start();
+    }
+
+    private void EditorSerialWorkerLoop()
+    {
+        Debug.Log("[BluetoothInputManager] Unity Editor Windows Serial worker thread started...");
+        
+        string[] ports = SerialPort.GetPortNames();
+        string activePort = editorCOMPort;
+        if (ports != null && ports.Length > 0)
+        {
+            foreach (string p in ports)
+            {
+                if (p.Equals(editorCOMPort, StringComparison.OrdinalIgnoreCase))
+                {
+                    activePort = p;
+                    break;
+                }
+            }
+            if (string.IsNullOrEmpty(activePort) || Array.IndexOf(ports, activePort) < 0)
+            {
+                activePort = ports[0];
+            }
+        }
+
+        while (!stopBTThread)
+        {
+            SerialPort sp = null;
+            try
+            {
+                sp = new SerialPort(activePort, baudRate);
+                sp.ReadTimeout = 1000;
+                sp.Open();
+                Debug.Log($"✅ [BluetoothInputManager] Opened Windows Serial COM Port '{activePort}' at {baudRate} baud.");
+
+                while (!stopBTThread && sp.IsOpen)
+                {
+                    try
+                    {
+                        string line = sp.ReadLine();
+                        if (!string.IsNullOrEmpty(line))
+                        {
+                            lock (lockObj)
+                            {
+                                pendingDataLine = line;
+                            }
+                        }
+                    }
+                    catch (TimeoutException) { }
+                }
+            }
+            catch (Exception ex)
+            {
+                isConnected = false;
+                Debug.LogWarning("[BluetoothInputManager] Editor Serial note: " + ex.Message);
+                Thread.Sleep(3000);
+            }
+            finally
+            {
+                if (sp != null && sp.IsOpen)
+                {
+                    sp.Close();
+                }
+            }
+        }
+    }
+#endif
 
 #if UNITY_ANDROID && !UNITY_EDITOR
     private void StartAndroidBluetoothThread()
@@ -123,9 +229,12 @@ public class BluetoothInputManager : MonoBehaviour
 
                         using (AndroidJavaObject bondedDevices = btAdapter.Call<AndroidJavaObject>("getBondedDevices"))
                         {
+                            int count = bondedDevices.Call<int>("size");
                             using (AndroidJavaObject iterator = bondedDevices.Call<AndroidJavaObject>("iterator"))
                             {
                                 AndroidJavaObject targetDevice = null;
+                                AndroidJavaObject fallbackDevice = null;
+
                                 while (iterator.Call<bool>("hasNext"))
                                 {
                                     using (AndroidJavaObject device = iterator.Call<AndroidJavaObject>("next"))
@@ -133,13 +242,25 @@ public class BluetoothInputManager : MonoBehaviour
                                         string devName = device.Call<string>("getName");
                                         string devAddr = device.Call<string>("getAddress");
 
-                                        if ((!string.IsNullOrEmpty(devName) && devName.Contains(targetDeviceName)) ||
-                                            (!string.IsNullOrEmpty(targetMACAddress) && devAddr == targetMACAddress))
+                                        if (fallbackDevice == null) fallbackDevice = device;
+
+                                        if (!string.IsNullOrEmpty(devName))
                                         {
-                                            targetDevice = device;
-                                            break;
+                                            string lowerName = devName.ToLower();
+                                            if (lowerName.Contains("hc-05") || lowerName.Contains("hc-06") || lowerName.Contains("bt05") ||
+                                                (!string.IsNullOrEmpty(targetDeviceName) && lowerName.Contains(targetDeviceName.ToLower())) ||
+                                                (!string.IsNullOrEmpty(targetMACAddress) && devAddr.Equals(targetMACAddress, StringComparison.OrdinalIgnoreCase)))
+                                            {
+                                                targetDevice = device;
+                                                break;
+                                            }
                                         }
                                     }
+                                }
+
+                                if (targetDevice == null && count == 1)
+                                {
+                                    targetDevice = fallbackDevice;
                                 }
 
                                 if (targetDevice != null)
@@ -169,7 +290,7 @@ public class BluetoothInputManager : MonoBehaviour
                                                                 }
                                                                 else
                                                                 {
-                                                                    break; // End of stream / disconnected
+                                                                    break;
                                                                 }
                                                             }
                                                         }
@@ -186,12 +307,13 @@ public class BluetoothInputManager : MonoBehaviour
             }
             catch (Exception ex)
             {
-                // Disconnected or connection error, wait and retry connection
                 isConnected = false;
+                Debug.LogWarning("[BluetoothInputManager] Android Bluetooth note: " + ex.Message);
                 Thread.Sleep(3000);
             }
         }
     }
+#endif
 
     void OnDestroy()
     {
@@ -201,7 +323,6 @@ public class BluetoothInputManager : MonoBehaviour
             btThread.Abort();
         }
     }
-#endif
 
     private void HandleKeyboardSimulation(int threshold)
     {
@@ -262,11 +383,12 @@ public class BluetoothInputManager : MonoBehaviour
 
         try
         {
-            string[] parts = dataLine.Trim().Split(',');
+            string clean = dataLine.Trim();
+            string[] parts = clean.Split(',');
             if (parts.Length >= 3)
             {
-                if (float.TryParse(parts[0], out float parsedPitch)) pitch = parsedPitch;
-                if (float.TryParse(parts[1], out float parsedRoll)) roll = parsedRoll;
+                if (float.TryParse(parts[0], NumberStyles.Any, CultureInfo.InvariantCulture, out float parsedPitch)) pitch = parsedPitch;
+                if (float.TryParse(parts[1], NumberStyles.Any, CultureInfo.InvariantCulture, out float parsedRoll)) roll = parsedRoll;
                 if (int.TryParse(parts[2], out int parsedEMG)) emgValue = parsedEMG;
 
                 if (!isConnected)

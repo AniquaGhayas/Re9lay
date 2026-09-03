@@ -1,5 +1,5 @@
 /*
-2D Space Shooter - Session Logger (HH_mm_ss_fff Timestamp Format)
+2D Space Shooter - Session Logger (0.50s / 500ms Time Interval CSV Logging)
 Saves CSV files to Public Documents folder on Android.
 */
 
@@ -13,7 +13,7 @@ public class SessionLogger : MonoBehaviour
     public static SessionLogger Instance { get; private set; }
 
     [Header("Logging Settings")]
-    public float samplingInterval = 0.05f; // 50ms interval (20 Hz sampling rate)
+    public float samplingInterval = 0.50f; // 0.50s interval (500ms time difference between readings / 2 Hz sampling rate)
     public bool isLoggingActive = false;
 
     private string currentFilePath;
@@ -86,7 +86,7 @@ public class SessionLogger : MonoBehaviour
     {
         float elapsedSeconds = Time.time - sessionStartTime;
         DateTime currentClockTime = sessionStartClockTime.AddSeconds(elapsedSeconds);
-        string clockTimeStr = currentClockTime.ToString("HH_mm_ss_fff"); // Format: HH_mm_ss_fff (e.g. 02_37_15_125)
+        string clockTimeStr = currentClockTime.ToString("HH_mm_ss_fff"); // Format: HH_mm_ss_fff (e.g. 21_23_34_500)
 
         float pitch = 0f, roll = 0f;
         int emg = 0, shoot = 0;
