@@ -3,6 +3,7 @@ using System;
 using System.IO.Ports;
 using System.Threading;
 using System.Globalization;
+using System.Collections.Generic;
 
 #if UNITY_ANDROID
 using UnityEngine.Android;
@@ -15,26 +16,29 @@ public class BluetoothInputManager : MonoBehaviour
     [Header("Bluetooth Device Targeting")]
     public string targetDeviceName = "HC-05";
     public string targetMACAddress = "";
-    public string editorCOMPort = "COM4"; // Primary Windows COM port for HC-05
+    public string editorCOMPort = "COM4";
     public int baudRate = 9600;
 
     [Header("Current Sensor Data")]
     public float pitch = 0f;
     public float roll = 0f;
     public int emgValue = 0;
-    public int shoot = 0; // 1 if emgValue >= emgThreshold, else 0
+    public int shoot = 0;
     public bool isContracted = false;
 
     [Header("Connection Status")]
     public bool isConnected = false;
-    public string connectionStatus = "Disconnected (Simulation Mode Active)";
+    public string connectionStatus = "Disconnected";
+
+    [Header("Paired Devices List")]
+    public List<string> pairedDevices = new List<string>();
+    public bool isScanning = false;
 
     [Header("Simulation Controls (Editor Mode)")]
     public bool useSimulation = false;
     public int simulatedContractedEMG = 750;
     public int simulatedRelaxedEMG = 150;
 
-    private bool loggedConnectionSuccess = false;
     private float nextLogTime = 0f;
     private readonly object lockObj = new object();
     private string pendingDataLine = "";
@@ -57,22 +61,19 @@ public class BluetoothInputManager : MonoBehaviour
 
     void Start()
     {
-        Debug.Log("🎮 [BluetoothInputManager] System Initialized. Target Device: " + targetDeviceName + " | Simulation Mode: " + useSimulation);
-
+        Debug.Log("🎮 [BluetoothInputManager] System Initialized. Target: " + targetDeviceName);
         RequestAndroidPermissions();
+        ScanPairedDevices();
 
 #if UNITY_EDITOR
         if (!useSimulation)
         {
             StartEditorSerialThread();
         }
-#elif UNITY_ANDROID
-        useSimulation = false;
-        StartAndroidBluetoothThread();
 #endif
     }
 
-    private void RequestAndroidPermissions()
+    public void RequestAndroidPermissions()
     {
 #if UNITY_ANDROID && !UNITY_EDITOR
         try
@@ -91,6 +92,104 @@ public class BluetoothInputManager : MonoBehaviour
             Debug.LogWarning("[BluetoothInputManager] Permission Request Note: " + ex.Message);
         }
 #endif
+    }
+
+    public void ScanPairedDevices()
+    {
+        pairedDevices.Clear();
+        isScanning = true;
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+        try
+        {
+            using (AndroidJavaClass btAdapterClass = new AndroidJavaClass("android.bluetooth.BluetoothAdapter"))
+            {
+                using (AndroidJavaObject btAdapter = btAdapterClass.CallStatic<AndroidJavaObject>("getDefaultAdapter"))
+                {
+                    if (btAdapter != null && btAdapter.Call<bool>("isEnabled"))
+                    {
+                        using (AndroidJavaObject bondedDevices = btAdapter.Call<AndroidJavaObject>("getBondedDevices"))
+                        {
+                            using (AndroidJavaObject iterator = bondedDevices.Call<AndroidJavaObject>("iterator"))
+                            {
+                                while (iterator.Call<bool>("hasNext"))
+                                {
+                                    using (AndroidJavaObject dev = iterator.Call<AndroidJavaObject>("next"))
+                                    {
+                                        string name = dev.Call<string>("getName");
+                                        if (!string.IsNullOrEmpty(name) && !pairedDevices.Contains(name))
+                                        {
+                                            pairedDevices.Add(name);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        connectionStatus = "Bluetooth is Turned Off";
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            connectionStatus = "Scan error: " + ex.Message;
+        }
+#elif UNITY_EDITOR
+        try
+        {
+            string[] ports = SerialPort.GetPortNames();
+            if (ports != null)
+            {
+                foreach (string p in ports)
+                {
+                    if (!pairedDevices.Contains(p)) pairedDevices.Add(p);
+                }
+            }
+        }
+        catch { }
+#endif
+        isScanning = false;
+    }
+
+    public void ConnectToDevice(string deviceName)
+    {
+        targetDeviceName = deviceName;
+        connectionStatus = "Connecting to " + deviceName + "...";
+        isConnected = false;
+
+        // Stop existing thread if running
+        stopBTThread = true;
+        if (btThread != null && btThread.IsAlive)
+        {
+            try { btThread.Abort(); } catch { }
+        }
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+        stopBTThread = false;
+        btThread = new Thread(AndroidBluetoothWorkerLoop);
+        btThread.IsBackground = true;
+        btThread.Start();
+#elif UNITY_EDITOR
+        editorCOMPort = deviceName;
+        stopBTThread = false;
+        btThread = new Thread(EditorSerialWorkerLoop);
+        btThread.IsBackground = true;
+        btThread.Start();
+#endif
+    }
+
+    public void Disconnect()
+    {
+        stopBTThread = true;
+        isConnected = false;
+        connectionStatus = "Disconnected";
+        if (btThread != null && btThread.IsAlive)
+        {
+            try { btThread.Abort(); } catch { }
+        }
     }
 
     void Update()
@@ -123,11 +222,147 @@ public class BluetoothInputManager : MonoBehaviour
 
         if (Time.time >= nextLogTime)
         {
-            string modeStr = isConnected ? "Bluetooth (HC-05)" : "Editor Simulation Mode (WASD/Spacebar)";
-            Debug.Log($"📡 [BluetoothInputManager] [{modeStr}] Telemetry Stream -> Pitch: {pitch:F1}°, Roll: {roll:F1}°, EMG: {emgValue}, ShootState: {shoot} ({(shoot == 1 ? "SHOOTING" : "READY")})");
+            string modeStr = isConnected ? $"Bluetooth ({targetDeviceName})" : "Editor Simulation Mode (WASD/Spacebar)";
+            Debug.Log($"📡 [BluetoothInputManager] [{modeStr}] Telemetry -> Pitch: {pitch:F1}°, Roll: {roll:F1}°, EMG: {emgValue}, ShootState: {shoot}");
             nextLogTime = Time.time + 3.0f;
         }
     }
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+    private void AndroidBluetoothWorkerLoop()
+    {
+        AndroidJNI.AttachCurrentThread();
+        try
+        {
+            using (AndroidJavaClass btAdapterClass = new AndroidJavaClass("android.bluetooth.BluetoothAdapter"))
+            {
+                using (AndroidJavaObject btAdapter = btAdapterClass.CallStatic<AndroidJavaObject>("getDefaultAdapter"))
+                {
+                    if (btAdapter == null || !btAdapter.Call<bool>("isEnabled"))
+                    {
+                        connectionStatus = "Bluetooth Disabled";
+                        return;
+                    }
+
+                    try { btAdapter.Call<bool>("cancelDiscovery"); } catch { }
+
+                    using (AndroidJavaObject bondedDevices = btAdapter.Call<AndroidJavaObject>("getBondedDevices"))
+                    {
+                        using (AndroidJavaObject iterator = bondedDevices.Call<AndroidJavaObject>("iterator"))
+                        {
+                            AndroidJavaObject targetDevice = null;
+                            while (iterator.Call<bool>("hasNext"))
+                            {
+                                AndroidJavaObject dev = iterator.Call<AndroidJavaObject>("next");
+                                string devName = dev.Call<string>("getName");
+                                string devAddr = dev.Call<string>("getAddress");
+
+                                if (!string.IsNullOrEmpty(devName) && devName.Equals(targetDeviceName, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    targetDevice = dev;
+                                    break;
+                                }
+                                else if (!string.IsNullOrEmpty(targetMACAddress) && devAddr.Equals(targetMACAddress, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    targetDevice = dev;
+                                    break;
+                                }
+                                else
+                                {
+                                    dev.Dispose();
+                                }
+                            }
+
+                            if (targetDevice == null)
+                            {
+                                connectionStatus = $"Device '{targetDeviceName}' not found in paired list";
+                                return;
+                            }
+
+                            AndroidJavaObject socket = null;
+                            try
+                            {
+                                using (AndroidJavaClass uuidClass = new AndroidJavaClass("java.util.UUID"))
+                                {
+                                    using (AndroidJavaObject sppUuid = uuidClass.CallStatic<AndroidJavaObject>("fromString", "00001101-0000-1000-8000-00805F9B34FB"))
+                                    {
+                                        socket = targetDevice.Call<AndroidJavaObject>("createRfcommSocketToServiceRecord", sppUuid);
+                                    }
+                                }
+                                socket.Call("connect");
+                            }
+                            catch
+                            {
+                                if (socket != null) { try { socket.Call("close"); } catch { } socket = null; }
+
+                                // Fallback to insecure RFCOMM
+                                try
+                                {
+                                    using (AndroidJavaClass uuidClass = new AndroidJavaClass("java.util.UUID"))
+                                    {
+                                        using (AndroidJavaObject sppUuid = uuidClass.CallStatic<AndroidJavaObject>("fromString", "00001101-0000-1000-8000-00805F9B34FB"))
+                                        {
+                                            socket = targetDevice.Call<AndroidJavaObject>("createInsecureRfcommSocketToServiceRecord", sppUuid);
+                                        }
+                                    }
+                                    socket.Call("connect");
+                                }
+                                catch (Exception connEx)
+                                {
+                                    if (socket != null) { try { socket.Call("close"); } catch { } socket = null; }
+                                    connectionStatus = "Connection failed: " + connEx.Message;
+                                }
+                            }
+
+                            if (socket != null)
+                            {
+                                isConnected = true;
+                                connectionStatus = "Connected to " + targetDeviceName;
+
+                                using (AndroidJavaObject inputStream = socket.Call<AndroidJavaObject>("getInputStream"))
+                                {
+                                    using (AndroidJavaObject isReader = new AndroidJavaObject("java.io.InputStreamReader", inputStream))
+                                    {
+                                        using (AndroidJavaObject bufferedReader = new AndroidJavaObject("java.io.BufferedReader", isReader))
+                                        {
+                                            while (!stopBTThread)
+                                            {
+                                                string line = bufferedReader.Call<string>("readLine");
+                                                if (line != null)
+                                                {
+                                                    lock (lockObj)
+                                                    {
+                                                        pendingDataLine = line;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                try { socket.Call("close"); } catch { }
+                            }
+
+                            targetDevice.Dispose();
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            connectionStatus = "Error: " + ex.Message;
+        }
+        finally
+        {
+            isConnected = false;
+            AndroidJNI.DetachCurrentThread();
+        }
+    }
+#endif
 
 #if UNITY_EDITOR
     private void StartEditorSerialThread()
@@ -140,8 +375,6 @@ public class BluetoothInputManager : MonoBehaviour
 
     private void EditorSerialWorkerLoop()
     {
-        Debug.Log("[BluetoothInputManager] Unity Editor Windows Serial worker thread started...");
-
         while (!stopBTThread)
         {
             string[] ports = SerialPort.GetPortNames();
@@ -151,225 +384,46 @@ public class BluetoothInputManager : MonoBehaviour
                 continue;
             }
 
-            System.Collections.Generic.List<string> candidatePorts = new System.Collections.Generic.List<string>();
-            if (!string.IsNullOrEmpty(editorCOMPort) && Array.IndexOf(ports, editorCOMPort) >= 0)
+            string activePort = editorCOMPort;
+            if (string.IsNullOrEmpty(activePort) || Array.IndexOf(ports, activePort) < 0)
             {
-                candidatePorts.Add(editorCOMPort);
-            }
-            foreach (string p in ports)
-            {
-                if (!candidatePorts.Contains(p)) candidatePorts.Add(p);
+                activePort = ports[0];
             }
 
-            foreach (string portName in candidatePorts)
-            {
-                if (stopBTThread) break;
-
-                SerialPort sp = null;
-                try
-                {
-                    sp = new SerialPort(portName, baudRate);
-                    sp.ReadTimeout = 1500;
-                    sp.Open();
-
-                    int lineAttempts = 0;
-                    while (!stopBTThread && sp.IsOpen && lineAttempts < 5)
-                    {
-                        try
-                        {
-                            string line = sp.ReadLine();
-                            if (!string.IsNullOrEmpty(line) && line.Contains(","))
-                            {
-                                lock (lockObj)
-                                {
-                                    pendingDataLine = line;
-                                }
-                                lineAttempts++;
-                            }
-                        }
-                        catch (TimeoutException)
-                        {
-                            lineAttempts++;
-                        }
-                    }
-
-                    if (isConnected)
-                    {
-                        while (!stopBTThread && sp.IsOpen)
-                        {
-                            try
-                            {
-                                string line = sp.ReadLine();
-                                if (!string.IsNullOrEmpty(line))
-                                {
-                                    lock (lockObj)
-                                    {
-                                        pendingDataLine = line;
-                                    }
-                                }
-                            }
-                            catch (TimeoutException) { }
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    isConnected = false;
-                    Debug.LogWarning($"[BluetoothInputManager] COM Port '{portName}' note: {ex.Message}");
-                }
-                finally
-                {
-                    if (sp != null && sp.IsOpen)
-                    {
-                        sp.Close();
-                    }
-                }
-            }
-
-            Thread.Sleep(2000);
-        }
-    }
-#endif
-
-#if UNITY_ANDROID && !UNITY_EDITOR
-    private void StartAndroidBluetoothThread()
-    {
-        stopBTThread = false;
-        btThread = new Thread(AndroidBluetoothWorkerLoop);
-        btThread.IsBackground = true;
-        btThread.Start();
-    }
-
-    private void AndroidBluetoothWorkerLoop()
-    {
-        Debug.Log("[BluetoothInputManager] Android Native Bluetooth worker thread started...");
-        while (!stopBTThread)
-        {
+            SerialPort sp = null;
             try
             {
-                using (AndroidJavaClass btAdapterClass = new AndroidJavaClass("android.bluetooth.BluetoothAdapter"))
+                sp = new SerialPort(activePort, baudRate);
+                sp.ReadTimeout = 1500;
+                sp.Open();
+                isConnected = true;
+                connectionStatus = "Connected to " + activePort;
+
+                while (!stopBTThread && sp.IsOpen)
                 {
-                    using (AndroidJavaObject btAdapter = btAdapterClass.CallStatic<AndroidJavaObject>("getDefaultAdapter"))
+                    try
                     {
-                        if (btAdapter == null || !btAdapter.Call<bool>("isEnabled"))
+                        string line = sp.ReadLine();
+                        if (!string.IsNullOrEmpty(line))
                         {
-                            Thread.Sleep(2000);
-                            continue;
-                        }
-
-                        try { btAdapter.Call<bool>("cancelDiscovery"); } catch {}
-
-                        using (AndroidJavaObject bondedDevices = btAdapter.Call<AndroidJavaObject>("getBondedDevices"))
-                        {
-                            int count = bondedDevices.Call<int>("size");
-                            using (AndroidJavaObject iterator = bondedDevices.Call<AndroidJavaObject>("iterator"))
+                            lock (lockObj)
                             {
-                                AndroidJavaObject targetDevice = null;
-                                AndroidJavaObject fallbackDevice = null;
-
-                                while (iterator.Call<bool>("hasNext"))
-                                {
-                                    using (AndroidJavaObject device = iterator.Call<AndroidJavaObject>("next"))
-                                    {
-                                        string devName = device.Call<string>("getName");
-                                        string devAddr = device.Call<string>("getAddress");
-
-                                        if (fallbackDevice == null) fallbackDevice = device;
-
-                                        if (!string.IsNullOrEmpty(devName))
-                                        {
-                                            string lowerName = devName.ToLower();
-                                            if (lowerName.Contains("hc-05") || lowerName.Contains("hc-06") || lowerName.Contains("bt05") ||
-                                                (!string.IsNullOrEmpty(targetDeviceName) && lowerName.Contains(targetDeviceName.ToLower())) ||
-                                                (!string.IsNullOrEmpty(targetMACAddress) && devAddr.Equals(targetMACAddress, StringComparison.OrdinalIgnoreCase)))
-                                            {
-                                                targetDevice = device;
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
-
-                                if (targetDevice == null && count == 1)
-                                {
-                                    targetDevice = fallbackDevice;
-                                }
-
-                                if (targetDevice != null)
-                                {
-                                    AndroidJavaObject socket = null;
-                                    try
-                                    {
-                                        using (AndroidJavaClass uuidClass = new AndroidJavaClass("java.util.UUID"))
-                                        {
-                                            using (AndroidJavaObject sppUuid = uuidClass.CallStatic<AndroidJavaObject>("fromString", "00001101-0000-1000-8000-00805F9B34FB"))
-                                            {
-                                                socket = targetDevice.Call<AndroidJavaObject>("createRfcommSocketToServiceRecord", sppUuid);
-                                            }
-                                        }
-
-                                        socket.Call("connect");
-                                    }
-                                    catch
-                                    {
-                                        if (socket != null) { try { socket.Call("close"); } catch {} socket = null; }
-
-                                        try
-                                        {
-                                            using (AndroidJavaClass uuidClass = new AndroidJavaClass("java.util.UUID"))
-                                            {
-                                                using (AndroidJavaObject sppUuid = uuidClass.CallStatic<AndroidJavaObject>("fromString", "00001101-0000-1000-8000-00805F9B34FB"))
-                                                {
-                                                    socket = targetDevice.Call<AndroidJavaObject>("createInsecureRfcommSocketToServiceRecord", sppUuid);
-                                                }
-                                            }
-                                            socket.Call("connect");
-                                        }
-                                        catch
-                                        {
-                                            if (socket != null) { try { socket.Call("close"); } catch {} socket = null; }
-                                        }
-                                    }
-
-                                    if (socket != null)
-                                    {
-                                        using (AndroidJavaObject inputStream = socket.Call<AndroidJavaObject>("getInputStream"))
-                                        {
-                                            using (AndroidJavaObject isReader = new AndroidJavaObject("java.io.InputStreamReader", inputStream))
-                                            {
-                                                using (AndroidJavaObject bufferedReader = new AndroidJavaObject("java.io.BufferedReader", isReader))
-                                                {
-                                                    while (!stopBTThread)
-                                                    {
-                                                        string line = bufferedReader.Call<string>("readLine");
-                                                        if (line != null)
-                                                        {
-                                                            lock (lockObj)
-                                                            {
-                                                                pendingDataLine = line;
-                                                            }
-                                                        }
-                                                        else
-                                                        {
-                                                            break;
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        try { socket.Call("close"); } catch {}
-                                    }
-                                }
+                                pendingDataLine = line;
                             }
                         }
                     }
+                    catch (TimeoutException) { }
                 }
             }
             catch (Exception ex)
             {
                 isConnected = false;
-                Debug.LogWarning("[BluetoothInputManager] Android Bluetooth connection note: " + ex.Message);
+                connectionStatus = "Port error: " + ex.Message;
                 Thread.Sleep(3000);
+            }
+            finally
+            {
+                if (sp != null && sp.IsOpen) sp.Close();
             }
         }
     }
@@ -380,7 +434,7 @@ public class BluetoothInputManager : MonoBehaviour
         stopBTThread = true;
         if (btThread != null && btThread.IsAlive)
         {
-            btThread.Abort();
+            try { btThread.Abort(); } catch { }
         }
     }
 
@@ -451,36 +505,16 @@ public class BluetoothInputManager : MonoBehaviour
                 if (float.TryParse(parts[1], NumberStyles.Any, CultureInfo.InvariantCulture, out float parsedRoll)) roll = parsedRoll;
                 if (int.TryParse(parts[2], out int parsedEMG)) emgValue = parsedEMG;
 
-                if (!isConnected)
-                {
-                    isConnected = true;
-                    connectionStatus = "Connected to " + targetDeviceName;
-                    if (!loggedConnectionSuccess)
-                    {
-                        Debug.Log($"✅ [BluetoothInputManager] Bluetooth Connected Successfully to device '{targetDeviceName}'!");
-                        loggedConnectionSuccess = true;
-                    }
-                }
+                isConnected = true;
+                connectionStatus = "Connected to " + targetDeviceName;
 
                 int threshold = (GameSettings.Instance != null) ? GameSettings.Instance.emgThreshold : 400;
                 EvaluateShootState(threshold);
             }
-            else
-            {
-                Debug.LogWarning($"⚠️ [BluetoothInputManager] Received malformed data packet: '{dataLine}'");
-            }
         }
         catch (Exception ex)
         {
-            Debug.LogError($"❌ [BluetoothInputManager] Bluetooth Data Parsing Error: {ex.Message} | Packet: '{dataLine}'");
+            Debug.LogError($"❌ [BluetoothInputManager] Parse error: {ex.Message}");
         }
-    }
-
-    public void OnBluetoothDisconnected()
-    {
-        isConnected = false;
-        loggedConnectionSuccess = false;
-        connectionStatus = "Disconnected";
-        Debug.LogWarning($"⚠️ [BluetoothInputManager] Bluetooth Disconnected from device '{targetDeviceName}'. Re-entering Simulation Mode.");
     }
 }

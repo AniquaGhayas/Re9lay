@@ -26,6 +26,7 @@ public class GUI : MonoBehaviour {
 
     private readonly float virtualWidth = 400f;
     private readonly float virtualHeight = 700f;
+    private Vector2 deviceScrollPos = Vector2.zero;
 
     void Awake() {
         if (Instance != null && Instance != this) {
@@ -160,40 +161,97 @@ public class GUI : MonoBehaviour {
 
     // --- PANEL 1: MAIN MENU ---
     private void DrawPanel1_MainMenu() {
-        UnityEngine.GUI.Box(new Rect(20f, 90f, 360f, 500f), "");
+        UnityEngine.GUI.Box(new Rect(20f, 30f, 360f, 640f), "");
 
         GUIStyle titleStyle = new GUIStyle(UnityEngine.GUI.skin.label);
-        titleStyle.fontSize = 24;
+        titleStyle.fontSize = 26;
         titleStyle.fontStyle = FontStyle.Bold;
         titleStyle.alignment = TextAnchor.MiddleCenter;
         titleStyle.normal.textColor = Color.yellow;
-        UnityEngine.GUI.Label(new Rect(20f, 115f, 360f, 40f), "Re9lay", titleStyle);
+        UnityEngine.GUI.Label(new Rect(20f, 42f, 360f, 35f), "Re9lay", titleStyle);
 
         GUIStyle subTitleStyle = new GUIStyle(UnityEngine.GUI.skin.label);
         subTitleStyle.fontSize = 12;
         subTitleStyle.alignment = TextAnchor.MiddleCenter;
         subTitleStyle.normal.textColor = Color.cyan;
-        UnityEngine.GUI.Label(new Rect(20f, 155f, 360f, 25f), "Gamified IoT Rehabilitation System", subTitleStyle);
+        UnityEngine.GUI.Label(new Rect(20f, 75f, 360f, 20f), "Gamified IoT Rehabilitation System", subTitleStyle);
 
-        // Bluetooth Connection Confirmation Indicator Badge
+        // Bluetooth Setup Box
+        UnityEngine.GUI.Box(new Rect(35f, 105f, 330f, 260f), "BLUETOOTH DEVICE SETUP");
+
         bool isBTConnected = (BluetoothInputManager.Instance != null && BluetoothInputManager.Instance.isConnected);
+        string currentStatus = (BluetoothInputManager.Instance != null) ? BluetoothInputManager.Instance.connectionStatus : "Disconnected";
         string targetDevice = (BluetoothInputManager.Instance != null) ? BluetoothInputManager.Instance.targetDeviceName : "HC-05";
-        string btBadgeStr = isBTConnected 
-            ? $"<color=lime><b>● BLUETOOTH CONNECTED ({targetDevice})</b></color>" 
-            : $"<color=yellow><b>○ BT SIMULATION MODE (WASD)</b></color>";
 
-        GUIStyle btStyle = new GUIStyle(UnityEngine.GUI.skin.label);
-        btStyle.fontSize = 11;
-        btStyle.alignment = TextAnchor.MiddleCenter;
-        btStyle.richText = true;
-        UnityEngine.GUI.Label(new Rect(20f, 185f, 360f, 25f), btBadgeStr, btStyle);
+        GUIStyle statusStyle = new GUIStyle(UnityEngine.GUI.skin.label);
+        statusStyle.fontSize = 12;
+        statusStyle.alignment = TextAnchor.MiddleCenter;
+        statusStyle.richText = true;
+
+        if (isBTConnected) {
+            UnityEngine.GUI.Label(new Rect(40f, 140f, 320f, 30f), $"<color=lime><b>● CONNECTED: {targetDevice}</b></color>", statusStyle);
+
+            GUIStyle discBtnStyle = new GUIStyle(UnityEngine.GUI.skin.button);
+            discBtnStyle.fontSize = 12;
+            if (UnityEngine.GUI.Button(new Rect(95f, 190f, 210f, 38f), "Disconnect Device", discBtnStyle)) {
+                if (BluetoothInputManager.Instance != null) {
+                    BluetoothInputManager.Instance.Disconnect();
+                }
+            }
+
+            GUIStyle hintStyle = new GUIStyle(UnityEngine.GUI.skin.label);
+            hintStyle.fontSize = 11;
+            hintStyle.alignment = TextAnchor.MiddleCenter;
+            hintStyle.normal.textColor = Color.white;
+            hintStyle.wordWrap = true;
+            UnityEngine.GUI.Label(new Rect(45f, 245f, 310f, 60f), "Hardware module is connected and active.\nTap Start below to begin your rehabilitation workout.", hintStyle);
+        } else {
+            UnityEngine.GUI.Label(new Rect(40f, 130f, 320f, 25f), $"Status: <color=yellow>{currentStatus}</color>", statusStyle);
+
+            GUIStyle scanBtnStyle = new GUIStyle(UnityEngine.GUI.skin.button);
+            scanBtnStyle.fontSize = 12;
+            scanBtnStyle.fontStyle = FontStyle.Bold;
+
+            if (UnityEngine.GUI.Button(new Rect(55f, 160f, 290f, 36f), "🔍 SCAN PAIRED DEVICES", scanBtnStyle)) {
+                if (BluetoothInputManager.Instance != null) {
+                    BluetoothInputManager.Instance.RequestAndroidPermissions();
+                    BluetoothInputManager.Instance.ScanPairedDevices();
+                }
+            }
+
+            // Scrollable list of paired devices
+            GUILayout.BeginArea(new Rect(45f, 205f, 310f, 150f));
+            deviceScrollPos = GUILayout.BeginScrollView(deviceScrollPos, GUILayout.Width(310f), GUILayout.Height(150f));
+
+            if (BluetoothInputManager.Instance != null && BluetoothInputManager.Instance.pairedDevices.Count > 0) {
+                GUILayout.Label("<b>Select your module to connect:</b>", statusStyle);
+                foreach (string dev in BluetoothInputManager.Instance.pairedDevices) {
+                    bool isHC05 = dev.IndexOf("HC-05", System.StringComparison.OrdinalIgnoreCase) >= 0;
+                    string btnLabel = isHC05 ? $"★ CONNECT TO {dev} ★" : $"Connect to {dev}";
+                    if (GUILayout.Button(btnLabel, GUILayout.Height(34f))) {
+                        BluetoothInputManager.Instance.ConnectToDevice(dev);
+                    }
+                }
+            } else {
+                GUIStyle emptyStyle = new GUIStyle(UnityEngine.GUI.skin.label);
+                emptyStyle.fontSize = 11;
+                emptyStyle.alignment = TextAnchor.MiddleCenter;
+                emptyStyle.normal.textColor = Color.gray;
+                emptyStyle.wordWrap = true;
+                GUILayout.Space(15f);
+                GUILayout.Label("No paired devices found.\n1. Pair HC-05 in Phone Bluetooth Settings (PIN 1234).\n2. Tap 'SCAN PAIRED DEVICES' above.", emptyStyle);
+            }
+
+            GUILayout.EndScrollView();
+            GUILayout.EndArea();
+        }
 
         GUIStyle bodyStyle = new GUIStyle(UnityEngine.GUI.skin.label);
         bodyStyle.fontSize = 11;
         bodyStyle.alignment = TextAnchor.MiddleCenter;
         bodyStyle.normal.textColor = Color.white;
         bodyStyle.wordWrap = true;
-        UnityEngine.GUI.Label(new Rect(40f, 220f, 320f, 140f),
+        UnityEngine.GUI.Label(new Rect(35f, 380f, 330f, 140f),
             "<b>REHABILITATION GOALS:</b>\n" +
             "• Tilt Wearable Glove or WASD to Move\n" +
             "• Contract Muscle or Hold Spacebar to Shoot\n" +
@@ -205,7 +263,7 @@ public class GUI : MonoBehaviour {
         btnStyle.fontStyle = FontStyle.Bold;
         btnStyle.normal.textColor = Color.white;
 
-        if (UnityEngine.GUI.Button(new Rect(60f, 430f, 280f, 55f), "START REHABILITATION SESSION", btnStyle)) {
+        if (UnityEngine.GUI.Button(new Rect(50f, 545f, 300f, 55f), "START REHABILITATION SESSION", btnStyle)) {
             StartGameplay();
         }
     }
