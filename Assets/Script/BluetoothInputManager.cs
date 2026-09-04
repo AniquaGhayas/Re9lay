@@ -15,7 +15,7 @@ public class BluetoothInputManager : MonoBehaviour
     [Header("Bluetooth Device Targeting")]
     public string targetDeviceName = "HC-05";
     public string targetMACAddress = "";
-    public string editorCOMPort = "COM7"; // Windows COM port when HC-05 paired to PC
+    public string editorCOMPort = "COM4"; // Primary Windows COM port for HC-05
     public int baudRate = 9600;
 
     [Header("Current Sensor Data")]
@@ -139,64 +139,95 @@ public class BluetoothInputManager : MonoBehaviour
     private void EditorSerialWorkerLoop()
     {
         Debug.Log("[BluetoothInputManager] Unity Editor Windows Serial worker thread started...");
-        
-        string[] ports = SerialPort.GetPortNames();
-        string activePort = editorCOMPort;
-        if (ports != null && ports.Length > 0)
-        {
-            foreach (string p in ports)
-            {
-                if (p.Equals(editorCOMPort, StringComparison.OrdinalIgnoreCase))
-                {
-                    activePort = p;
-                    break;
-                }
-            }
-            if (string.IsNullOrEmpty(activePort) || Array.IndexOf(ports, activePort) < 0)
-            {
-                activePort = ports[0];
-            }
-        }
 
         while (!stopBTThread)
         {
-            SerialPort sp = null;
-            try
+            string[] ports = SerialPort.GetPortNames();
+            if (ports == null || ports.Length == 0)
             {
-                sp = new SerialPort(activePort, baudRate);
-                sp.ReadTimeout = 1000;
-                sp.Open();
-                Debug.Log($"✅ [BluetoothInputManager] Opened Windows Serial COM Port '{activePort}' at {baudRate} baud.");
+                Thread.Sleep(3000);
+                continue;
+            }
 
-                while (!stopBTThread && sp.IsOpen)
+            // Prioritize editorCOMPort, then fallback to other available COM ports
+            System.Collections.Generic.List<string> candidatePorts = new System.Collections.Generic.List<string>();
+            if (!string.IsNullOrEmpty(editorCOMPort) && Array.IndexOf(ports, editorCOMPort) >= 0)
+            {
+                candidatePorts.Add(editorCOMPort);
+            }
+            foreach (string p in ports)
+            {
+                if (!candidatePorts.Contains(p)) candidatePorts.Add(p);
+            }
+
+            foreach (string portName in candidatePorts)
+            {
+                if (stopBTThread) break;
+
+                SerialPort sp = null;
+                try
                 {
-                    try
+                    sp = new SerialPort(portName, baudRate);
+                    sp.ReadTimeout = 1500;
+                    sp.Open();
+                    Debug.Log($"✅ [BluetoothInputManager] Testing Windows Serial COM Port '{portName}' at {baudRate} baud...");
+
+                    int lineAttempts = 0;
+                    while (!stopBTThread && sp.IsOpen && lineAttempts < 5)
                     {
-                        string line = sp.ReadLine();
-                        if (!string.IsNullOrEmpty(line))
+                        try
                         {
-                            lock (lockObj)
+                            string line = sp.ReadLine();
+                            if (!string.IsNullOrEmpty(line) && line.Contains(","))
                             {
-                                pendingDataLine = line;
+                                lock (lockObj)
+                                {
+                                    pendingDataLine = line;
+                                }
+                                lineAttempts++;
                             }
                         }
+                        catch (TimeoutException)
+                        {
+                            lineAttempts++;
+                        }
                     }
-                    catch (TimeoutException) { }
+
+                    if (isConnected)
+                    {
+                        // Successfully receiving live data lines, keep loop active on this port
+                        while (!stopBTThread && sp.IsOpen)
+                        {
+                            try
+                            {
+                                string line = sp.ReadLine();
+                                if (!string.IsNullOrEmpty(line))
+                                {
+                                    lock (lockObj)
+                                    {
+                                        pendingDataLine = line;
+                                    }
+                                }
+                            }
+                            catch (TimeoutException) { }
+                        }
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                isConnected = false;
-                Debug.LogWarning("[BluetoothInputManager] Editor Serial note: " + ex.Message);
-                Thread.Sleep(3000);
-            }
-            finally
-            {
-                if (sp != null && sp.IsOpen)
+                catch (Exception ex)
                 {
-                    sp.Close();
+                    isConnected = false;
+                    Debug.LogWarning($"[BluetoothInputManager] COM Port '{portName}' note: {ex.Message}");
+                }
+                finally
+                {
+                    if (sp != null && sp.IsOpen)
+                    {
+                        sp.Close();
+                    }
                 }
             }
+
+            Thread.Sleep(2000);
         }
     }
 #endif

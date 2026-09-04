@@ -1,5 +1,5 @@
 /*
-2D Space Shooter - NeuroPlay 2.0 3-Panel UI System with Bluetooth Status Badge
+2D Space Shooter - Re9lay 3-Panel UI System with Bluetooth Status Badge
 Panel 1: Main Menu (Bluetooth Connection Status Indicator)
 Panel 2: Gameplay (Real-time Telemetry HUD with Bluetooth Connection Badge)
 Panel 3: Game Over & Session Summary
@@ -167,7 +167,7 @@ public class GUI : MonoBehaviour {
         titleStyle.fontStyle = FontStyle.Bold;
         titleStyle.alignment = TextAnchor.MiddleCenter;
         titleStyle.normal.textColor = Color.yellow;
-        UnityEngine.GUI.Label(new Rect(20f, 115f, 360f, 40f), "NEUROPLAY 2.0", titleStyle);
+        UnityEngine.GUI.Label(new Rect(20f, 115f, 360f, 40f), "Re9lay", titleStyle);
 
         GUIStyle subTitleStyle = new GUIStyle(UnityEngine.GUI.skin.label);
         subTitleStyle.fontSize = 12;
@@ -238,7 +238,7 @@ public class GUI : MonoBehaviour {
         titleStyle.fontSize = 11;
         titleStyle.fontStyle = FontStyle.Bold;
         titleStyle.normal.textColor = Color.white;
-        GUILayout.Label("NEUROPLAY 2.0", titleStyle);
+        GUILayout.Label("Re9lay", titleStyle);
 
         bool isBTConnected = (BluetoothInputManager.Instance != null && BluetoothInputManager.Instance.isConnected);
         string btStatusStr = isBTConnected 

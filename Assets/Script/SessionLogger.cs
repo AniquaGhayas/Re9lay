@@ -1,6 +1,6 @@
 /*
-2D Space Shooter - Session Logger (0.50s / 500ms Time Interval CSV Logging)
-Saves CSV files to Public Documents folder on Android.
+2D Space Shooter - Session Logger (Re9lay 2.0 20Hz Sampling Rate)
+Saves CSV files to Downloads/game_csv on PC, and Documents/Re9layLogs on Android.
 */
 
 using UnityEngine;
@@ -13,7 +13,7 @@ public class SessionLogger : MonoBehaviour
     public static SessionLogger Instance { get; private set; }
 
     [Header("Logging Settings")]
-    public float samplingInterval = 0.50f; // 0.50s interval (500ms time difference between readings / 2 Hz sampling rate)
+    public float samplingInterval = 0.05f; // 20 Hz logging rate (50ms interval between rows)
     public bool isLoggingActive = false;
 
     private string currentFilePath;
@@ -36,20 +36,35 @@ public class SessionLogger : MonoBehaviour
     public void StartLoggingSession()
     {
         sessionStartClockTime = DateTime.Now;
-        string timestampStr = sessionStartClockTime.ToString("yyyyMMdd_HHmmss");
-        string filename = $"session_{timestampStr}.csv";
+        
+        // Filename format: yyyy_mm_dd_hh_mm.csv (e.g. 2026_09_04_05_01.csv)
+        string filename = sessionStartClockTime.ToString("yyyy_MM_dd_HH_mm") + ".csv";
 
-        string logDir = Path.Combine(Application.persistentDataPath, "SessionLogs");
+        // Determine Save Directory:
+        // PC (Windows Editor / Standalone): Downloads/game_csv
+        // Android (APK): Documents/Re9layLogs
+        string logDir = Path.Combine(Application.persistentDataPath, "Re9layLogs");
 
-#if UNITY_ANDROID && !UNITY_EDITOR
+#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
         try {
-            string publicDocs = "/storage/emulated/0/Documents/NeuroPlayLogs";
+            string userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            string pcDownloads = Path.Combine(userProfile, "Downloads", "game_csv");
+            if (!Directory.Exists(pcDownloads)) {
+                Directory.CreateDirectory(pcDownloads);
+            }
+            logDir = pcDownloads;
+        } catch (Exception ex) {
+            Debug.LogWarning("[SessionLogger] PC Downloads directory fallback note: " + ex.Message);
+        }
+#elif UNITY_ANDROID && !UNITY_EDITOR
+        try {
+            string publicDocs = "/storage/emulated/0/Documents/Re9layLogs";
             if (!Directory.Exists(publicDocs)) {
                 Directory.CreateDirectory(publicDocs);
             }
             logDir = publicDocs;
         } catch (Exception ex) {
-            Debug.LogWarning("[SessionLogger] Fallback to persistentDataPath: " + ex.Message);
+            Debug.LogWarning("[SessionLogger] Android Documents fallback note: " + ex.Message);
         }
 #endif
 
@@ -68,7 +83,7 @@ public class SessionLogger : MonoBehaviour
         nextSampleTime = Time.time;
         isLoggingActive = true;
 
-        Debug.Log($"[SessionLogger] Started logging session at {sessionStartClockTime:HH_mm_ss_fff} -> Saved to: {currentFilePath}");
+        Debug.Log($"[SessionLogger] Started 20Hz session logging -> File: {currentFilePath}");
     }
 
     void Update()
@@ -86,7 +101,7 @@ public class SessionLogger : MonoBehaviour
     {
         float elapsedSeconds = Time.time - sessionStartTime;
         DateTime currentClockTime = sessionStartClockTime.AddSeconds(elapsedSeconds);
-        string clockTimeStr = currentClockTime.ToString("HH_mm_ss_fff"); // Format: HH_mm_ss_fff (e.g. 21_23_34_500)
+        string clockTimeStr = currentClockTime.ToString("HH_mm_ss_fff"); // Format: HH_mm_ss_fff
 
         float pitch = 0f, roll = 0f;
         int emg = 0, shoot = 0;
@@ -126,7 +141,7 @@ public class SessionLogger : MonoBehaviour
         try
         {
             File.WriteAllText(currentFilePath, csvBuffer.ToString());
-            Debug.Log($"[SessionLogger] Saved session log ({csvBuffer.Length} bytes) to: {currentFilePath}");
+            Debug.Log($"[SessionLogger] Saved Re9lay 20Hz session CSV log ({csvBuffer.Length} bytes) to: {currentFilePath}");
         }
         catch (Exception ex)
         {
