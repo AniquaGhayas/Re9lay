@@ -30,7 +30,7 @@ public class BluetoothInputManager : MonoBehaviour
     public string connectionStatus = "Disconnected (Simulation Mode Active)";
 
     [Header("Simulation Controls (Editor Mode)")]
-    public bool useSimulation = false; // Set to false to test live Bluetooth in Editor
+    public bool useSimulation = false;
     public int simulatedContractedEMG = 750;
     public int simulatedRelaxedEMG = 150;
 
@@ -51,6 +51,8 @@ public class BluetoothInputManager : MonoBehaviour
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        RequestAndroidPermissions();
     }
 
     void Start()
@@ -149,7 +151,6 @@ public class BluetoothInputManager : MonoBehaviour
                 continue;
             }
 
-            // Prioritize editorCOMPort, then fallback to other available COM ports
             System.Collections.Generic.List<string> candidatePorts = new System.Collections.Generic.List<string>();
             if (!string.IsNullOrEmpty(editorCOMPort) && Array.IndexOf(ports, editorCOMPort) >= 0)
             {
@@ -170,7 +171,6 @@ public class BluetoothInputManager : MonoBehaviour
                     sp = new SerialPort(portName, baudRate);
                     sp.ReadTimeout = 1500;
                     sp.Open();
-                    Debug.Log($"✅ [BluetoothInputManager] Testing Windows Serial COM Port '{portName}' at {baudRate} baud...");
 
                     int lineAttempts = 0;
                     while (!stopBTThread && sp.IsOpen && lineAttempts < 5)
@@ -195,7 +195,6 @@ public class BluetoothInputManager : MonoBehaviour
 
                     if (isConnected)
                     {
-                        // Successfully receiving live data lines, keep loop active on this port
                         while (!stopBTThread && sp.IsOpen)
                         {
                             try
@@ -258,6 +257,8 @@ public class BluetoothInputManager : MonoBehaviour
                             continue;
                         }
 
+                        try { btAdapter.Call<bool>("cancelDiscovery"); } catch {}
+
                         using (AndroidJavaObject bondedDevices = btAdapter.Call<AndroidJavaObject>("getBondedDevices"))
                         {
                             int count = bondedDevices.Call<int>("size");
@@ -296,39 +297,67 @@ public class BluetoothInputManager : MonoBehaviour
 
                                 if (targetDevice != null)
                                 {
-                                    using (AndroidJavaClass uuidClass = new AndroidJavaClass("java.util.UUID"))
+                                    AndroidJavaObject socket = null;
+                                    try
                                     {
-                                        using (AndroidJavaObject sppUuid = uuidClass.CallStatic<AndroidJavaObject>("fromString", "00001101-0000-1000-8000-00805F9B34FB"))
+                                        using (AndroidJavaClass uuidClass = new AndroidJavaClass("java.util.UUID"))
                                         {
-                                            using (AndroidJavaObject socket = targetDevice.Call<AndroidJavaObject>("createRfcommSocketToServiceRecord", sppUuid))
+                                            using (AndroidJavaObject sppUuid = uuidClass.CallStatic<AndroidJavaObject>("fromString", "00001101-0000-1000-8000-00805F9B34FB"))
                                             {
-                                                socket.Call("connect");
-                                                using (AndroidJavaObject inputStream = socket.Call<AndroidJavaObject>("getInputStream"))
+                                                socket = targetDevice.Call<AndroidJavaObject>("createRfcommSocketToServiceRecord", sppUuid);
+                                            }
+                                        }
+
+                                        socket.Call("connect");
+                                    }
+                                    catch
+                                    {
+                                        if (socket != null) { try { socket.Call("close"); } catch {} socket = null; }
+
+                                        try
+                                        {
+                                            using (AndroidJavaClass uuidClass = new AndroidJavaClass("java.util.UUID"))
+                                            {
+                                                using (AndroidJavaObject sppUuid = uuidClass.CallStatic<AndroidJavaObject>("fromString", "00001101-0000-1000-8000-00805F9B34FB"))
                                                 {
-                                                    using (AndroidJavaObject isReader = new AndroidJavaObject("java.io.InputStreamReader", inputStream))
+                                                    socket = targetDevice.Call<AndroidJavaObject>("createInsecureRfcommSocketToServiceRecord", sppUuid);
+                                                }
+                                            }
+                                            socket.Call("connect");
+                                        }
+                                        catch
+                                        {
+                                            if (socket != null) { try { socket.Call("close"); } catch {} socket = null; }
+                                        }
+                                    }
+
+                                    if (socket != null)
+                                    {
+                                        using (AndroidJavaObject inputStream = socket.Call<AndroidJavaObject>("getInputStream"))
+                                        {
+                                            using (AndroidJavaObject isReader = new AndroidJavaObject("java.io.InputStreamReader", inputStream))
+                                            {
+                                                using (AndroidJavaObject bufferedReader = new AndroidJavaObject("java.io.BufferedReader", isReader))
+                                                {
+                                                    while (!stopBTThread)
                                                     {
-                                                        using (AndroidJavaObject bufferedReader = new AndroidJavaObject("java.io.BufferedReader", isReader))
+                                                        string line = bufferedReader.Call<string>("readLine");
+                                                        if (line != null)
                                                         {
-                                                            while (!stopBTThread)
+                                                            lock (lockObj)
                                                             {
-                                                                string line = bufferedReader.Call<string>("readLine");
-                                                                if (line != null)
-                                                                {
-                                                                    lock (lockObj)
-                                                                    {
-                                                                        pendingDataLine = line;
-                                                                    }
-                                                                }
-                                                                else
-                                                                {
-                                                                    break;
-                                                                }
+                                                                pendingDataLine = line;
                                                             }
+                                                        }
+                                                        else
+                                                        {
+                                                            break;
                                                         }
                                                     }
                                                 }
                                             }
                                         }
+                                        try { socket.Call("close"); } catch {}
                                     }
                                 }
                             }
@@ -339,7 +368,7 @@ public class BluetoothInputManager : MonoBehaviour
             catch (Exception ex)
             {
                 isConnected = false;
-                Debug.LogWarning("[BluetoothInputManager] Android Bluetooth note: " + ex.Message);
+                Debug.LogWarning("[BluetoothInputManager] Android Bluetooth connection note: " + ex.Message);
                 Thread.Sleep(3000);
             }
         }
