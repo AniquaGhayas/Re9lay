@@ -12,7 +12,7 @@ public class GUI : MonoBehaviour {
 
     public static GUI Instance { get; private set; }
 
-    public enum UIPanel { MainMenu = 1, Gameplay = 2, GameOver = 3 }
+    public enum UIPanel { MainMenu = 1, Calibration = 2, Gameplay = 3, GameOver = 4 }
     [Header("Active Panel State")]
     public UIPanel currentPanel = UIPanel.MainMenu;
 
@@ -85,6 +85,17 @@ public class GUI : MonoBehaviour {
         isGameOver = false;
         Time.timeScale = 0f;
         SetGameplayElementsVisible(false);
+    }
+
+    public void ShowCalibration() {
+        currentPanel = UIPanel.Calibration;
+        isGameOver = false;
+        Time.timeScale = 0f;
+        SetGameplayElementsVisible(false);
+
+        if (EmgCalibrator.Instance != null) {
+            EmgCalibrator.Instance.StartCalibration();
+        }
     }
 
     public void StartGameplay() {
@@ -161,6 +172,9 @@ public class GUI : MonoBehaviour {
         switch (currentPanel) {
             case UIPanel.MainMenu:
                 DrawPanel1_MainMenu();
+                break;
+            case UIPanel.Calibration:
+                DrawPanel_Calibration();
                 break;
             case UIPanel.Gameplay:
                 DrawPanel2_Gameplay();
@@ -282,7 +296,149 @@ public class GUI : MonoBehaviour {
         btnStyle.normal.textColor = Color.white;
 
         if (UnityEngine.GUI.Button(new Rect(50f, 545f, 300f, 55f), "START REHABILITATION SESSION", btnStyle)) {
-            StartGameplay();
+            ShowCalibration();
+        }
+    }
+
+    // --- PANEL: EMG CALIBRATION ---
+    private void DrawPanel_Calibration() {
+        UnityEngine.GUI.Box(new Rect(20f, 25f, 360f, 650f), "");
+
+        GUIStyle titleStyle = new GUIStyle(UnityEngine.GUI.skin.label);
+        titleStyle.fontSize = 20;
+        titleStyle.fontStyle = FontStyle.Bold;
+        titleStyle.alignment = TextAnchor.MiddleCenter;
+        titleStyle.normal.textColor = Color.yellow;
+        UnityEngine.GUI.Label(new Rect(20f, 40f, 360f, 30f), "EMG CALIBRATION", titleStyle);
+
+        GUIStyle subTitleStyle = new GUIStyle(UnityEngine.GUI.skin.label);
+        subTitleStyle.fontSize = 11;
+        subTitleStyle.alignment = TextAnchor.MiddleCenter;
+        subTitleStyle.normal.textColor = Color.cyan;
+        UnityEngine.GUI.Label(new Rect(20f, 70f, 360f, 20f), "Guided Pre-Session Muscle Threshold Setup", subTitleStyle);
+
+        EmgCalibrator calibrator = EmgCalibrator.Instance;
+        float liveEmg = (calibrator != null) ? calibrator.GetLiveEmgSample() : 0f;
+
+        // Central Guided Calibration Card
+        UnityEngine.GUI.Box(new Rect(35f, 100f, 330f, 360f), "CALIBRATION PROTOCOL");
+
+        GUIStyle phaseHeaderStyle = new GUIStyle(UnityEngine.GUI.skin.label);
+        phaseHeaderStyle.fontSize = 15;
+        phaseHeaderStyle.fontStyle = FontStyle.Bold;
+        phaseHeaderStyle.alignment = TextAnchor.MiddleCenter;
+        phaseHeaderStyle.richText = true;
+
+        GUIStyle instructionStyle = new GUIStyle(UnityEngine.GUI.skin.label);
+        instructionStyle.fontSize = 12;
+        instructionStyle.alignment = TextAnchor.MiddleCenter;
+        instructionStyle.wordWrap = true;
+        instructionStyle.normal.textColor = Color.white;
+
+        GUIStyle timerStyle = new GUIStyle(UnityEngine.GUI.skin.label);
+        timerStyle.fontSize = 22;
+        timerStyle.fontStyle = FontStyle.Bold;
+        timerStyle.alignment = TextAnchor.MiddleCenter;
+        timerStyle.normal.textColor = Color.white;
+
+        if (calibrator == null || calibrator.currentPhase == EmgCalibrator.CalibrationPhase.Idle) {
+            UnityEngine.GUI.Label(new Rect(45f, 160f, 310f, 30f), "<color=yellow>READY TO CALIBRATE</color>", phaseHeaderStyle);
+            UnityEngine.GUI.Label(new Rect(45f, 200f, 310f, 60f), "This 8-second test measures your resting muscle signal and maximum contraction to personalize weapon firing.", instructionStyle);
+
+            GUIStyle startCalBtnStyle = new GUIStyle(UnityEngine.GUI.skin.button);
+            startCalBtnStyle.fontSize = 13;
+            startCalBtnStyle.fontStyle = FontStyle.Bold;
+            if (UnityEngine.GUI.Button(new Rect(70f, 280f, 260f, 45f), "▶ BEGIN CALIBRATION", startCalBtnStyle)) {
+                if (calibrator != null) calibrator.StartCalibration();
+            }
+        } else if (calibrator.currentPhase == EmgCalibrator.CalibrationPhase.Rest) {
+            UnityEngine.GUI.Label(new Rect(45f, 130f, 310f, 25f), "<color=cyan><b>PHASE 1 OF 2: REST BASELINE</b></color>", phaseHeaderStyle);
+            UnityEngine.GUI.Label(new Rect(45f, 160f, 310f, 75f), "Relax your hand, wrist, and forearm completely on the surface.\n\nDo NOT contract or squeeze any muscles.", instructionStyle);
+
+            UnityEngine.GUI.Label(new Rect(45f, 245f, 310f, 35f), $"{calibrator.phaseTimer:F1}s", timerStyle);
+
+            // Progress bar
+            UnityEngine.GUI.Box(new Rect(55f, 290f, 290f, 22f), "");
+            float fillWidth = 286f * Mathf.Clamp01(calibrator.phaseProgress);
+            UnityEngine.GUI.Box(new Rect(57f, 292f, fillWidth, 18f), "");
+
+            GUIStyle meterStyle = new GUIStyle(UnityEngine.GUI.skin.label);
+            meterStyle.fontSize = 11;
+            meterStyle.alignment = TextAnchor.MiddleCenter;
+            meterStyle.normal.textColor = Color.cyan;
+            UnityEngine.GUI.Label(new Rect(45f, 325f, 310f, 20f), $"Live Sensor: {liveEmg:F0} ADC", meterStyle);
+        } else if (calibrator.currentPhase == EmgCalibrator.CalibrationPhase.Contract) {
+            UnityEngine.GUI.Label(new Rect(45f, 130f, 310f, 25f), "<color=yellow><b>PHASE 2 OF 2: MAX CONTRACTION</b></color>", phaseHeaderStyle);
+            UnityEngine.GUI.Label(new Rect(45f, 160f, 310f, 75f), "CONTRACT your hand or forearm firmly!\n\nHOLD the contraction steadily until the timer finishes.", instructionStyle);
+
+            UnityEngine.GUI.Label(new Rect(45f, 245f, 310f, 35f), $"{calibrator.phaseTimer:F1}s", timerStyle);
+
+            // Progress bar
+            UnityEngine.GUI.Box(new Rect(55f, 290f, 290f, 22f), "");
+            float fillWidth = 286f * Mathf.Clamp01(calibrator.phaseProgress);
+            UnityEngine.GUI.Box(new Rect(57f, 292f, fillWidth, 18f), "");
+
+            GUIStyle meterStyle = new GUIStyle(UnityEngine.GUI.skin.label);
+            meterStyle.fontSize = 11;
+            meterStyle.alignment = TextAnchor.MiddleCenter;
+            meterStyle.normal.textColor = Color.yellow;
+            UnityEngine.GUI.Label(new Rect(45f, 325f, 310f, 20f), $"Live Sensor: {liveEmg:F0} ADC", meterStyle);
+        } else if (calibrator.currentPhase == EmgCalibrator.CalibrationPhase.Completed) {
+            UnityEngine.GUI.Label(new Rect(45f, 130f, 310f, 25f), "<color=lime><b>✔ CALIBRATION COMPLETE!</b></color>", phaseHeaderStyle);
+
+            GUIStyle resStyle = new GUIStyle(UnityEngine.GUI.skin.label);
+            resStyle.fontSize = 12;
+            resStyle.alignment = TextAnchor.MiddleLeft;
+            resStyle.normal.textColor = Color.white;
+            resStyle.richText = true;
+
+            GUILayout.BeginArea(new Rect(60f, 165f, 280f, 140f));
+            GUILayout.Label($"• Rest Baseline: <b>{calibrator.restBaseline:F0} ADC</b>", resStyle);
+            GUILayout.Label($"• Max Contraction: <b>{calibrator.maxContraction:F0} ADC</b>", resStyle);
+            GUILayout.Space(6f);
+            GUILayout.Label($"• Firing Threshold: <color=yellow><b>{calibrator.sessionThreshold:F0} ADC</b></color>", resStyle);
+            GUILayout.Label("<size=10><color=gray>(50% midpoint between rest and max)</color></size>", resStyle);
+            GUILayout.EndArea();
+
+            GUIStyle playBtnStyle = new GUIStyle(UnityEngine.GUI.skin.button);
+            playBtnStyle.fontSize = 13;
+            playBtnStyle.fontStyle = FontStyle.Bold;
+            playBtnStyle.normal.textColor = Color.white;
+
+            if (UnityEngine.GUI.Button(new Rect(55f, 320f, 290f, 48f), "★ START REHABILITATION WORKOUT ★", playBtnStyle)) {
+                StartGameplay();
+            }
+
+            GUIStyle reCalBtnStyle = new GUIStyle(UnityEngine.GUI.skin.button);
+            reCalBtnStyle.fontSize = 11;
+            if (UnityEngine.GUI.Button(new Rect(105f, 385f, 190f, 30f), "🔄 Re-Calibrate", reCalBtnStyle)) {
+                calibrator.StartCalibration();
+            }
+        }
+
+        // Live Sensor Monitor Box
+        UnityEngine.GUI.Box(new Rect(35f, 475f, 330f, 65f), "LIVE EMG SENSOR");
+        GUIStyle sensorStyle = new GUIStyle(UnityEngine.GUI.skin.label);
+        sensorStyle.fontSize = 11;
+        sensorStyle.alignment = TextAnchor.MiddleCenter;
+        sensorStyle.richText = true;
+        sensorStyle.normal.textColor = Color.white;
+        string threshStr = (calibrator != null && calibrator.isCalibrated) ? $"{calibrator.sessionThreshold:F0}" : "400 (Default)";
+        UnityEngine.GUI.Label(new Rect(45f, 498f, 310f, 30f), $"Raw Value: <b>{liveEmg:F0} ADC</b>   |   Active Threshold: <b>{threshStr}</b>", sensorStyle);
+
+        // Action Buttons at bottom
+        GUIStyle subBtnStyle = new GUIStyle(UnityEngine.GUI.skin.button);
+        subBtnStyle.fontSize = 11;
+
+        if (calibrator != null && calibrator.currentPhase != EmgCalibrator.CalibrationPhase.Completed) {
+            if (UnityEngine.GUI.Button(new Rect(50f, 555f, 300f, 38f), "SKIP TO DEFAULT THRESHOLD (400 ADC)", subBtnStyle)) {
+                calibrator.SkipToDefault();
+                StartGameplay();
+            }
+        }
+
+        if (UnityEngine.GUI.Button(new Rect(80f, 605f, 240f, 34f), "Cancel / Main Menu", subBtnStyle)) {
+            ShowMainMenu();
         }
     }
 
@@ -308,7 +464,7 @@ public class GUI : MonoBehaviour {
         UnityEngine.GUI.Label(new Rect(0f, 10f, virtualWidth, 30f), headerText, headerStyle);
 
         // Telemetry HUD Box with Live Bluetooth Status Badge
-        GUILayout.BeginArea(new Rect(10f, 45f, 185f, 90f), UnityEngine.GUI.skin.box);
+        GUILayout.BeginArea(new Rect(10f, 45f, 195f, 125f), UnityEngine.GUI.skin.box);
         
         GUIStyle titleStyle = new GUIStyle(UnityEngine.GUI.skin.label);
         titleStyle.fontSize = 11;
@@ -334,10 +490,27 @@ public class GUI : MonoBehaviour {
         }
         GUILayout.Label($"Speed: {speed:F2}x", infoStyle);
 
+        int hits = (DifficultyManager.Instance != null) ? DifficultyManager.Instance.CurrentHits : 0;
+        int attempts = (DifficultyManager.Instance != null) ? DifficultyManager.Instance.TotalAttemptsInWindow : 0;
+        GUILayout.Label($"Accuracy: {hits}/{attempts} (Last 10)", infoStyle);
+
+        float spawnInt = (DifficultyManager.Instance != null) ? DifficultyManager.Instance.CurrentSpawnInterval : 7.0f;
+        GUILayout.Label($"Spawn: {spawnInt:F1}s", infoStyle);
+
         bool isShooting = Input.GetKey(KeyCode.Space) || Input.GetButton("Fire1") || (BluetoothInputManager.Instance != null && BluetoothInputManager.Instance.shoot == 1);
         string shootStatus = isShooting ? "<color=green>SHOOTING</color>" : "<color=yellow>READY</color>";
         GUILayout.Label($"Weapon: {shootStatus}", infoStyle);
         GUILayout.EndArea();
+
+        // On-Screen Dynamic Difficulty Adjustment Toast Banner
+        if (DifficultyManager.Instance != null && DifficultyManager.Instance.toastTimer > 0f) {
+            GUIStyle toastStyle = new GUIStyle(UnityEngine.GUI.skin.box);
+            toastStyle.fontSize = 12;
+            toastStyle.fontStyle = FontStyle.Bold;
+            toastStyle.alignment = TextAnchor.MiddleCenter;
+            toastStyle.normal.textColor = DifficultyManager.Instance.activeToastColor;
+            UnityEngine.GUI.Box(new Rect(20f, 180f, 360f, 40f), DifficultyManager.Instance.activeToastMessage, toastStyle);
+        }
 
         if (GameManager.Instance != null && GameManager.Instance.isPaused) {
             UnityEngine.GUI.Box(new Rect(virtualWidth / 2f - 100f, virtualHeight / 2f - 50f, 200f, 100f), "PAUSED");

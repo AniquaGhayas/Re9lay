@@ -8,6 +8,7 @@ public class Bullet : MonoBehaviour {
 
 	public int bulletSpeed = 30;
 	public int bulletDirection = 1; // +1 moves UPWARD
+	public bool hasResolved = false;
 
 	private Rigidbody2D rb;
 
@@ -56,5 +57,12 @@ public class Bullet : MonoBehaviour {
 
 	void OnBecameInvisible() {  
 		Destroy(gameObject);
+	}
+
+	void OnDestroy() {
+		if (!hasResolved && bulletDirection > 0 && DifficultyManager.Instance != null && GameManager.Instance != null && GameManager.Instance.isGameActive) {
+			hasResolved = true;
+			DifficultyManager.Instance.RecordAttempt(false);
+		}
 	}
 }

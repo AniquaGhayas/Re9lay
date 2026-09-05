@@ -179,7 +179,9 @@ public class ReportUploader : MonoBehaviour
         form.AddBinaryData("csv_file", csvBytes, csvFileName, "text/csv");
         form.AddField("session_label", sessionLabel);
 
-        int emgThresh = (GameSettings.Instance != null) ? GameSettings.Instance.emgThreshold : 400;
+        int emgThresh = (EmgCalibrator.Instance != null && EmgCalibrator.Instance.isCalibrated)
+            ? Mathf.RoundToInt(EmgCalibrator.Instance.sessionThreshold)
+            : ((GameSettings.Instance != null) ? GameSettings.Instance.emgThreshold : 400);
         form.AddField("emg_threshold", emgThresh.ToString());
 
         using (UnityWebRequest request = UnityWebRequest.Post(uploadUrl, form))

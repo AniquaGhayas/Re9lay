@@ -28,7 +28,8 @@ public class enemyGenerator : MonoBehaviour {
 				enemyObj.transform.position = new Vector3(Random.Range(spawnMinX, spawnMaxX), spawnY, 0f);
 				enemyObj.transform.eulerAngles = Vector3.zero;
 			}
-			timeLastAlien = Time.time + timeBetweenEnemies;
+			float interval = (DifficultyManager.Instance != null) ? DifficultyManager.Instance.CurrentSpawnInterval : timeBetweenEnemies;
+			timeLastAlien = Time.time + interval;
 		}
 	}
 }

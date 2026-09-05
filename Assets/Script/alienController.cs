@@ -71,6 +71,13 @@ public class alienController : MonoBehaviour {
 			}
 
 			if (hitName.Contains("bullet")) {
+				Bullet b = hitObj.GetComponent<Bullet>();
+				if (b != null) {
+					b.hasResolved = true;
+				}
+				if (DifficultyManager.Instance != null) {
+					DifficultyManager.Instance.RecordAttempt(true);
+				}
 				Destroy(hitObj);
 			}
 
