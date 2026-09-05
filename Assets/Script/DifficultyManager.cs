@@ -13,7 +13,7 @@ public class DifficultyManager : MonoBehaviour
 
     [Header("Adaptive Difficulty Parameters")]
     [SerializeField] private float currentSpeedMultiplier = 1.0f;
-    [SerializeField] private float currentSpawnInterval = 7.0f;
+    [SerializeField] private float currentSpawnInterval = 5.0f;
 
     public float CurrentSpeedMultiplier => currentSpeedMultiplier;
     public float CurrentSpawnInterval => currentSpawnInterval;
@@ -23,8 +23,8 @@ public class DifficultyManager : MonoBehaviour
     public float maxSpeed = 1.3f;
     public float speedStep = 0.1f;
 
-    public float minSpawnInterval = 4.5f; // Never faster than 4.5s
-    public float maxSpawnInterval = 9.5f; // Slower spawn if struggling
+    public float minSpawnInterval = 3.0f; // Fastest spawn rate
+    public float maxSpawnInterval = 8.0f; // Slowest spawn rate if struggling
     public float spawnStep = 0.5f;
 
     [Header("Rolling Window State")]
@@ -32,6 +32,8 @@ public class DifficultyManager : MonoBehaviour
     public const int WindowSize = 10;
     public const int IncreaseThreshold = 9; // >= 9 / 10 hits
     public const int DecreaseThreshold = 6; // <= 6 / 10 hits
+    public const int ActivationPoints = 5;  // Difficulty unlocks after 5 points
+    private int attemptsSinceAdjustment = 0;
 
     [Header("On-Screen Notification Toast")]
     public string activeToastMessage = "";
@@ -77,11 +79,12 @@ public class DifficultyManager : MonoBehaviour
     public void ResetDifficulty()
     {
         currentSpeedMultiplier = 1.0f;
-        currentSpawnInterval = 7.0f;
+        currentSpawnInterval = 5.0f;
         recentAttempts.Clear();
+        attemptsSinceAdjustment = 0;
         activeToastMessage = "";
         toastTimer = 0f;
-        Debug.Log("[DifficultyManager] Difficulty Reset: Speed 1.0x, Spawn 7.0s");
+        Debug.Log("[DifficultyManager] Difficulty Reset: Speed 1.0x, Spawn 5.0s");
     }
 
     public void UpdateScore(int score)
@@ -100,28 +103,47 @@ public class DifficultyManager : MonoBehaviour
             recentAttempts.Dequeue();
         }
 
+        attemptsSinceAdjustment++;
+
         int hits = CurrentHits;
         int total = recentAttempts.Count;
 
         Debug.Log($"[DifficultyManager] Shot Resolution: {(wasHit ? "HIT" : "MISS")} | Window Accuracy: {hits}/{total}");
 
-        // Only evaluate difficulty adjustments once the rolling window has 10 attempts
-        if (total >= WindowSize)
+        // Do not adjust difficulty until at least 5 points have been earned
+        int currentScore = (GUI.Instance != null) ? GUI.Instance.currentScore : 0;
+        if (currentScore < ActivationPoints)
         {
-            if (hits >= IncreaseThreshold)
+            return;
+        }
+
+        // Apply a 5-shot buffer between consecutive difficulty adjustments
+        if (attemptsSinceAdjustment < 5)
+        {
+            return;
+        }
+
+        // Only evaluate adjustments when rolling window has enough data (>= 5)
+        if (total >= 5)
+        {
+            float accuracy = (float)hits / total;
+
+            if (wasHit && (hits >= IncreaseThreshold || (total >= 5 && accuracy >= 0.85f)))
             {
-                // Difficulty UP
+                // Difficulty UP - only triggered on a HIT
                 currentSpeedMultiplier = Mathf.Min(currentSpeedMultiplier + speedStep, maxSpeed);
                 currentSpawnInterval = Mathf.Max(currentSpawnInterval - spawnStep, minSpawnInterval);
+                attemptsSinceAdjustment = 0;
 
                 ShowToast($"▲ DIFFICULTY UP! (Speed: {currentSpeedMultiplier:F1}x | Spawn: {currentSpawnInterval:F1}s)", Color.yellow);
                 Debug.Log($"[DifficultyManager] ▲ Increased Difficulty -> Speed: {currentSpeedMultiplier:F1}x, Spawn: {currentSpawnInterval:F1}s");
             }
-            else if (hits <= DecreaseThreshold)
+            else if (!wasHit && (hits <= DecreaseThreshold || (total >= 5 && accuracy <= 0.60f)))
             {
-                // Difficulty DOWN
+                // Difficulty DOWN - only triggered on a MISS
                 currentSpeedMultiplier = Mathf.Max(currentSpeedMultiplier - speedStep, minSpeed);
                 currentSpawnInterval = Mathf.Min(currentSpawnInterval + spawnStep, maxSpawnInterval);
+                attemptsSinceAdjustment = 0;
 
                 ShowToast($"▼ DIFFICULTY DOWN (Speed: {currentSpeedMultiplier:F1}x | Spawn: {currentSpawnInterval:F1}s)", Color.cyan);
                 Debug.Log($"[DifficultyManager] ▼ Decreased Difficulty -> Speed: {currentSpeedMultiplier:F1}x, Spawn: {currentSpawnInterval:F1}s");

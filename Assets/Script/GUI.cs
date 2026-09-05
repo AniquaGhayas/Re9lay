@@ -492,9 +492,14 @@ public class GUI : MonoBehaviour {
 
         int hits = (DifficultyManager.Instance != null) ? DifficultyManager.Instance.CurrentHits : 0;
         int attempts = (DifficultyManager.Instance != null) ? DifficultyManager.Instance.TotalAttemptsInWindow : 0;
-        GUILayout.Label($"Accuracy: {hits}/{attempts} (Last 10)", infoStyle);
 
-        float spawnInt = (DifficultyManager.Instance != null) ? DifficultyManager.Instance.CurrentSpawnInterval : 7.0f;
+        if (currentScore < 5) {
+            GUILayout.Label($"Accuracy: Calibrating ({currentScore}/5 pts)", infoStyle);
+        } else {
+            GUILayout.Label($"Accuracy: {hits}/{attempts} (Last 10)", infoStyle);
+        }
+
+        float spawnInt = (DifficultyManager.Instance != null) ? DifficultyManager.Instance.CurrentSpawnInterval : 5.0f;
         GUILayout.Label($"Spawn: {spawnInt:F1}s", infoStyle);
 
         bool isShooting = Input.GetKey(KeyCode.Space) || Input.GetButton("Fire1") || (BluetoothInputManager.Instance != null && BluetoothInputManager.Instance.shoot == 1);

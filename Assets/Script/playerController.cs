@@ -86,26 +86,34 @@ public class playerController : MonoBehaviour {
 		}
 	}
 
+	private bool isTriggerArmed = true;
+
 	void HandleShooting () {
 		// Evaluates shooting from Spacebar key, Fire1 button, or HC-05 EMG contraction
-		bool isSpacePressed = Input.GetKey(KeyCode.Space) || Input.GetKeyDown(KeyCode.Space) || Input.GetButton("Fire1");
+		bool isSpaceHeld = Input.GetKey(KeyCode.Space) || Input.GetButton("Fire1");
 		bool isEMGContracted = (BluetoothInputManager.Instance != null && BluetoothInputManager.Instance.shoot == 1);
+		bool isActivating = isSpaceHeld || isEMGContracted;
 
-		bool shouldShoot = isSpacePressed || isEMGContracted;
+		if (isActivating) {
+			if (isTriggerArmed) {
+				// Fire exactly ONE bullet per contraction
+				if (playerBullet != null) {
+					Vector3 spawnPos = transform.position + new Vector3(playerBulletXOffset, playerBulletYOffset, 0f);
+					GameObject bulletObj = Instantiate(playerBullet, spawnPos, Quaternion.identity);
 
-		if (shouldShoot && Time.time >= timestamp) {
-			if (playerBullet != null) {
-				Vector3 spawnPos = transform.position + new Vector3(playerBulletXOffset, playerBulletYOffset, 0f);
-				GameObject bulletObj = Instantiate(playerBullet, spawnPos, Quaternion.identity);
-
-				// Prevent bullet from colliding with player ship
-				Collider2D shipCol = GetComponent<Collider2D>();
-				Collider2D bulletCol = bulletObj != null ? bulletObj.GetComponent<Collider2D>() : null;
-				if (shipCol != null && bulletCol != null) {
-					Physics2D.IgnoreCollision(shipCol, bulletCol);
+					// Prevent bullet from colliding with player ship
+					Collider2D shipCol = GetComponent<Collider2D>();
+					Collider2D bulletCol = bulletObj != null ? bulletObj.GetComponent<Collider2D>() : null;
+					if (shipCol != null && bulletCol != null) {
+						Physics2D.IgnoreCollision(shipCol, bulletCol);
+					}
 				}
+				// Disarm trigger: must relax muscle before firing again
+				isTriggerArmed = false;
 			}
-			timestamp = Time.time + timeBetweenShots;
+		} else {
+			// Muscle relaxed below threshold / key released -> rearm trigger
+			isTriggerArmed = true;
 		}
 	}
 
