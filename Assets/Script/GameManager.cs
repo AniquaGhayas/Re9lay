@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
     public bool isGameActive = false;
     public bool isPaused = false;
     public float sessionTimer = 0f;
+    public float baseGameSpeed = 0.5f;
 
     void Awake()
     {
@@ -26,7 +27,8 @@ public class GameManager : MonoBehaviour
 
     public void StartNewSession()
     {
-        Time.timeScale = 1.0f;
+        Time.timeScale = baseGameSpeed;
+        Time.fixedDeltaTime = 0.02f * Time.timeScale;
         isGameActive = true;
         isPaused = false;
         sessionTimer = 0f;
@@ -67,7 +69,8 @@ public class GameManager : MonoBehaviour
     public void TogglePause()
     {
         isPaused = !isPaused;
-        Time.timeScale = isPaused ? 0.0f : 1.0f;
+        Time.timeScale = isPaused ? 0.0f : baseGameSpeed;
+        Time.fixedDeltaTime = isPaused ? 0.02f : 0.02f * Time.timeScale;
     }
 
     public void CompleteSession()

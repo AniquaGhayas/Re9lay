@@ -26,7 +26,7 @@ public class enemyGenerator : MonoBehaviour {
 				}
 
 				enemyObj.transform.position = new Vector3(Random.Range(spawnMinX, spawnMaxX), spawnY, 0f);
-				enemyObj.transform.eulerAngles = new Vector3(0f, 0f, -90f);
+				enemyObj.transform.eulerAngles = Vector3.zero;
 			}
 			timeLastAlien = Time.time + timeBetweenEnemies;
 		}

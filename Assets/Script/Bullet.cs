@@ -9,8 +9,21 @@ public class Bullet : MonoBehaviour {
 	public int bulletSpeed = 30;
 	public int bulletDirection = 1; // +1 moves UPWARD
 
+	private Rigidbody2D rb;
+
+	void Start () {
+		rb = GetComponent<Rigidbody2D>();
+		if (rb != null) {
+			rb.gravityScale = 0f;
+			rb.freezeRotation = true;
+			rb.velocity = new Vector2(0f, bulletDirection * bulletSpeed * 0.4f);
+		}
+	}
+
 	void FixedUpdate () {
-		GetComponent<Rigidbody2D>().AddForce(new Vector2(0, bulletDirection * 0.1f * bulletSpeed), ForceMode2D.Impulse);
+		if (rb != null) {
+			rb.velocity = new Vector2(0f, bulletDirection * bulletSpeed * 0.4f);
+		}
 
 		// Self-destruct if bullet flies beyond top or bottom bounds
 		float maxY = 5.0f;

@@ -1,24 +1,12 @@
 fileFormatVersion: 2
-guid: e991282ec7e4a473596b30baf5b70fdc
+guid: 28d0e13164b7cf34697e0b3847a87074
 TextureImporter:
-  internalIDToNameTable:
-  - first:
-      213: 21300000
-    second: Spritesheet_64x29_0
-  - first:
-      213: 21300002
-    second: Spritesheet_64x29_1
-  - first:
-      213: 21300004
-    second: Spritesheet_64x29_2
-  - first:
-      213: 21300006
-    second: Spritesheet_64x29_3
+  internalIDToNameTable: []
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
     mipMapMode: 0
-    enableMipMap: 1
+    enableMipMap: 0
     sRGBTexture: 1
     linearTexture: 0
     fadeOut: 0
@@ -42,12 +30,12 @@ TextureImporter:
   generateCubemap: 6
   cubemapConvolution: 0
   seamlessCubemap: 0
-  textureFormat: -1
+  textureFormat: 1
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
-    aniso: 16
+    filterMode: 0
+    aniso: 1
     mipBias: 0
     wrapU: 1
     wrapV: 1
@@ -75,16 +63,16 @@ TextureImporter:
   compressionQualitySet: 0
   textureFormatSet: 0
   ignorePngGamma: 0
-  applyGammaDecoding: 1
+  applyGammaDecoding: 0
   swizzle: 50462976
-  cookieLightType: 1
+  cookieLightType: 0
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -122,85 +110,127 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Spritesheet_64x29_0
+      name: explosionufo_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 87
+        y: 2
         width: 64
-        height: 29
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 02305410000000000800000000000000
-      internalID: 21300000
+      spriteID: faa1bf7effffffff0800000000000000
+      internalID: -402974033
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spritesheet_64x29_1
+      name: explosionufo_1
       rect:
         serializedVersion: 2
-        x: 0
-        y: 58
+        x: 64
+        y: 2
         width: 64
-        height: 29
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 22305410000000000800000000000000
-      internalID: 21300002
+      spriteID: fbdeb0f0000000000800000000000000
+      internalID: 252439999
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spritesheet_64x29_2
+      name: explosionufo_2
       rect:
         serializedVersion: 2
-        x: 0
-        y: 29
+        x: 128
+        y: 2
         width: 64
-        height: 29
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 42305410000000000800000000000000
-      internalID: 21300004
+      spriteID: 561e84caffffffff0800000000000000
+      internalID: -1404509851
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spritesheet_64x29_3
+      name: explosionufo_3
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
+        x: 192
+        y: 2
         width: 64
-        height: 29
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 62305410000000000800000000000000
-      internalID: 21300006
+      spriteID: b0428368ffffffff0800000000000000
+      internalID: -2043141109
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: explosionufo_4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 2
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b94446bdffffffff0800000000000000
+      internalID: -614185829
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: explosionufo_5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 2
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2ed66dd9ffffffff0800000000000000
+      internalID: -1646891550
       vertices: []
       indices: 
       edges: []
@@ -208,7 +238,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
@@ -216,10 +246,12 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Spritesheet_64x29_0: 21300000
-      Spritesheet_64x29_1: 21300002
-      Spritesheet_64x29_2: 21300004
-      Spritesheet_64x29_3: 21300006
+      explosionufo_0: -402974033
+      explosionufo_1: 252439999
+      explosionufo_2: -1404509851
+      explosionufo_3: -2043141109
+      explosionufo_4: -614185829
+      explosionufo_5: -1646891550
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

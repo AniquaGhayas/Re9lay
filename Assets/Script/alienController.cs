@@ -8,6 +8,7 @@ using System.Collections;
 public class alienController : MonoBehaviour {
 
 	public float constantEnemySpeed = 1.5f;
+	public GameObject explosionPrefab;
 	private Rigidbody2D rb;
 
 	void Start () {
@@ -71,6 +72,10 @@ public class alienController : MonoBehaviour {
 
 			if (hitName.Contains("bullet")) {
 				Destroy(hitObj);
+			}
+
+			if (explosionPrefab != null) {
+				Instantiate(explosionPrefab, transform.position, Quaternion.identity);
 			}
 
 			StartCoroutine(blinkUponCollisionAndDestroy(gameObject));

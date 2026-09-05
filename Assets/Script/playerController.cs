@@ -16,9 +16,9 @@ public class playerController : MonoBehaviour {
 	public float playerPadding = 0.4f;
 
 	[Header("Shooting Settings")]
-	private float playerBulletXOffset = 0f;
-	private float playerBulletYOffset = 0.4f;
-	private float timeBetweenShots = 0.2f;
+	public float playerBulletXOffset = 0f;
+	public float playerBulletYOffset = 0.65f;
+	public float timeBetweenShots = 0.2f;
 	private float timestamp;
 
 	private Rigidbody2D rb;
@@ -34,7 +34,8 @@ public class playerController : MonoBehaviour {
 	void Update () {
 		if (isGameOver) {
 			if (Input.GetButtonDown("Fire1") || Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space)) {
-				Time.timeScale = 1.0F;
+				Time.timeScale = 0.5f;
+				Time.fixedDeltaTime = 0.02f * Time.timeScale;
 				if (GameManager.Instance != null) {
 					GameManager.Instance.StartNewSession();
 				}
@@ -50,14 +51,24 @@ public class playerController : MonoBehaviour {
 	void HandleMovement () {
 		Vector3 moveDir = Vector3.zero;
 
-		// 1. Read HC-05 Bluetooth IMU Tilt direction (pitch & roll vs 32.0 threshold)
-		if (BluetoothInputManager.Instance != null) {
+		// 1. Direct Keyboard WASD and Arrow Keys (for testing on laptop)
+		float keyX = 0f;
+		float keyY = 0f;
+		if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) keyY += 1f;
+		if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) keyY -= 1f;
+		if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) keyX -= 1f;
+		if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) keyX += 1f;
+
+		if (keyX != 0f || keyY != 0f) {
+			moveDir = new Vector3(keyX, keyY, 0f).normalized;
+		}
+		// 2. Read HC-05 Bluetooth IMU Tilt direction if Bluetooth connected and no keyboard input
+		else if (BluetoothInputManager.Instance != null && BluetoothInputManager.Instance.isConnected) {
 			Vector2 btDir = BluetoothInputManager.Instance.GetMoveDirection();
 			moveDir = new Vector3(btDir.x, btDir.y, 0f);
 		}
-
-		// 2. Read Keyboard WASD / Arrow Keys fallback if no tilt input
-		if (moveDir == Vector3.zero) {
+		// 3. Fallback to Unity Input axes
+		else {
 			float h = Input.GetAxisRaw("Horizontal"); // A/D or Left/Right
 			float v = Input.GetAxisRaw("Vertical");   // W/S or Up/Down
 			moveDir = new Vector3(h, v, 0f).normalized;
@@ -84,14 +95,24 @@ public class playerController : MonoBehaviour {
 	}
 
 	void HandleShooting () {
-		// Evaluates shooting from BOTH HC-05 EMG muscle contraction (shoot == 1) AND Spacebar key
-		bool isSpacePressed = Input.GetKey(KeyCode.Space) || Input.GetButton("Fire1");
+		// Evaluates shooting from Spacebar key, Fire1 button, or HC-05 EMG contraction
+		bool isSpacePressed = Input.GetKey(KeyCode.Space) || Input.GetKeyDown(KeyCode.Space) || Input.GetButton("Fire1");
 		bool isEMGContracted = (BluetoothInputManager.Instance != null && BluetoothInputManager.Instance.shoot == 1);
 
 		bool shouldShoot = isSpacePressed || isEMGContracted;
 
 		if (shouldShoot && Time.time >= timestamp) {
-			Instantiate(playerBullet, transform.position + new Vector3(playerBulletXOffset, playerBulletYOffset, 0), Quaternion.Euler(0, 0, 90f));
+			if (playerBullet != null) {
+				Vector3 spawnPos = transform.position + new Vector3(playerBulletXOffset, playerBulletYOffset, 0f);
+				GameObject bulletObj = Instantiate(playerBullet, spawnPos, Quaternion.identity);
+
+				// Prevent bullet from colliding with player ship
+				Collider2D shipCol = GetComponent<Collider2D>();
+				Collider2D bulletCol = bulletObj != null ? bulletObj.GetComponent<Collider2D>() : null;
+				if (shipCol != null && bulletCol != null) {
+					Physics2D.IgnoreCollision(shipCol, bulletCol);
+				}
+			}
 			timestamp = Time.time + timeBetweenShots;
 		}
 	}
