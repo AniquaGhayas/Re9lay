@@ -17,6 +17,8 @@ public class SessionLogger : MonoBehaviour
     public bool isLoggingActive = false;
 
     private string currentFilePath;
+    public string CurrentFilePath => currentFilePath;
+    public string CurrentSessionLabel => sessionStartClockTime.ToString("yyyy_MM_dd_HH_mm");
     private StringBuilder csvBuffer = new StringBuilder();
     private float nextSampleTime = 0f;
     private float sessionStartTime = 0f;

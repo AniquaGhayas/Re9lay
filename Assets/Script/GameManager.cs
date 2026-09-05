@@ -42,6 +42,11 @@ public class GameManager : MonoBehaviour
         {
             SessionLogger.Instance.StartLoggingSession();
         }
+
+        if (ReportUploader.Instance != null)
+        {
+            ReportUploader.Instance.WarmUp();
+        }
     }
 
     void Update()

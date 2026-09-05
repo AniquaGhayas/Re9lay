@@ -12,7 +12,7 @@ public class playerController : MonoBehaviour {
 	public bool isGameOver = false;
 
 	[Header("Movement Settings")]
-	public float moveSpeed = 5.0f;
+	public float moveSpeed = 2.0f;
 	public float playerPadding = 0.4f;
 
 	[Header("Shooting Settings")]
@@ -33,14 +33,6 @@ public class playerController : MonoBehaviour {
 
 	void Update () {
 		if (isGameOver) {
-			if (Input.GetButtonDown("Fire1") || Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space)) {
-				Time.timeScale = 0.5f;
-				Time.fixedDeltaTime = 0.02f * Time.timeScale;
-				if (GameManager.Instance != null) {
-					GameManager.Instance.StartNewSession();
-				}
-				UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex);
-			}
 			return;
 		}
 

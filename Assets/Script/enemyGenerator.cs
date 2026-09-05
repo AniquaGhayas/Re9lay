@@ -9,7 +9,7 @@ public class enemyGenerator : MonoBehaviour {
 
 	public GameObject alien;
 
-	public float timeBetweenEnemies = 5.0f; // 1 enemy every 5 seconds
+	public float timeBetweenEnemies = 7.0f; // 1 enemy every 7 seconds
 	private int secondsBeforeFirstEnemyAppears = 1;
 	private float timeLastAlien;
 

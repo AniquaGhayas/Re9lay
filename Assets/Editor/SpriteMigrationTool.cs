@@ -64,6 +64,34 @@ public class SpriteMigrationTool
         }
     }
 
+    [MenuItem("Tools/Setup App Icon")]
+    public static void SetupAppIcon()
+    {
+        string iconPath = "Assets/Sprites/icon_logo.png";
+        TextureImporter ti = AssetImporter.GetAtPath(iconPath) as TextureImporter;
+        if (ti != null)
+        {
+            ti.textureType = TextureImporterType.Default;
+            ti.isReadable = true;
+            ti.alphaIsTransparency = true;
+            EditorUtility.SetDirty(ti);
+            ti.SaveAndReimport();
+        }
+
+        Texture2D icon = AssetDatabase.LoadAssetAtPath<Texture2D>(iconPath);
+        if (icon != null)
+        {
+            PlayerSettings.SetIconsForTargetGroup(BuildTargetGroup.Unknown, new Texture2D[] { icon });
+            PlayerSettings.SetIconsForTargetGroup(BuildTargetGroup.Android, new Texture2D[] { icon });
+            AssetDatabase.SaveAssets();
+            Debug.Log("[SpriteMigrationTool] Successfully assigned icon_logo.png as Android & Default App Icon!");
+        }
+        else
+        {
+            Debug.LogError("[SpriteMigrationTool] Could not load icon at " + iconPath);
+        }
+    }
+
     static void ConfigureTextureBasic(TextureImporter ti, SpriteImportMode mode)
     {
         ti.textureType = TextureImporterType.Sprite;

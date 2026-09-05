@@ -28,12 +28,26 @@ public class GUI : MonoBehaviour {
     private readonly float virtualHeight = 700f;
     private Vector2 deviceScrollPos = Vector2.zero;
 
+    [Header("Main Menu Branding")]
+    public Texture2D mainMenuLogo;
+
     void Awake() {
         if (Instance != null && Instance != this) {
             Destroy(this);
             return;
         }
         Instance = this;
+
+        if (mainMenuLogo == null) {
+            string logoPath = System.IO.Path.Combine(Application.dataPath, "Sprites/main_menu_logo.png");
+            if (System.IO.File.Exists(logoPath)) {
+                try {
+                    byte[] rawBytes = System.IO.File.ReadAllBytes(logoPath);
+                    mainMenuLogo = new Texture2D(2, 2);
+                    mainMenuLogo.LoadImage(rawBytes);
+                } catch { }
+            }
+        }
     }
 
     void Start () {
@@ -161,23 +175,27 @@ public class GUI : MonoBehaviour {
 
     // --- PANEL 1: MAIN MENU ---
     private void DrawPanel1_MainMenu() {
-        UnityEngine.GUI.Box(new Rect(20f, 30f, 360f, 640f), "");
+        UnityEngine.GUI.Box(new Rect(20f, 25f, 360f, 650f), "");
 
-        GUIStyle titleStyle = new GUIStyle(UnityEngine.GUI.skin.label);
-        titleStyle.fontSize = 26;
-        titleStyle.fontStyle = FontStyle.Bold;
-        titleStyle.alignment = TextAnchor.MiddleCenter;
-        titleStyle.normal.textColor = Color.yellow;
-        UnityEngine.GUI.Label(new Rect(20f, 42f, 360f, 35f), "Re9lay", titleStyle);
+        if (mainMenuLogo != null) {
+            UnityEngine.GUI.DrawTexture(new Rect(50f, 32f, 300f, 52f), mainMenuLogo, ScaleMode.ScaleToFit);
+        } else {
+            GUIStyle titleStyle = new GUIStyle(UnityEngine.GUI.skin.label);
+            titleStyle.fontSize = 26;
+            titleStyle.fontStyle = FontStyle.Bold;
+            titleStyle.alignment = TextAnchor.MiddleCenter;
+            titleStyle.normal.textColor = Color.yellow;
+            UnityEngine.GUI.Label(new Rect(20f, 42f, 360f, 35f), "Re9lay", titleStyle);
+        }
 
         GUIStyle subTitleStyle = new GUIStyle(UnityEngine.GUI.skin.label);
-        subTitleStyle.fontSize = 12;
+        subTitleStyle.fontSize = 11;
         subTitleStyle.alignment = TextAnchor.MiddleCenter;
         subTitleStyle.normal.textColor = Color.cyan;
-        UnityEngine.GUI.Label(new Rect(20f, 75f, 360f, 20f), "Gamified IoT Rehabilitation System", subTitleStyle);
+        UnityEngine.GUI.Label(new Rect(20f, 85f, 360f, 18f), "Gamified IoT Rehabilitation System", subTitleStyle);
 
         // Bluetooth Setup Box
-        UnityEngine.GUI.Box(new Rect(35f, 105f, 330f, 260f), "BLUETOOTH DEVICE SETUP");
+        UnityEngine.GUI.Box(new Rect(35f, 108f, 330f, 258f), "BLUETOOTH DEVICE SETUP");
 
         bool isBTConnected = (BluetoothInputManager.Instance != null && BluetoothInputManager.Instance.isConnected);
         string currentStatus = (BluetoothInputManager.Instance != null) ? BluetoothInputManager.Instance.connectionStatus : "Disconnected";
@@ -331,14 +349,14 @@ public class GUI : MonoBehaviour {
 
     // --- PANEL 3: GAME OVER & RESTART ---
     private void DrawPanel3_GameOver() {
-        UnityEngine.GUI.Box(new Rect(20f, 140f, 360f, 400f), "");
+        UnityEngine.GUI.Box(new Rect(20f, 90f, 360f, 520f), "");
 
         GUIStyle titleStyle = new GUIStyle(UnityEngine.GUI.skin.label);
         titleStyle.fontSize = 22;
         titleStyle.fontStyle = FontStyle.Bold;
         titleStyle.alignment = TextAnchor.MiddleCenter;
         titleStyle.normal.textColor = Color.red;
-        UnityEngine.GUI.Label(new Rect(20f, 170f, 360f, 40f), "SESSION COMPLETED", titleStyle);
+        UnityEngine.GUI.Label(new Rect(20f, 115f, 360f, 35f), "SESSION COMPLETED", titleStyle);
 
         float totalSeconds = 0f;
         if (GameManager.Instance != null) {
@@ -354,18 +372,61 @@ public class GUI : MonoBehaviour {
         statsStyle.alignment = TextAnchor.MiddleCenter;
         statsStyle.normal.textColor = Color.white;
 
-        UnityEngine.GUI.Label(new Rect(20f, 230f, 360f, 30f), $"Final Score: {currentScore}", statsStyle);
-        UnityEngine.GUI.Label(new Rect(20f, 270f, 360f, 30f), $"Duration: {minutes:00}:{seconds:00}", statsStyle);
+        UnityEngine.GUI.Label(new Rect(20f, 155f, 360f, 25f), $"Final Score: {currentScore}", statsStyle);
+        UnityEngine.GUI.Label(new Rect(20f, 185f, 360f, 25f), $"Duration: {minutes:00}:{seconds:00}", statsStyle);
+
+        // --- CLOUD PROGRESS REPORT SECTION ---
+        UnityEngine.GUI.Box(new Rect(35f, 225f, 330f, 160f), "REHABILITATION PROGRESS REPORT");
+
+        GUIStyle reportStatusStyle = new GUIStyle(UnityEngine.GUI.skin.label);
+        reportStatusStyle.fontSize = 11;
+        reportStatusStyle.alignment = TextAnchor.MiddleCenter;
+        reportStatusStyle.wordWrap = true;
+        reportStatusStyle.richText = true;
+
+        ReportUploader uploader = ReportUploader.Instance;
+        if (uploader != null) {
+            if (uploader.currentStatus == ReportUploader.UploadStatus.Uploading) {
+                reportStatusStyle.normal.textColor = Color.yellow;
+                UnityEngine.GUI.Label(new Rect(45f, 255f, 310f, 40f), "⏳ Uploading CSV & Generating Report...\n(Waking up cloud container)", reportStatusStyle);
+            } else if (uploader.currentStatus == ReportUploader.UploadStatus.Success) {
+                reportStatusStyle.normal.textColor = Color.green;
+                UnityEngine.GUI.Label(new Rect(45f, 250f, 310f, 30f), "<color=lime><b>✔ PDF Report Generated & Saved!</b></color>", reportStatusStyle);
+
+                GUIStyle openBtnStyle = new GUIStyle(UnityEngine.GUI.skin.button);
+                openBtnStyle.fontSize = 12;
+                openBtnStyle.fontStyle = FontStyle.Bold;
+                if (UnityEngine.GUI.Button(new Rect(65f, 290f, 270f, 40f), "📂 RE-OPEN PDF REPORT", openBtnStyle)) {
+                    uploader.OpenLastReport();
+                }
+            } else {
+                if (uploader.currentStatus == ReportUploader.UploadStatus.Error) {
+                    reportStatusStyle.normal.textColor = Color.red;
+                    UnityEngine.GUI.Label(new Rect(45f, 250f, 310f, 35f), $"<color=red>{uploader.statusMessage}</color>", reportStatusStyle);
+                } else {
+                    reportStatusStyle.normal.textColor = Color.cyan;
+                    UnityEngine.GUI.Label(new Rect(45f, 252f, 310f, 32f), "Generate PDF report with kinematics & EMG analysis:", reportStatusStyle);
+                }
+
+                GUIStyle genBtnStyle = new GUIStyle(UnityEngine.GUI.skin.button);
+                genBtnStyle.fontSize = 12;
+                genBtnStyle.fontStyle = FontStyle.Bold;
+                string btnText = (uploader.currentStatus == ReportUploader.UploadStatus.Error) ? "🔄 RETRY REPORT GENERATION" : "📄 GENERATE REHAB REPORT (PDF)";
+                if (UnityEngine.GUI.Button(new Rect(65f, 292f, 270f, 44f), btnText, genBtnStyle)) {
+                    uploader.GenerateReport();
+                }
+            }
+        }
 
         GUIStyle btnStyle = new GUIStyle(UnityEngine.GUI.skin.button);
         btnStyle.fontSize = 14;
         btnStyle.fontStyle = FontStyle.Bold;
 
-        if (UnityEngine.GUI.Button(new Rect(70f, 350f, 260f, 50f), "RESTART SESSION", btnStyle)) {
+        if (UnityEngine.GUI.Button(new Rect(65f, 410f, 270f, 48f), "RESTART SESSION", btnStyle)) {
             StartGameplay();
         }
 
-        if (UnityEngine.GUI.Button(new Rect(70f, 420f, 260f, 40f), "MAIN MENU", btnStyle)) {
+        if (UnityEngine.GUI.Button(new Rect(65f, 470f, 270f, 42f), "MAIN MENU", btnStyle)) {
             ShowMainMenu();
         }
     }
