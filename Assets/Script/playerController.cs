@@ -57,7 +57,7 @@ public class playerController : MonoBehaviour {
 		// 2. Read HC-05 Bluetooth IMU Tilt direction if Bluetooth connected and no keyboard input
 		else if (BluetoothInputManager.Instance != null && BluetoothInputManager.Instance.isConnected) {
 			Vector2 btDir = BluetoothInputManager.Instance.GetMoveDirection();
-			moveDir = new Vector3(btDir.x, btDir.y, 0f);
+			moveDir = (btDir != Vector2.zero) ? new Vector3(btDir.x, btDir.y, 0f).normalized : Vector3.zero;
 		}
 		// 3. Fallback to Unity Input axes
 		else {

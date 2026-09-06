@@ -443,12 +443,11 @@ public class BluetoothInputManager : MonoBehaviour
         float h = Input.GetAxisRaw("Horizontal");
         float v = Input.GetAxisRaw("Vertical");
 
-        float threshX = (GameSettings.Instance != null) ? GameSettings.Instance.tiltXThreshold : 40.0f;
-        float threshY = (GameSettings.Instance != null) ? GameSettings.Instance.tiltYThreshold : 90.0f;
+        // Pitch controls Left/Right: RIGHT: pitch > 35, LEFT: pitch < -20, Neutral: -20 to 35
+        pitch = (h > 0) ? 45.0f : ((h < 0) ? -35.0f : 0f);
 
-        roll = h * (threshX + 10.0f);
-        // Simulate upside-down MPU: Neutral = 176°, Up = -65°, Down = +65°
-        pitch = (v > 0) ? -65.0f : ((v < 0) ? 65.0f : 176.0f);
+        // Roll controls Up/Down: UP: roll between +40 and +140, DOWN: roll between -180 and -140, Neutral: 0°
+        roll = (v > 0) ? 90.0f : ((v < 0) ? -160.0f : 0f);
 
         if (Input.GetKey(KeyCode.Space) || Input.GetButton("Fire1"))
         {
@@ -478,26 +477,43 @@ public class BluetoothInputManager : MonoBehaviour
 
     public Vector2 GetMoveDirection()
     {
-        float threshX = (GameSettings.Instance != null) ? GameSettings.Instance.tiltXThreshold : 40.0f;
-        float threshY = (GameSettings.Instance != null) ? GameSettings.Instance.tiltYThreshold : 90.0f;
-
-        // Roll: Horizontal (Left / Right)
+        // -------------------------------------------------------------
+        // Left/Right Movement: uses Pitch (Swapped Axis)
+        // -------------------------------------------------------------
         float dirX = 0f;
-        if (roll > threshX) dirX = 1f;        // Tilt Right
-        else if (roll < -threshX) dirX = -1f; // Tilt Left
+        if (pitch > 35.0f)
+        {
+            dirX = 1f;  // RIGHT: pitch > 35
+        }
+        else if (pitch < -20.0f)
+        {
+            dirX = -1f; // LEFT: pitch < -20
+        }
+        // Neutral: pitch between -20 and 35 -> dirX remains 0f
 
-        // Pitch: Vertical (Up / Down) with Upside-Down MPU
-        // Neutral sits at +/- 176° (|pitch| >= 90°)
+        // -------------------------------------------------------------
+        // Up/Down Movement: uses Roll (Swapped Axis)
+        // -------------------------------------------------------------
         float dirY = 0f;
-        if (pitch > -threshY && pitch < 0f)
+        if (roll >= 40.0f && roll <= 140.0f)
         {
-            dirY = 1f;  // Tilt UP (moves towards -70° / -60°)
+            dirY = 1f;  // UP: roll between +40 and +140
         }
-        else if (pitch < threshY && pitch > 0f)
+        // DOWN: roll between -180 and -140 (handle wraparound near ±180 if roll is reported in that range)
+        // NOTE: The DOWN roll range (-180 to -140) is close to the rest/neutral zone (~176°),
+        // so it may need tighter tuning or a larger dead zone if it misfires during idle movement.
+        else if ((roll >= -180.0f && roll <= -140.0f) || roll <= -180.0f)
         {
-            dirY = -1f; // Tilt DOWN (moves towards +70° / +60°)
+            dirY = -1f; // DOWN: roll between -180 and -140
         }
+        // Neutral: everything else -> dirY remains 0f
 
+        // -------------------------------------------------------------
+        // Diagonal Handling:
+        // Both axes are evaluated independently each frame. If both pitch and roll
+        // cross their respective thresholds simultaneously, genuine diagonal input
+        // (both movements active at the same time) is returned.
+        // -------------------------------------------------------------
         return new Vector2(dirX, dirY);
     }
 
