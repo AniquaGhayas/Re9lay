@@ -22,7 +22,7 @@ Traditional upper-extremity physical therapy after stroke, spinal cord injury, o
 
 **Re9lay** is an IoT-enabled gamified rehabilitation platform that bridges interactive gaming with clinical neuro-rehabilitation:
 * **Wearable Sensor Glove / Wristband:** An Arduino equipped with an **MPU-9250** (9-DOF IMU) and **MyoWare 2.0 / Surface EMG** captures wrist kinematics and muscle contractions in real time.
-* **Biofeedback Gameplay:** Wrist flexion/extension (Pitch) and pronation/supination (Roll) steer the player's spacecraft, while active muscle contractions fire defensive lasers.
+* **Biofeedback Gameplay:** Real-time wrist pitch and roll kinematics steer the player's spacecraft relative to an auto-calibrated neutral resting baseline, while active muscle contractions fire defensive lasers.
 * **Clinically-Safe Dynamic Difficulty Adaptation (DDA):** An automated clinical algorithm tracks patient accuracy across a 10-shot rolling window, progressively adjusting target speed and spawn frequency without causing patient fatigue or frustration.
 * **Cloud Telemetry & PDF Medical Reports:** High-resolution 20Hz session data is streamed and uploaded to a cloud-based **FastAPI** service on Render, generating downloadable PDF clinical analytics for therapists.
 
@@ -30,11 +30,13 @@ Traditional upper-extremity physical therapy after stroke, spinal cord injury, o
 
 ## 🌟 Key Features
 
-### 🎮 1. Kinematic Spatial Navigation (MPU-9250 IMU)
-* **Wrist Tilting Control:** Replaces joysticks with wrist motion:
-  * **Roll ($\pm 40^\circ$):** Horizontal player movement (left / right).
-  * **Pitch ($\pm 90^\circ$ Neutral Calibration):** Vertical player movement (up / down).
-* **Inverted-Mount Calibration:** Engineered for wearable modules mounted on the dorsal wrist, ensuring intuitive movement even when the IMU is physically oriented upside-down.
+### 🎮 1. Kinematic Spatial Navigation & Neutral Auto-Calibration (MPU-9250 IMU)
+* **Automatic 2-Second Neutral Baseline Calibration:** At the start of each rehabilitation session, the system automatically records the patient's resting hand position for ~2 seconds, computing reference baseline angles (`pitch0`, `roll0`) via circular mean averaging.
+* **Relative Angular Displacements ($\Delta\text{Pitch}, \Delta\text{Roll}$):** Movement thresholds operate entirely on angular deltas from the calibrated rest posture ($\Delta\theta = \text{NormalizeAngle}(\theta - \theta_0)$), completely eliminating errors caused by sensor orientation shifts or variations in how the glove is worn:
+  * **Horizontal Steering (Pitch Delta):** $\Delta\text{Pitch} > +30^\circ$ (Right), $\Delta\text{Pitch} < -30^\circ$ (Left).
+  * **Vertical Steering (Roll Delta):** $\Delta\text{Roll} > +40^\circ$ (Up), $\Delta\text{Roll} < -40^\circ$ (Down).
+* **Circular Wraparound Normalization:** Angles are wrapped to $[-180^\circ, +180^\circ]$, ensuring smooth navigation without glitches near the $\pm 180^\circ$ seam.
+* **Simultaneous Diagonal Movement:** Pitch and roll are evaluated independently each frame, allowing responsive, normalized diagonal maneuvering.
 
 ### 💪 2. Neuromuscular Triggering & Relaxation Cycle (sEMG)
 * **Single-Shot Firing:** Firing requires exceeding the muscle contraction threshold (e.g., EMG $> 450$).
@@ -183,12 +185,14 @@ graph TD
 
 ## 🎮 Gameplay Controls & Calibration
 
-| Action | Sensor Control (Wearable) | Keyboard Simulation |
+| Action | Sensor Control (Wearable Glove) | Keyboard Simulation |
 | :--- | :--- | :--- |
-| **Move Up / Down** | Wrist Pitch tilt ($> -90^\circ$ up, $< 90^\circ$ down) | `W` / `S` or `Up` / `Down` |
-| **Move Left / Right** | Wrist Roll tilt ($< -40^\circ$ left, $> 40^\circ$ right) | `A` / `D` or `Left` / `Right` |
-| **Shoot Laser** | Contract forearm muscle (EMG $> 450$) | `Spacebar` |
-| **Reload / Ready** | **Consciously relax forearm muscle** (EMG $< 300$) | Release `Spacebar` |
+| **Neutral Calibration** | **Hold hand at rest for ~2 seconds** at session start (`pitch0`, `roll0`) | Automatic baseline capture |
+| **Move Left / Right** | Wrist Pitch tilt ($\Delta\text{Pitch} < -30^\circ$ Left, $\Delta\text{Pitch} > +30^\circ$ Right) | `A` / `D` or `Left` / `Right` |
+| **Move Up / Down** | Wrist Roll tilt ($\Delta\text{Roll} > +40^\circ$ Up, $\Delta\text{Roll} < -40^\circ$ Down) | `W` / `S` or `Up` / `Down` |
+| **Diagonal Steering** | Combine Pitch and Roll tilts simultaneously | Multi-key (e.g. `W`+`D`, `S`+`A`) |
+| **Shoot Laser** | Contract forearm muscle (EMG $> \text{threshold}$) | `Spacebar` |
+| **Reload / Ready** | **Consciously relax forearm muscle** below baseline | Release `Spacebar` |
 
 ---
 

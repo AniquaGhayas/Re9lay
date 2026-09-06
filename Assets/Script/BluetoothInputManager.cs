@@ -577,34 +577,37 @@ public class BluetoothInputManager : MonoBehaviour
         float deltaPitch = NormalizeAngle(pitch - pitch0);
         float deltaRoll = NormalizeAngle(roll - roll0);
 
+        float threshPitch = (GameSettings.Instance != null) ? GameSettings.Instance.deltaPitchThreshold : 30.0f;
+        float threshRoll = (GameSettings.Instance != null) ? GameSettings.Instance.deltaRollThreshold : 40.0f;
+
         // -------------------------------------------------------------
         // Left / Right Movement: uses deltaPitch
-        // RIGHT: deltaPitch > 30
-        // LEFT:  deltaPitch < -30
-        // Neutral: deltaPitch between -30 and 30
+        // RIGHT: deltaPitch > threshPitch (default 30)
+        // LEFT:  deltaPitch < -threshPitch (default -30)
+        // Neutral: deltaPitch between -threshPitch and threshPitch
         // -------------------------------------------------------------
         float dirX = 0f;
-        if (deltaPitch > 30.0f)
+        if (deltaPitch > threshPitch)
         {
             dirX = 1f;  // RIGHT
         }
-        else if (deltaPitch < -30.0f)
+        else if (deltaPitch < -threshPitch)
         {
             dirX = -1f; // LEFT
         }
 
         // -------------------------------------------------------------
         // Up / Down Movement: uses deltaRoll
-        // UP:   deltaRoll > 40
-        // DOWN: deltaRoll < -40
-        // Neutral: deltaRoll between -40 and 40
+        // UP:   deltaRoll > threshRoll (default 40)
+        // DOWN: deltaRoll < -threshRoll (default -40)
+        // Neutral: deltaRoll between -threshRoll and threshRoll
         // -------------------------------------------------------------
         float dirY = 0f;
-        if (deltaRoll > 40.0f)
+        if (deltaRoll > threshRoll)
         {
             dirY = 1f;  // UP
         }
-        else if (deltaRoll < -40.0f)
+        else if (deltaRoll < -threshRoll)
         {
             dirY = -1f; // DOWN
         }

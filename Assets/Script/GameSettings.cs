@@ -6,8 +6,8 @@ public class GameSettings : MonoBehaviour
 
     [Header("EMG & Input Settings")]
     public int emgThreshold = 400; // Analog EMG value (0 - 1023) threshold for muscle contraction
-    public float tiltXThreshold = 40.0f; // Tilt threshold for X axis (left/right)
-    public float tiltYThreshold = 90.0f; // Tilt threshold for Y axis (up/down)
+    public float deltaPitchThreshold = 30.0f; // Relative Pitch threshold for Left/Right (±30° from baseline)
+    public float deltaRollThreshold = 40.0f;  // Relative Roll threshold for Up/Down (±40° from baseline)
     public float moveSpeed = 4.0f;
 
     [Header("Difficulty Settings")]
@@ -33,8 +33,8 @@ public class GameSettings : MonoBehaviour
     public void LoadSettings()
     {
         emgThreshold = PlayerPrefs.GetInt("EMGThreshold", emgThreshold);
-        tiltXThreshold = PlayerPrefs.GetFloat("TiltXThreshold", 40.0f);
-        tiltYThreshold = PlayerPrefs.GetFloat("TiltYThreshold", 90.0f);
+        deltaPitchThreshold = PlayerPrefs.GetFloat("DeltaPitchThreshold", 30.0f);
+        deltaRollThreshold = PlayerPrefs.GetFloat("DeltaRollThreshold", 40.0f);
         moveSpeed = PlayerPrefs.GetFloat("MoveSpeed", moveSpeed);
         pointsPerSpeedStep = PlayerPrefs.GetInt("PointsPerSpeedStep", pointsPerSpeedStep);
         speedStepIncrement = PlayerPrefs.GetFloat("SpeedStepIncrement", speedStepIncrement);
@@ -44,8 +44,8 @@ public class GameSettings : MonoBehaviour
     public void SaveSettings()
     {
         PlayerPrefs.SetInt("EMGThreshold", emgThreshold);
-        PlayerPrefs.SetFloat("TiltXThreshold", tiltXThreshold);
-        PlayerPrefs.SetFloat("TiltYThreshold", tiltYThreshold);
+        PlayerPrefs.SetFloat("DeltaPitchThreshold", deltaPitchThreshold);
+        PlayerPrefs.SetFloat("DeltaRollThreshold", deltaRollThreshold);
         PlayerPrefs.SetFloat("MoveSpeed", moveSpeed);
         PlayerPrefs.SetInt("PointsPerSpeedStep", pointsPerSpeedStep);
         PlayerPrefs.SetFloat("SpeedStepIncrement", speedStepIncrement);
