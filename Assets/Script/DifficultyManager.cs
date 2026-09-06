@@ -30,10 +30,17 @@ public class DifficultyManager : MonoBehaviour
     [Header("Rolling Window State")]
     private Queue<int> recentAttempts = new Queue<int>();
     public const int WindowSize = 10;
-    public const int IncreaseThreshold = 9; // >= 9 / 10 hits
-    public const int DecreaseThreshold = 6; // <= 6 / 10 hits
+    public const int IncreaseThreshold = 8; // >= 8 / 10 hits (80%)
+    public const int DecreaseThreshold = 5; // <= 5 / 10 hits (50%)
     public const int ActivationPoints = 5;  // Difficulty unlocks after 5 points
     private int attemptsSinceAdjustment = 0;
+
+    [Header("Session Lifetime Stats")]
+    public int totalSessionHits = 0;
+    public int totalSessionAttempts = 0;
+
+    public int TotalSessionHits => totalSessionHits;
+    public int TotalSessionAttempts => totalSessionAttempts;
 
     [Header("On-Screen Notification Toast")]
     public string activeToastMessage = "";
@@ -62,6 +69,14 @@ public class DifficultyManager : MonoBehaviour
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        // Force runtime limits so Unity Inspector serialization cannot clamp spawn rate at 4.5s
+        minSpawnInterval = 3.0f;
+        maxSpawnInterval = 8.0f;
+        spawnStep = 0.5f;
+        minSpeed = 0.7f;
+        maxSpeed = 1.3f;
+        speedStep = 0.1f;
     }
 
     void Update()
@@ -80,11 +95,15 @@ public class DifficultyManager : MonoBehaviour
     {
         currentSpeedMultiplier = 1.0f;
         currentSpawnInterval = 5.0f;
+        minSpawnInterval = 3.0f;
+        maxSpawnInterval = 8.0f;
         recentAttempts.Clear();
         attemptsSinceAdjustment = 0;
+        totalSessionHits = 0;
+        totalSessionAttempts = 0;
         activeToastMessage = "";
         toastTimer = 0f;
-        Debug.Log("[DifficultyManager] Difficulty Reset: Speed 1.0x, Spawn 5.0s");
+        Debug.Log("[DifficultyManager] Difficulty Reset: Speed 1.0x, Spawn 5.0s, MinSpawn 3.0s");
     }
 
     public void UpdateScore(int score)
@@ -97,6 +116,9 @@ public class DifficultyManager : MonoBehaviour
     /// </summary>
     public void RecordAttempt(bool wasHit)
     {
+        totalSessionAttempts++;
+        if (wasHit) totalSessionHits++;
+
         recentAttempts.Enqueue(wasHit ? 1 : 0);
         if (recentAttempts.Count > WindowSize)
         {
@@ -108,7 +130,7 @@ public class DifficultyManager : MonoBehaviour
         int hits = CurrentHits;
         int total = recentAttempts.Count;
 
-        Debug.Log($"[DifficultyManager] Shot Resolution: {(wasHit ? "HIT" : "MISS")} | Window Accuracy: {hits}/{total}");
+        Debug.Log($"[DifficultyManager] Shot Resolution: {(wasHit ? "HIT" : "MISS")} | Window Accuracy: {hits}/{total} | Session: {TotalSessionHits}/{TotalSessionAttempts}");
 
         // Do not adjust difficulty until at least 5 points have been earned
         int currentScore = (GUI.Instance != null) ? GUI.Instance.currentScore : 0;
@@ -128,7 +150,7 @@ public class DifficultyManager : MonoBehaviour
         {
             float accuracy = (float)hits / total;
 
-            if (wasHit && (hits >= IncreaseThreshold || (total >= 5 && accuracy >= 0.85f)))
+            if (wasHit && (hits >= IncreaseThreshold || (total >= 5 && accuracy >= 0.78f)))
             {
                 // Difficulty UP - only triggered on a HIT
                 currentSpeedMultiplier = Mathf.Min(currentSpeedMultiplier + speedStep, maxSpeed);
@@ -138,7 +160,7 @@ public class DifficultyManager : MonoBehaviour
                 ShowToast($"▲ DIFFICULTY UP! (Speed: {currentSpeedMultiplier:F1}x | Spawn: {currentSpawnInterval:F1}s)", Color.yellow);
                 Debug.Log($"[DifficultyManager] ▲ Increased Difficulty -> Speed: {currentSpeedMultiplier:F1}x, Spawn: {currentSpawnInterval:F1}s");
             }
-            else if (!wasHit && (hits <= DecreaseThreshold || (total >= 5 && accuracy <= 0.60f)))
+            else if (!wasHit && (hits <= DecreaseThreshold || (total >= 5 && accuracy <= 0.50f)))
             {
                 // Difficulty DOWN - only triggered on a MISS
                 currentSpeedMultiplier = Mathf.Max(currentSpeedMultiplier - speedStep, minSpeed);

@@ -1,0 +1,78 @@
+=== ASSET INSPECTION REPORT ===
+
+[Prefab: Assets/Prefab/Enemy.prefab]
+  Enemy [SR: idleufo_0 from Assets/Sprites/idleufo.png] [AnimCtrl: eSpritesheet_40x30_0] (pos=(3.78, 0.89, 0.00), rot=(0.00, 0.00, 0.00), scale=(1.00, 1.00, 1.00))
+    Collider: BoxCollider2D, bounds=(0.00, 0.00, 0.00), isTrigger=True
+      BoxCollider2D: size=(0.58, 0.36), offset=(0.00, 0.00)
+
+[Prefab: Assets/Prefab/player_bullet.prefab]
+  player_bullet [SR: fireshot_0 from Assets/Sprites/fireshot.png] (pos=(0.39, -0.06, 0.00), rot=(0.00, 0.00, 0.00), scale=(1.00, 1.00, 1.00))
+    Collider: BoxCollider2D, bounds=(0.00, 0.00, 0.00), isTrigger=False
+      BoxCollider2D: size=(0.16, 0.26), offset=(0.00, 0.00)
+
+[AnimationClip: Assets/Sprites/Player.anim]
+  Binding:  / m_Sprite (type: SpriteRenderer)
+    time=0.00s -> spaceship_0 (Assets/Sprites/spaceship.png)
+    time=0.08s -> spaceship_1 (Assets/Sprites/spaceship.png)
+    time=0.17s -> spaceship_2 (Assets/Sprites/spaceship.png)
+    time=0.25s -> spaceship_3 (Assets/Sprites/spaceship.png)
+
+[AnimationClip: Assets/Sprites/Enemy.anim]
+  Binding:  / m_Sprite (type: SpriteRenderer)
+    time=0.00s -> idleufo_0 (Assets/Sprites/idleufo.png)
+    time=0.17s -> idleufo_1 (Assets/Sprites/idleufo.png)
+
+[AnimatorController: Assets/Sprites/Background.controller]
+
+[AnimatorController: Assets/Sprites/Spritesheet_64x29_0.controller]
+
+[AnimatorController: Assets/Sprites/Spritesheet_64x29_1.controller]
+
+[AnimatorController: Assets/Sprites/Spritesheet_64x29_2.controller]
+  Layer: Base Layer
+    State: New Animation (Motion: Player)
+
+[AnimatorController: Assets/Sprites/eSpritesheet_40x30_0.controller]
+  Layer: Base Layer
+    State: Enemy (Motion: Enemy)
+
+[Sprite Assets in Assets/Sprites]
+  Assets/Sprites/explosionufo.png: spriteImportMode=Multiple, pixelsPerUnit=100, filterMode=Point
+    Sub-sprites (6): explosionufo_0 (rect: (x:0.00, y:2.00, width:64.00, height:64.00)), explosionufo_1 (rect: (x:64.00, y:2.00, width:64.00, height:64.00)), explosionufo_2 (rect: (x:128.00, y:2.00, width:64.00, height:64.00)), explosionufo_3 (rect: (x:192.00, y:2.00, width:64.00, height:64.00)), explosionufo_4 (rect: (x:256.00, y:2.00, width:64.00, height:64.00)), explosionufo_5 (rect: (x:320.00, y:2.00, width:64.00, height:64.00))
+  Assets/Sprites/fireshot.png: spriteImportMode=Multiple, pixelsPerUnit=100, filterMode=Point
+    Sub-sprites (6): fireshot_0 (rect: (x:0.00, y:0.00, width:32.00, height:34.00)), fireshot_1 (rect: (x:32.00, y:0.00, width:32.00, height:34.00)), fireshot_2 (rect: (x:64.00, y:0.00, width:32.00, height:34.00)), fireshot_3 (rect: (x:96.00, y:0.00, width:32.00, height:34.00)), fireshot_4 (rect: (x:128.00, y:0.00, width:32.00, height:34.00)), fireshot_5 (rect: (x:160.00, y:0.00, width:32.00, height:34.00))
+  Assets/Sprites/idleufo.png: spriteImportMode=Multiple, pixelsPerUnit=100, filterMode=Point
+    Sub-sprites (2): idleufo_0 (rect: (x:0.00, y:18.00, width:64.00, height:48.00)), idleufo_1 (rect: (x:64.00, y:18.00, width:64.00, height:48.00))
+  Assets/Sprites/spaceship.png: spriteImportMode=Multiple, pixelsPerUnit=100, filterMode=Point
+    Sub-sprites (4): spaceship_0 (rect: (x:0.00, y:0.00, width:64.00, height:98.00)), spaceship_1 (rect: (x:64.00, y:0.00, width:64.00, height:98.00)), spaceship_2 (rect: (x:128.00, y:0.00, width:64.00, height:98.00)), spaceship_3 (rect: (x:192.00, y:0.00, width:64.00, height:98.00))
+  Assets/Sprites/space_background.png: spriteImportMode=Single, pixelsPerUnit=100, filterMode=Point
+    Sub-sprites (1): space_background (rect: (x:0.00, y:0.00, width:180.00, height:320.00))
+
+[Scene: Assets/Level1.unity]
+Main Camera (pos=(0.00, 0.00, -10.00), rot=(0.00, 0.00, 0.00), scale=(1.00, 1.00, 1.00))
+Player [SR: spaceship_0 from Assets/Sprites/spaceship.png] [AnimCtrl: Spritesheet_64x29_2] [playerController: bullet=player_bullet] (pos=(0.00, -3.40, 0.00), rot=(0.00, 0.00, 0.00), scale=(1.00, 1.00, 1.00))
+  Collider: BoxCollider2D, bounds=(0.50, 0.86, 0.00), isTrigger=False
+    BoxCollider2D: size=(0.50, 0.86), offset=(0.00, 0.00)
+Scenery (pos=(0.00, -0.07, 0.00), rot=(0.00, 0.00, 0.00), scale=(1.00, 1.00, 1.00))
+  Floor (pos=(0.00, -4.45, 0.00), rot=(0.00, 0.00, 0.00), scale=(15.76, 0.50, 1.00))
+    Collider: BoxCollider2D, bounds=(15.76, 0.50, 0.00), isTrigger=False
+      BoxCollider2D: size=(1.00, 1.00), offset=(0.00, 0.00)
+  Ceiling (pos=(0.00, 4.44, 0.00), rot=(0.00, 0.00, 0.00), scale=(15.76, 0.50, 1.00))
+    Collider: BoxCollider2D, bounds=(15.76, 0.50, 0.00), isTrigger=False
+      BoxCollider2D: size=(1.00, 1.00), offset=(0.00, 0.00)
+  Background [ScrollingScript: speed=(0.10, 10.00), dir=(-1.00, 0.00), looping=True, linked=False] (pos=(0.00, 0.00, 0.00), rot=(0.00, 0.00, 90.00), scale=(3.44, 1.00, 1.00))
+    1 [SR: space_background from Assets/Sprites/space_background.png] (pos=(0.00, 0.00, 0.00), rot=(0.00, 0.00, 90.00), scale=(3.00, 3.00, 1.00))
+  LeftWall (pos=(-7.13, 0.00, 0.00), rot=(0.00, 0.00, 0.00), scale=(0.50, 10.39, 1.00))
+    Collider: BoxCollider2D, bounds=(0.50, 10.39, 0.00), isTrigger=False
+      BoxCollider2D: size=(1.00, 1.00), offset=(0.00, 0.00)
+  RightWall (pos=(7.13, 0.00, 0.00), rot=(0.00, 0.00, 0.00), scale=(0.50, 10.39, 1.00))
+    Collider: BoxCollider2D, bounds=(0.50, 10.39, 0.00), isTrigger=False
+      BoxCollider2D: size=(1.00, 1.00), offset=(0.00, 0.00)
+Logic [enemyGenerator: alien=Enemy] (pos=(-1.53, 0.80, 0.00), rot=(0.00, 0.00, 0.00), scale=(1.00, 1.00, 1.00))
+Canvas (pos=(565.75, 345.25, 0.00), rot=(0.00, 0.00, 0.00), scale=(1.00, 1.00, 1.00))
+  GameOver (pos=(572.31, 353.75, 0.00), rot=(0.00, 0.00, 0.00), scale=(1.00, 1.00, 1.00))
+  Lives (pos=(424.27, 456.14, 0.00), rot=(0.00, 0.00, 0.00), scale=(1.00, 1.00, 1.00))
+  Score (pos=(784.45, 456.14, 0.00), rot=(0.00, 0.00, 0.00), scale=(1.00, 1.00, 1.00))
+  Instructions (pos=(617.15, 223.65, 0.00), rot=(0.00, 0.00, 0.00), scale=(1.00, 1.00, 1.00))
+EventSystem (pos=(0.00, 0.00, 0.00), rot=(0.00, 0.00, 0.00), scale=(1.00, 1.00, 1.00))
+_NeuroPlayManagers (pos=(0.00, 0.00, 0.00), rot=(0.00, 0.00, 0.00), scale=(1.00, 1.00, 1.00))

@@ -67,6 +67,9 @@
     <Compile Include="Assets\Script\alienController.cs" />
     <Compile Include="Assets\Script\GameSettings.cs" />
     <Compile Include="Assets\Script\ScrollingScript.cs" />
+    <Compile Include="Assets\Script\AutoDestroyExplosion.cs" />
+    <Compile Include="Assets\Script\ReportUploader.cs" />
+    <Compile Include="Assets\Script\InfiniteBackground.cs" />
     <Compile Include="Assets\Script\BluetoothInputManager.cs" />
     <Compile Include="Assets\Script\DynamicScreenBoundaries.cs" />
     <Compile Include="Assets\Script\GameManager.cs" />
@@ -76,6 +79,7 @@
     <Compile Include="Assets\Script\DifficultyManager.cs" />
     <Compile Include="Assets\Script\SessionLogger.cs" />
     <Compile Include="Assets\Script\enemyGenerator.cs" />
+    <Compile Include="Assets\Script\EmgCalibrator.cs" />
     <Compile Include="Assets\Script\playerController.cs" />
   </ItemGroup>
   <ItemGroup>

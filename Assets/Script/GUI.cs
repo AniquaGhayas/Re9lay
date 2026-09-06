@@ -493,10 +493,14 @@ public class GUI : MonoBehaviour {
         int hits = (DifficultyManager.Instance != null) ? DifficultyManager.Instance.CurrentHits : 0;
         int attempts = (DifficultyManager.Instance != null) ? DifficultyManager.Instance.TotalAttemptsInWindow : 0;
 
+        int sessHits = (DifficultyManager.Instance != null) ? DifficultyManager.Instance.TotalSessionHits : currentScore;
+        int sessAtts = (DifficultyManager.Instance != null) ? DifficultyManager.Instance.TotalSessionAttempts : currentScore;
+        int pct = (sessAtts > 0) ? Mathf.RoundToInt((float)sessHits / sessAtts * 100f) : 100;
+
         if (currentScore < 5) {
             GUILayout.Label($"Accuracy: Calibrating ({currentScore}/5 pts)", infoStyle);
         } else {
-            GUILayout.Label($"Accuracy: {hits}/{attempts} (Last 10)", infoStyle);
+            GUILayout.Label($"Accuracy: {pct}% ({sessHits}/{sessAtts})", infoStyle);
         }
 
         float spawnInt = (DifficultyManager.Instance != null) ? DifficultyManager.Instance.CurrentSpawnInterval : 5.0f;
