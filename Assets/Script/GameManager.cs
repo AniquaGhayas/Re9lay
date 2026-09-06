@@ -47,6 +47,11 @@ public class GameManager : MonoBehaviour
         {
             ReportUploader.Instance.WarmUp();
         }
+
+        if (BluetoothInputManager.Instance != null)
+        {
+            BluetoothInputManager.Instance.StartOrientationCalibration();
+        }
     }
 
     void Update()

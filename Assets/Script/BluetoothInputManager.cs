@@ -39,6 +39,16 @@ public class BluetoothInputManager : MonoBehaviour
     public int simulatedContractedEMG = 750;
     public int simulatedRelaxedEMG = 150;
 
+    [Header("Neutral Orientation Baseline Calibration")]
+    public bool isOrientationCalibrated = false;
+    public bool isCalibratingOrientation = false;
+    public float pitch0 = 0f;
+    public float roll0 = 0f;
+    public float orientationCalibrationDuration = 2.0f; // ~2 seconds of hand at rest
+    public float orientationCalibrationTimer = 0f;
+    private List<float> calibPitchSamples = new List<float>();
+    private List<float> calibRollSamples = new List<float>();
+
     private float nextLogTime = 0f;
     private readonly object lockObj = new object();
     private string pendingDataLine = "";
@@ -64,6 +74,7 @@ public class BluetoothInputManager : MonoBehaviour
         Debug.Log("🎮 [BluetoothInputManager] System Initialized. Target: " + targetDeviceName);
         RequestAndroidPermissions();
         ScanPairedDevices();
+        StartOrientationCalibration();
 
 #if UNITY_EDITOR
         if (!useSimulation)
@@ -218,6 +229,18 @@ public class BluetoothInputManager : MonoBehaviour
         else
         {
             EvaluateShootState(emgThresh);
+        }
+
+        if (isCalibratingOrientation)
+        {
+            orientationCalibrationTimer -= Time.unscaledDeltaTime;
+            calibPitchSamples.Add(pitch);
+            calibRollSamples.Add(roll);
+
+            if (orientationCalibrationTimer <= 0f)
+            {
+                FinishOrientationCalibration();
+            }
         }
 
         if (Time.time >= nextLogTime)
@@ -438,16 +461,83 @@ public class BluetoothInputManager : MonoBehaviour
         }
     }
 
+    public void StartOrientationCalibration()
+    {
+        isOrientationCalibrated = false;
+        isCalibratingOrientation = true;
+        orientationCalibrationTimer = orientationCalibrationDuration;
+        calibPitchSamples.Clear();
+        calibRollSamples.Clear();
+        Debug.Log("🎯 [BluetoothInputManager] Starting Neutral Orientation Calibration (2s rest period)...");
+    }
+
+    private void FinishOrientationCalibration()
+    {
+        isCalibratingOrientation = false;
+        isOrientationCalibrated = true;
+
+        if (calibPitchSamples.Count > 0 && calibRollSamples.Count > 0)
+        {
+            pitch0 = CalculateCircularMean(calibPitchSamples);
+            roll0 = CalculateCircularMean(calibRollSamples);
+        }
+        else
+        {
+            pitch0 = pitch;
+            roll0 = roll;
+        }
+
+        Debug.Log($"🎯 [BluetoothInputManager] Neutral Orientation Baseline Calibrated: pitch0 = {pitch0:F1}°, roll0 = {roll0:F1}° (from {calibPitchSamples.Count} samples)");
+    }
+
+    public static float NormalizeAngle(float angle)
+    {
+        while (angle > 180f) angle -= 360f;
+        while (angle < -180f) angle += 360f;
+        return angle;
+    }
+
+    public static float CalculateCircularMean(List<float> anglesInDegrees)
+    {
+        if (anglesInDegrees == null || anglesInDegrees.Count == 0) return 0f;
+        float sumSin = 0f;
+        float sumCos = 0f;
+        for (int i = 0; i < anglesInDegrees.Count; i++)
+        {
+            float rad = anglesInDegrees[i] * Mathf.Deg2Rad;
+            sumSin += Mathf.Sin(rad);
+            sumCos += Mathf.Cos(rad);
+        }
+        if (Mathf.Approximately(sumSin, 0f) && Mathf.Approximately(sumCos, 0f))
+        {
+            return anglesInDegrees[0];
+        }
+        return Mathf.Atan2(sumSin, sumCos) * Mathf.Rad2Deg;
+    }
+
     private void HandleKeyboardSimulation(int threshold)
     {
         float h = Input.GetAxisRaw("Horizontal");
         float v = Input.GetAxisRaw("Vertical");
 
-        // Pitch controls Left/Right: RIGHT: pitch > 35, LEFT: pitch < -20, Neutral: -20 to 35
-        pitch = (h > 0) ? 45.0f : ((h < 0) ? -35.0f : 0f);
+        if (isCalibratingOrientation)
+        {
+            pitch = pitch0;
+            roll = roll0;
+        }
+        else
+        {
+            // Relative displacement from baseline (pitch0, roll0):
+            // D/Right: deltaPitch = +45 (> 30) -> RIGHT
+            // A/Left:  deltaPitch = -45 (< -30) -> LEFT
+            // Neutral: deltaPitch = 0
+            pitch = pitch0 + ((h > 0) ? 45.0f : ((h < 0) ? -45.0f : 0f));
 
-        // Roll controls Up/Down: UP: roll between +40 and +140, DOWN: roll between -180 and -140, Neutral: 0°
-        roll = (v > 0) ? 90.0f : ((v < 0) ? -160.0f : 0f);
+            // W/Up:    deltaRoll = +50 (> 40) -> UP
+            // S/Down:  deltaRoll = -50 (< -40) -> DOWN
+            // Neutral: deltaRoll = 0
+            roll = roll0 + ((v > 0) ? 50.0f : ((v < 0) ? -50.0f : 0f));
+        }
 
         if (Input.GetKey(KeyCode.Space) || Input.GetButton("Fire1"))
         {
@@ -477,42 +567,53 @@ public class BluetoothInputManager : MonoBehaviour
 
     public Vector2 GetMoveDirection()
     {
-        // -------------------------------------------------------------
-        // Left/Right Movement: uses Pitch (Swapped Axis)
-        // -------------------------------------------------------------
-        float dirX = 0f;
-        if (pitch > 35.0f)
+        // Before gesture detection begins (or if not yet calibrated), hold player neutral
+        if (isCalibratingOrientation || !isOrientationCalibrated)
         {
-            dirX = 1f;  // RIGHT: pitch > 35
+            return Vector2.zero;
         }
-        else if (pitch < -20.0f)
-        {
-            dirX = -1f; // LEFT: pitch < -20
-        }
-        // Neutral: pitch between -20 and 35 -> dirX remains 0f
+
+        // Relative angular displacement from baseline (normalized to -180..180 for ±180 wraparound)
+        float deltaPitch = NormalizeAngle(pitch - pitch0);
+        float deltaRoll = NormalizeAngle(roll - roll0);
 
         // -------------------------------------------------------------
-        // Up/Down Movement: uses Roll (Swapped Axis)
+        // Left / Right Movement: uses deltaPitch
+        // RIGHT: deltaPitch > 30
+        // LEFT:  deltaPitch < -30
+        // Neutral: deltaPitch between -30 and 30
+        // -------------------------------------------------------------
+        float dirX = 0f;
+        if (deltaPitch > 30.0f)
+        {
+            dirX = 1f;  // RIGHT
+        }
+        else if (deltaPitch < -30.0f)
+        {
+            dirX = -1f; // LEFT
+        }
+
+        // -------------------------------------------------------------
+        // Up / Down Movement: uses deltaRoll
+        // UP:   deltaRoll > 40
+        // DOWN: deltaRoll < -40
+        // Neutral: deltaRoll between -40 and 40
         // -------------------------------------------------------------
         float dirY = 0f;
-        if (roll >= 40.0f && roll <= 140.0f)
+        if (deltaRoll > 40.0f)
         {
-            dirY = 1f;  // UP: roll between +40 and +140
+            dirY = 1f;  // UP
         }
-        // DOWN: roll between -180 and -140 (handle wraparound near ±180 if roll is reported in that range)
-        // NOTE: The DOWN roll range (-180 to -140) is close to the rest/neutral zone (~176°),
-        // so it may need tighter tuning or a larger dead zone if it misfires during idle movement.
-        else if ((roll >= -180.0f && roll <= -140.0f) || roll <= -180.0f)
+        else if (deltaRoll < -40.0f)
         {
-            dirY = -1f; // DOWN: roll between -180 and -140
+            dirY = -1f; // DOWN
         }
-        // Neutral: everything else -> dirY remains 0f
 
         // -------------------------------------------------------------
         // Diagonal Handling:
-        // Both axes are evaluated independently each frame. If both pitch and roll
-        // cross their respective thresholds simultaneously, genuine diagonal input
-        // (both movements active at the same time) is returned.
+        // Both axes checked independently each frame. If both deltaPitch
+        // and deltaRoll cross thresholds simultaneously, genuine diagonal
+        // input (both movements active at the same time) is returned.
         // -------------------------------------------------------------
         return new Vector2(dirX, dirY);
     }

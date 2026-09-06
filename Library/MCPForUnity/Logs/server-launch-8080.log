@@ -1,4 +1,3 @@
-Installed 72 packages in 1.51s
 
 
 +-----------------------------------------------------------------------------+
@@ -22,136 +21,73 @@ Installed 72 packages in 1.51s
 +-----------------------------------------------------------------------------+
 
 
-[09/07/26 00:02:28] INFO     Starting MCP server               transport.py:361
+[09/07/26 01:05:03] INFO     Starting MCP server               transport.py:361
                              'mcp-for-unity-server' with                       
                              transport 'http' on                               
                              http://127.0.0.1:8080/mcp                         
-INFO:     Started server process [29320]
+INFO:     Started server process [49576]
 INFO:     Waiting for application startup.
-2026-09-07 00:02:28,753 - mcp.server.streamable_http_manager - INFO - StreamableHTTP session manager started
+2026-09-07 01:05:03,898 - mcp.server.streamable_http_manager - INFO - StreamableHTTP session manager started
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://127.0.0.1:8080 (Press CTRL+C to quit)
-INFO:     127.0.0.1:50256 - "WebSocket /hub/plugin" [accepted]
+INFO:     127.0.0.1:64786 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-07 00:02:28,939 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-07 00:02:29,306 - transport.plugin_hub - INFO - Registered 35 tools for session f675b193-82e2-472b-baf9-f2a80efa4f2d
-2026-09-07 00:02:29,307 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-07 00:02:35,871 - mcp.server.streamable_http_manager - INFO - Created new transport with session ID: fafce51f43ce49ceacf39680b6ad444a
-INFO:     127.0.0.1:49258 - "POST /mcp HTTP/1.1" 400 Bad Request
-2026-09-07 00:02:35,900 - mcp.server.streamable_http_manager - INFO - Created new transport with session ID: 1c837311af99429d9682db3e0b3f54b0
-INFO:     127.0.0.1:49258 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:49258 - "GET /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:49259 - "POST /mcp HTTP/1.1" 202 Accepted
-INFO:     127.0.0.1:49259 - "GET /.well-known/oauth-protected-resource/mcp HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:49259 - "GET /.well-known/oauth-protected-resource HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:49259 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:49260 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:56619 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:56619 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:61745 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:61750 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:61750 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50926 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60927 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:51678 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:51678 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50233 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50233 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:57164 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:57164 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:57182 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:57182 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:57534 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:57539 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:57544 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:57550 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:53933 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58898 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58898 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50710 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:59443 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:59445 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:59452 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:59452 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:52397 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:52404 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:52413 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:52418 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:53803 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54259 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54259 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54259 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:64359 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:64359 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:64365 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:64365 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:64365 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:64365 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:64370 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:64375 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:64375 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:64388 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:51010 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:51010 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:51010 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:51010 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:61039 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:61040 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:61048 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:61054 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:64097 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54190 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54150 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54150 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54150 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54165 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54165 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:49682 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50455 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50455 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:65297 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:55850 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62358 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62364 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50474 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50474 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50482 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:55532 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62390 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50112 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50112 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50112 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:55369 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:56227 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:56234 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54163 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54163 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:63532 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58435 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58435 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58449 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58449 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58454 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54257 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62588 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-07 00:38:44,378 - transport.plugin_hub - INFO - Plugin session f675b193-82e2-472b-baf9-f2a80efa4f2d disconnected (1005)
-INFO:     127.0.0.1:49697 - "WebSocket /hub/plugin" [accepted]
+2026-09-07 01:05:04,816 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-07 01:05:05,333 - transport.plugin_hub - INFO - Registered 35 tools for session ec226794-af90-4253-8bb3-4f775577f899
+2026-09-07 01:05:05,333 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
+2026-09-07 01:05:11,590 - transport.plugin_hub - INFO - Plugin session ec226794-af90-4253-8bb3-4f775577f899 disconnected (1005)
+INFO:     127.0.0.1:63800 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-07 00:38:52,246 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-07 00:38:53,577 - transport.plugin_hub - INFO - Registered 35 tools for session 1953dfb8-be1b-46bd-9138-198e44a33f7f
-2026-09-07 00:38:53,579 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-07 00:38:53,583 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:49698 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62588 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62588 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62588 - "POST /mcp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58079 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-07 00:39:36,255 - transport.plugin_hub - INFO - Plugin session 1953dfb8-be1b-46bd-9138-198e44a33f7f disconnected (1005)
-INFO:     127.0.0.1:51590 - "WebSocket /hub/plugin" [accepted]
+2026-09-07 01:05:26,918 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-07 01:05:28,235 - transport.plugin_hub - INFO - Registered 35 tools for session bfcbcab3-28c8-4eae-b291-174c1d1b0999
+2026-09-07 01:05:28,236 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
+2026-09-07 01:05:30,238 - mcp.server.streamable_http_manager - INFO - Created new transport with session ID: 9b9cc3ef715c452188f97dac60ecab7c
+INFO:     127.0.0.1:63803 - "POST /mcp HTTP/1.1" 400 Bad Request
+2026-09-07 01:05:30,243 - mcp.server.streamable_http_manager - INFO - Created new transport with session ID: 1b260a1cfdbb43e3932f1b6090b77851
+INFO:     127.0.0.1:63803 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63803 - "GET /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63804 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     127.0.0.1:63804 - "GET /.well-known/oauth-protected-resource/mcp HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:63804 - "GET /.well-known/oauth-protected-resource HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:63804 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63804 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63804 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56914 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56914 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55622 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55622 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55632 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55632 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58563 - "POST /mcp HTTP/1.1" 200 OK
+2026-09-07 01:06:48,967 - transport.plugin_hub - INFO - Plugin session bfcbcab3-28c8-4eae-b291-174c1d1b0999 disconnected (1005)
+INFO:     127.0.0.1:60631 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60631 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50332 - "WebSocket /hub/plugin" [accepted]
 INFO:     connection open
-2026-09-07 00:39:41,961 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
-2026-09-07 00:39:42,288 - transport.plugin_hub - INFO - Registered 35 tools for session bd8a9148-4566-464a-ad7b-96e43fcc1510
-2026-09-07 00:39:42,288 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
-2026-09-07 00:39:42,290 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
-INFO:     127.0.0.1:51591 - "POST /mcp HTTP/1.1" 200 OK
-2026-09-07 00:40:26,961 - transport.plugin_hub - INFO - Plugin session bd8a9148-4566-464a-ad7b-96e43fcc1510 disconnected (1005)
+2026-09-07 01:06:57,922 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-07 01:06:59,286 - transport.plugin_hub - INFO - Registered 35 tools for session 87bfa5b2-e0da-41a6-a67c-96176cfa44b0
+2026-09-07 01:06:59,286 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
+2026-09-07 01:06:59,287 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
+INFO:     127.0.0.1:50334 - "POST /mcp HTTP/1.1" 200 OK
+2026-09-07 01:07:01,963 - transport.plugin_hub - INFO - Plugin session 87bfa5b2-e0da-41a6-a67c-96176cfa44b0 disconnected (1005)
+INFO:     127.0.0.1:62038 - "WebSocket /hub/plugin" [accepted]
+INFO:     connection open
+2026-09-07 01:07:07,670 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-07 01:07:07,992 - transport.plugin_hub - INFO - Registered 35 tools for session 876d3811-13b6-4336-9071-0d09ad62c959
+2026-09-07 01:07:07,992 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
+2026-09-07 01:07:07,993 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
+INFO:     127.0.0.1:62040 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65420 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64979 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64979 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64979 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64981 - "POST /mcp HTTP/1.1" 200 OK
+2026-09-07 01:08:34,613 - transport.plugin_hub - INFO - Plugin session 876d3811-13b6-4336-9071-0d09ad62c959 disconnected (1005)
+INFO:     127.0.0.1:50153 - "WebSocket /hub/plugin" [accepted]
+INFO:     connection open
+2026-09-07 01:08:40,185 - transport.plugin_hub - INFO - Plugin registered: 2D-SpaceShooter-master (18b2ce65d6134519)
+2026-09-07 01:08:40,544 - transport.plugin_hub - INFO - Registered 35 tools for session 2d74c1e3-fb67-4533-9c37-16c846cbf93b
+2026-09-07 01:08:40,545 - transport.plugin_hub - INFO - Server-level tool visibility synced from Unity: enabled=[animation, asset_gen, core, docs, probuilder, profiling, scripting_ext, testing, ui, vfx], disabled=[], total_transforms=19, unity_start=9
+2026-09-07 01:08:40,545 - transport.plugin_hub - INFO - Sent tools/list_changed notification to 2 MCP session(s)
+INFO:     127.0.0.1:50155 - "POST /mcp HTTP/1.1" 200 OK
+2026-09-07 01:09:08,316 - transport.plugin_hub - INFO - Plugin session 2d74c1e3-fb67-4533-9c37-16c846cbf93b disconnected (1005)

@@ -123,6 +123,8 @@ public class GUI : MonoBehaviour {
 
         if (GameManager.Instance != null) {
             GameManager.Instance.StartNewSession();
+        } else if (BluetoothInputManager.Instance != null) {
+            BluetoothInputManager.Instance.StartOrientationCalibration();
         }
     }
 
@@ -515,8 +517,18 @@ public class GUI : MonoBehaviour {
         GUILayout.Label($"Weapon: {shootStatus}", infoStyle);
         GUILayout.EndArea();
 
+        // On-Screen Orientation Calibration Toast Banner
+        if (BluetoothInputManager.Instance != null && BluetoothInputManager.Instance.isCalibratingOrientation) {
+            GUIStyle calibStyle = new GUIStyle(UnityEngine.GUI.skin.box);
+            calibStyle.fontSize = 12;
+            calibStyle.fontStyle = FontStyle.Bold;
+            calibStyle.alignment = TextAnchor.MiddleCenter;
+            calibStyle.normal.textColor = Color.cyan;
+            string calibMsg = $"🎯 HOLD HAND AT REST: CALIBRATING ({BluetoothInputManager.Instance.orientationCalibrationTimer:F1}s)";
+            UnityEngine.GUI.Box(new Rect(20f, 180f, 360f, 40f), calibMsg, calibStyle);
+        }
         // On-Screen Dynamic Difficulty Adjustment Toast Banner
-        if (DifficultyManager.Instance != null && DifficultyManager.Instance.toastTimer > 0f) {
+        else if (DifficultyManager.Instance != null && DifficultyManager.Instance.toastTimer > 0f) {
             GUIStyle toastStyle = new GUIStyle(UnityEngine.GUI.skin.box);
             toastStyle.fontSize = 12;
             toastStyle.fontStyle = FontStyle.Bold;

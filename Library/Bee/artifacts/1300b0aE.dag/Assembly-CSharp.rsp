@@ -383,7 +383,6 @@
 "Assets/Script/GameManager.cs"
 "Assets/Script/GameSettings.cs"
 "Assets/Script/GUI.cs"
-"Assets/Script/InfiniteBackground.cs"
 "Assets/Script/playerController.cs"
 "Assets/Script/RendererExtensions.cs"
 "Assets/Script/ReportUploader.cs"
