@@ -443,11 +443,12 @@ public class BluetoothInputManager : MonoBehaviour
         float h = Input.GetAxisRaw("Horizontal");
         float v = Input.GetAxisRaw("Vertical");
 
-        float threshX = (GameSettings.Instance != null) ? GameSettings.Instance.tiltXThreshold : 32.0f;
-        float threshY = (GameSettings.Instance != null) ? GameSettings.Instance.tiltYThreshold : 32.0f;
+        float threshX = (GameSettings.Instance != null) ? GameSettings.Instance.tiltXThreshold : 40.0f;
+        float threshY = (GameSettings.Instance != null) ? GameSettings.Instance.tiltYThreshold : 90.0f;
 
         roll = h * (threshX + 10.0f);
-        pitch = v * (threshY + 10.0f);
+        // Simulate upside-down MPU: Neutral = 176°, Up = -65°, Down = +65°
+        pitch = (v > 0) ? -65.0f : ((v < 0) ? 65.0f : 176.0f);
 
         if (Input.GetKey(KeyCode.Space) || Input.GetButton("Fire1"))
         {
@@ -477,16 +478,25 @@ public class BluetoothInputManager : MonoBehaviour
 
     public Vector2 GetMoveDirection()
     {
-        float threshX = (GameSettings.Instance != null) ? GameSettings.Instance.tiltXThreshold : 32.0f;
-        float threshY = (GameSettings.Instance != null) ? GameSettings.Instance.tiltYThreshold : 32.0f;
+        float threshX = (GameSettings.Instance != null) ? GameSettings.Instance.tiltXThreshold : 40.0f;
+        float threshY = (GameSettings.Instance != null) ? GameSettings.Instance.tiltYThreshold : 90.0f;
 
+        // Roll: Horizontal (Left / Right)
         float dirX = 0f;
-        if (roll > threshX) dirX = 1f;
-        else if (roll < -threshX) dirX = -1f;
+        if (roll > threshX) dirX = 1f;        // Tilt Right
+        else if (roll < -threshX) dirX = -1f; // Tilt Left
 
+        // Pitch: Vertical (Up / Down) with Upside-Down MPU
+        // Neutral sits at +/- 176° (|pitch| >= 90°)
         float dirY = 0f;
-        if (pitch > threshY) dirY = 1f;
-        else if (pitch < -threshY) dirY = -1f;
+        if (pitch > -threshY && pitch < 0f)
+        {
+            dirY = 1f;  // Tilt UP (moves towards -70° / -60°)
+        }
+        else if (pitch < threshY && pitch > 0f)
+        {
+            dirY = -1f; // Tilt DOWN (moves towards +70° / +60°)
+        }
 
         return new Vector2(dirX, dirY);
     }

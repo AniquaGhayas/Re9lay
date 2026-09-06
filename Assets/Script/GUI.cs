@@ -39,6 +39,10 @@ public class GUI : MonoBehaviour {
         Instance = this;
 
         if (mainMenuLogo == null) {
+            mainMenuLogo = Resources.Load<Texture2D>("main_menu_logo");
+        }
+
+        if (mainMenuLogo == null) {
             string logoPath = System.IO.Path.Combine(Application.dataPath, "Sprites/main_menu_logo.png");
             if (System.IO.File.Exists(logoPath)) {
                 try {

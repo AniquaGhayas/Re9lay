@@ -66,6 +66,7 @@
   <ItemGroup>
     <Compile Include="Assets\Editor\SpriteMigrationTool.cs" />
     <Compile Include="Assets\Editor\AssetInspector.cs" />
+    <Compile Include="Assets\Editor\SetupAppIconAndBranding.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
