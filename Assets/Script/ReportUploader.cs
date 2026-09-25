@@ -184,6 +184,16 @@ public class ReportUploader : MonoBehaviour
             : ((GameSettings.Instance != null) ? GameSettings.Instance.emgThreshold : 400);
         form.AddField("emg_threshold", emgThresh.ToString());
 
+        float restBase = (EmgCalibrator.Instance != null && EmgCalibrator.Instance.isCalibrated)
+            ? EmgCalibrator.Instance.restBaseline
+            : 150f;
+        float maxContr = (EmgCalibrator.Instance != null && EmgCalibrator.Instance.isCalibrated)
+            ? EmgCalibrator.Instance.maxContraction
+            : 750f;
+
+        form.AddField("rest_baseline", restBase.ToString("F1", System.Globalization.CultureInfo.InvariantCulture));
+        form.AddField("max_contraction", maxContr.ToString("F1", System.Globalization.CultureInfo.InvariantCulture));
+
         using (UnityWebRequest request = UnityWebRequest.Post(uploadUrl, form))
         {
             // Allow 90 seconds in case Render is spinning up from cold-start

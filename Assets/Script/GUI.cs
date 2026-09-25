@@ -28,8 +28,9 @@ public class GUI : MonoBehaviour {
     private readonly float virtualHeight = 700f;
     private Vector2 deviceScrollPos = Vector2.zero;
 
-    [Header("Main Menu Branding")]
+    [Header("Main Menu Branding & HUD")]
     public Texture2D mainMenuLogo;
+    public Texture2D pauseButtonTexture;
 
     void Awake() {
         if (Instance != null && Instance != this) {
@@ -49,6 +50,20 @@ public class GUI : MonoBehaviour {
                     byte[] rawBytes = System.IO.File.ReadAllBytes(logoPath);
                     mainMenuLogo = new Texture2D(2, 2);
                     mainMenuLogo.LoadImage(rawBytes);
+                } catch { }
+            }
+        }
+
+        if (pauseButtonTexture == null) {
+            pauseButtonTexture = Resources.Load<Texture2D>("Pause_button");
+        }
+        if (pauseButtonTexture == null) {
+            string pausePath = System.IO.Path.Combine(Application.dataPath, "Sprites/Pause_button.png");
+            if (System.IO.File.Exists(pausePath)) {
+                try {
+                    byte[] rawBytes = System.IO.File.ReadAllBytes(pausePath);
+                    pauseButtonTexture = new Texture2D(2, 2);
+                    pauseButtonTexture.LoadImage(rawBytes);
                 } catch { }
             }
         }
@@ -78,6 +93,12 @@ public class GUI : MonoBehaviour {
         if (instructObj != null) {
             instructionsText = instructObj.GetComponent<Text>();
             if (instructionsText != null) instructionsText.enabled = false;
+        }
+
+        if (ClinicalStationHUD.Instance == null) {
+            GameObject hudObj = new GameObject("_ClinicalStationHUD");
+            hudObj.AddComponent<ClinicalStationHUD>();
+            DontDestroyOnLoad(hudObj);
         }
 
         // Start at Panel 1 (Main Menu)
@@ -119,6 +140,10 @@ public class GUI : MonoBehaviour {
 
         if (DifficultyManager.Instance != null) {
             DifficultyManager.Instance.ResetDifficulty();
+        }
+
+        if (ClinicalStationHUD.Instance != null) {
+            ClinicalStationHUD.Instance.ResetSessionMetrics();
         }
 
         if (GameManager.Instance != null) {
@@ -172,8 +197,18 @@ public class GUI : MonoBehaviour {
         if (Instance != this) return;
 
         Matrix4x4 origMatrix = UnityEngine.GUI.matrix;
-        Vector3 scale = new Vector3(Screen.width / virtualWidth, Screen.height / virtualHeight, 1.0f);
-        UnityEngine.GUI.matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, scale);
+
+        float vpX = 0f;
+        float vpW = 1f;
+        if (DynamicScreenBoundaries.Instance != null && DynamicScreenBoundaries.Instance.isPillarBoxed) {
+            vpX = DynamicScreenBoundaries.Instance.viewportRect.x;
+            vpW = DynamicScreenBoundaries.Instance.viewportRect.width;
+        }
+
+        float leftMargin = vpX * Screen.width;
+        float centerWidth = vpW * Screen.width;
+        Vector3 scale = new Vector3(centerWidth / virtualWidth, Screen.height / virtualHeight, 1.0f);
+        UnityEngine.GUI.matrix = Matrix4x4.TRS(new Vector3(leftMargin, 0, 0), Quaternion.identity, scale);
 
         switch (currentPanel) {
             case UIPanel.MainMenu:
@@ -264,8 +299,10 @@ public class GUI : MonoBehaviour {
             if (BluetoothInputManager.Instance != null && BluetoothInputManager.Instance.pairedDevices.Count > 0) {
                 GUILayout.Label("<b>Select your module to connect:</b>", statusStyle);
                 foreach (string dev in BluetoothInputManager.Instance.pairedDevices) {
-                    bool isHC05 = dev.IndexOf("HC-05", System.StringComparison.OrdinalIgnoreCase) >= 0;
-                    string btnLabel = isHC05 ? $"★ CONNECT TO {dev} ★" : $"Connect to {dev}";
+                    bool isTarget = dev.IndexOf("Re9lay", System.StringComparison.OrdinalIgnoreCase) >= 0
+                                 || dev.IndexOf("Glove", System.StringComparison.OrdinalIgnoreCase) >= 0
+                                 || dev.IndexOf("HC-05", System.StringComparison.OrdinalIgnoreCase) >= 0;
+                    string btnLabel = isTarget ? $"★ CONNECT TO {dev} ★" : $"Connect to {dev}";
                     if (GUILayout.Button(btnLabel, GUILayout.Height(34f))) {
                         BluetoothInputManager.Instance.ConnectToDevice(dev);
                     }
@@ -277,7 +314,7 @@ public class GUI : MonoBehaviour {
                 emptyStyle.normal.textColor = Color.gray;
                 emptyStyle.wordWrap = true;
                 GUILayout.Space(15f);
-                GUILayout.Label("No paired devices found.\n1. Pair HC-05 in Phone Bluetooth Settings (PIN 1234).\n2. Tap 'SCAN PAIRED DEVICES' above.", emptyStyle);
+                GUILayout.Label("No paired devices found.\n1. Pair Re9lay-Glove in Bluetooth Settings.\n2. Tap 'SCAN PAIRED DEVICES' above.", emptyStyle);
             }
 
             GUILayout.EndScrollView();
@@ -462,60 +499,86 @@ public class GUI : MonoBehaviour {
         string timeFormatted = string.Format("{0:00}:{1:00}", minutes, seconds);
 
         GUIStyle headerStyle = new GUIStyle(UnityEngine.GUI.skin.label);
-        headerStyle.fontSize = 18;
+        headerStyle.fontSize = 17;
         headerStyle.fontStyle = FontStyle.Bold;
-        headerStyle.alignment = TextAnchor.MiddleCenter;
+        headerStyle.alignment = TextAnchor.MiddleLeft;
         headerStyle.normal.textColor = Color.yellow;
-        string headerText = $"SCORE: {currentScore}    |    TIME: {timeFormatted}";
-        UnityEngine.GUI.Label(new Rect(0f, 10f, virtualWidth, 30f), headerText, headerStyle);
+        string headerText = $" SCORE: {currentScore}   |   TIME: {timeFormatted}";
+        UnityEngine.GUI.Label(new Rect(8f, 10f, 335f, 30f), headerText, headerStyle);
 
-        // Telemetry HUD Box with Live Bluetooth Status Badge
-        GUILayout.BeginArea(new Rect(10f, 45f, 195f, 125f), UnityEngine.GUI.skin.box);
-        
-        GUIStyle titleStyle = new GUIStyle(UnityEngine.GUI.skin.label);
-        titleStyle.fontSize = 11;
-        titleStyle.fontStyle = FontStyle.Bold;
-        titleStyle.normal.textColor = Color.white;
-        GUILayout.Label("Re9lay", titleStyle);
+        // Clickable Pause Button in the top corner right after the time
+        Rect pauseBtnRect = new Rect(virtualWidth - 46f, 8f, 36f, 32f);
+        GUIStyle pauseBtnStyle = new GUIStyle(UnityEngine.GUI.skin.button);
+        pauseBtnStyle.padding = new RectOffset(4, 4, 4, 4);
+        pauseBtnStyle.alignment = TextAnchor.MiddleCenter;
 
-        bool isBTConnected = (BluetoothInputManager.Instance != null && BluetoothInputManager.Instance.isConnected);
-        string btStatusStr = isBTConnected 
-            ? "<color=lime>● BT: CONNECTED</color>" 
-            : "<color=yellow>○ BT: SIMULATION</color>";
-
-        GUIStyle infoStyle = new GUIStyle(UnityEngine.GUI.skin.label);
-        infoStyle.fontSize = 10;
-        infoStyle.richText = true;
-        infoStyle.normal.textColor = Color.white;
-
-        GUILayout.Label(btStatusStr, infoStyle);
-
-        float speed = 1.0f;
-        if (DifficultyManager.Instance != null) {
-            speed = DifficultyManager.Instance.CurrentSpeedMultiplier;
-        }
-        GUILayout.Label($"Speed: {speed:F2}x", infoStyle);
-
-        int hits = (DifficultyManager.Instance != null) ? DifficultyManager.Instance.CurrentHits : 0;
-        int attempts = (DifficultyManager.Instance != null) ? DifficultyManager.Instance.TotalAttemptsInWindow : 0;
-
-        int sessHits = (DifficultyManager.Instance != null) ? DifficultyManager.Instance.TotalSessionHits : currentScore;
-        int sessAtts = (DifficultyManager.Instance != null) ? DifficultyManager.Instance.TotalSessionAttempts : currentScore;
-        int pct = (sessAtts > 0) ? Mathf.RoundToInt((float)sessHits / sessAtts * 100f) : 100;
-
-        if (currentScore < 5) {
-            GUILayout.Label($"Accuracy: Calibrating ({currentScore}/5 pts)", infoStyle);
+        bool clickedPause = false;
+        if (pauseButtonTexture != null) {
+            clickedPause = UnityEngine.GUI.Button(pauseBtnRect, pauseButtonTexture, pauseBtnStyle);
         } else {
-            GUILayout.Label($"Accuracy: {pct}% ({sessHits}/{sessAtts})", infoStyle);
+            pauseBtnStyle.fontSize = 14;
+            pauseBtnStyle.fontStyle = FontStyle.Bold;
+            clickedPause = UnityEngine.GUI.Button(pauseBtnRect, "⏸", pauseBtnStyle);
         }
 
-        float spawnInt = (DifficultyManager.Instance != null) ? DifficultyManager.Instance.CurrentSpawnInterval : 5.0f;
-        GUILayout.Label($"Spawn: {spawnInt:F1}s", infoStyle);
+        if (clickedPause) {
+            if (GameManager.Instance != null) {
+                GameManager.Instance.TogglePause();
+            }
+        }
 
-        bool isShooting = Input.GetKey(KeyCode.Space) || Input.GetButton("Fire1") || (BluetoothInputManager.Instance != null && BluetoothInputManager.Instance.shoot == 1);
-        string shootStatus = isShooting ? "<color=green>SHOOTING</color>" : "<color=yellow>READY</color>";
-        GUILayout.Label($"Weapon: {shootStatus}", infoStyle);
-        GUILayout.EndArea();
+        bool isPillarBoxed = (DynamicScreenBoundaries.Instance != null && DynamicScreenBoundaries.Instance.isPillarBoxed);
+
+        // Only draw the in-game overlay box on mobile (when NOT pillar-boxed on widescreen desktop)
+        if (!isPillarBoxed) {
+            // Telemetry HUD Box with Live Bluetooth Status Badge
+            GUILayout.BeginArea(new Rect(10f, 45f, 195f, 125f), UnityEngine.GUI.skin.box);
+            
+            GUIStyle titleStyle = new GUIStyle(UnityEngine.GUI.skin.label);
+            titleStyle.fontSize = 11;
+            titleStyle.fontStyle = FontStyle.Bold;
+            titleStyle.normal.textColor = Color.white;
+            GUILayout.Label("Re9lay", titleStyle);
+
+            bool isBTConnected = (BluetoothInputManager.Instance != null && BluetoothInputManager.Instance.isConnected);
+            string btStatusStr = isBTConnected 
+                ? "<color=lime>● BT: CONNECTED</color>" 
+                : "<color=yellow>○ BT: SIMULATION</color>";
+
+            GUIStyle infoStyle = new GUIStyle(UnityEngine.GUI.skin.label);
+            infoStyle.fontSize = 10;
+            infoStyle.richText = true;
+            infoStyle.normal.textColor = Color.white;
+
+            GUILayout.Label(btStatusStr, infoStyle);
+
+            float speed = 1.0f;
+            if (DifficultyManager.Instance != null) {
+                speed = DifficultyManager.Instance.CurrentSpeedMultiplier;
+            }
+            GUILayout.Label($"Speed: {speed:F2}x", infoStyle);
+
+            int hits = (DifficultyManager.Instance != null) ? DifficultyManager.Instance.CurrentHits : 0;
+            int attempts = (DifficultyManager.Instance != null) ? DifficultyManager.Instance.TotalAttemptsInWindow : 0;
+
+            int sessHits = (DifficultyManager.Instance != null) ? DifficultyManager.Instance.TotalSessionHits : currentScore;
+            int sessAtts = (DifficultyManager.Instance != null) ? DifficultyManager.Instance.TotalSessionAttempts : currentScore;
+            int pct = (sessAtts > 0) ? Mathf.RoundToInt((float)sessHits / sessAtts * 100f) : 100;
+
+            if (currentScore < 5) {
+                GUILayout.Label($"Accuracy: Calibrating ({currentScore}/5 pts)", infoStyle);
+            } else {
+                GUILayout.Label($"Accuracy: {pct}% ({sessHits}/{sessAtts})", infoStyle);
+            }
+
+            float spawnInt = (DifficultyManager.Instance != null) ? DifficultyManager.Instance.CurrentSpawnInterval : 5.0f;
+            GUILayout.Label($"Spawn: {spawnInt:F1}s", infoStyle);
+
+            bool isShooting = Input.GetKey(KeyCode.Space) || Input.GetButton("Fire1") || (BluetoothInputManager.Instance != null && BluetoothInputManager.Instance.shoot == 1);
+            string shootStatus = isShooting ? "<color=green>SHOOTING</color>" : "<color=yellow>READY</color>";
+            GUILayout.Label($"Weapon: {shootStatus}", infoStyle);
+            GUILayout.EndArea();
+        }
 
         // On-Screen Orientation Calibration Toast Banner
         if (BluetoothInputManager.Instance != null && BluetoothInputManager.Instance.isCalibratingOrientation) {
@@ -537,10 +600,44 @@ public class GUI : MonoBehaviour {
             UnityEngine.GUI.Box(new Rect(20f, 180f, 360f, 40f), DifficultyManager.Instance.activeToastMessage, toastStyle);
         }
 
+        // Full Interactive Pause Overlay Menu
         if (GameManager.Instance != null && GameManager.Instance.isPaused) {
-            UnityEngine.GUI.Box(new Rect(virtualWidth / 2f - 100f, virtualHeight / 2f - 50f, 200f, 100f), "PAUSED");
-            if (UnityEngine.GUI.Button(new Rect(virtualWidth / 2f - 80f, virtualHeight / 2f, 160f, 30f), "Resume Session")) {
+            UnityEngine.GUI.Box(new Rect(20f, 160f, 360f, 265f), "");
+
+            GUIStyle pauseHeaderStyle = new GUIStyle(UnityEngine.GUI.skin.label);
+            pauseHeaderStyle.fontSize = 22;
+            pauseHeaderStyle.fontStyle = FontStyle.Bold;
+            pauseHeaderStyle.alignment = TextAnchor.MiddleCenter;
+            pauseHeaderStyle.normal.textColor = Color.yellow;
+            UnityEngine.GUI.Label(new Rect(20f, 175f, 360f, 35f), "⏸ GAME PAUSED", pauseHeaderStyle);
+
+            GUIStyle pauseSubStyle = new GUIStyle(UnityEngine.GUI.skin.label);
+            pauseSubStyle.fontSize = 11;
+            pauseSubStyle.alignment = TextAnchor.MiddleCenter;
+            pauseSubStyle.normal.textColor = Color.cyan;
+            UnityEngine.GUI.Label(new Rect(20f, 210f, 360f, 25f), "Take a quick rest to stretch and relax your hand.", pauseSubStyle);
+
+            GUIStyle resumeBtnStyle = new GUIStyle(UnityEngine.GUI.skin.button);
+            resumeBtnStyle.fontSize = 13;
+            resumeBtnStyle.fontStyle = FontStyle.Bold;
+
+            if (UnityEngine.GUI.Button(new Rect(60f, 250f, 280f, 44f), "▶ RESUME SESSION", resumeBtnStyle)) {
                 GameManager.Instance.TogglePause();
+            }
+
+            GUIStyle secBtnStyle = new GUIStyle(UnityEngine.GUI.skin.button);
+            secBtnStyle.fontSize = 11;
+
+            if (UnityEngine.GUI.Button(new Rect(60f, 305f, 280f, 36f), "🎯 RE-ZERO WRIST (REST POSITION)", secBtnStyle)) {
+                if (BluetoothInputManager.Instance != null) {
+                    BluetoothInputManager.Instance.StartOrientationCalibration();
+                }
+                GameManager.Instance.TogglePause();
+            }
+
+            if (UnityEngine.GUI.Button(new Rect(60f, 355f, 280f, 36f), "🏠 QUIT TO MAIN MENU", secBtnStyle)) {
+                GameManager.Instance.TogglePause();
+                ShowMainMenu();
             }
         }
     }

@@ -16,6 +16,12 @@ public class DynamicScreenBoundaries : MonoBehaviour
     public float minWorldY;
     public float maxWorldY;
 
+    [Header("Viewport Aspect Settings (Windows Pillar-Box)")]
+    public bool lockMobileAspectOnWidescreen = true;
+    public float targetMobileAspect = 9f / 16f; // ~0.5625 portrait corridor
+    public bool isPillarBoxed = false;
+    public Rect viewportRect = new Rect(0f, 0f, 1f, 1f);
+
     private Camera cam;
 
     void Awake()
@@ -39,6 +45,31 @@ public class DynamicScreenBoundaries : MonoBehaviour
     {
         if (cam == null) cam = Camera.main;
         if (cam == null) return;
+
+        // On widescreen displays (PC/Laptop), constrain camera viewport to centered 9:16 corridor
+        if (lockMobileAspectOnWidescreen && Screen.height > 0)
+        {
+            float windowAspect = (float)Screen.width / (float)Screen.height;
+            if (windowAspect > targetMobileAspect)
+            {
+                float vpWidth = targetMobileAspect / windowAspect;
+                float vpX = (1.0f - vpWidth) / 2.0f;
+                viewportRect = new Rect(vpX, 0f, vpWidth, 1f);
+                isPillarBoxed = true;
+            }
+            else
+            {
+                viewportRect = new Rect(0f, 0f, 1f, 1f);
+                isPillarBoxed = false;
+            }
+            cam.rect = viewportRect;
+        }
+        else
+        {
+            viewportRect = new Rect(0f, 0f, 1f, 1f);
+            isPillarBoxed = false;
+            cam.rect = viewportRect;
+        }
 
         Vector3 bottomLeft = cam.ViewportToWorldPoint(new Vector3(0, 0, cam.nearClipPlane));
         Vector3 topRight = cam.ViewportToWorldPoint(new Vector3(1, 1, cam.nearClipPlane));

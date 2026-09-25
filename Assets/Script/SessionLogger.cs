@@ -144,6 +144,11 @@ public class SessionLogger : MonoBehaviour
         {
             File.WriteAllText(currentFilePath, csvBuffer.ToString());
             Debug.Log($"[SessionLogger] Saved Re9lay 20Hz session CSV log ({csvBuffer.Length} bytes) to: {currentFilePath}");
+
+            if (EmgCalibrator.Instance != null)
+            {
+                EmgCalibrator.Instance.SaveSidecarMetadata();
+            }
         }
         catch (Exception ex)
         {

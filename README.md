@@ -2,12 +2,13 @@
 
 <div align="center">
 
-![Unity](https://img.shields.io/badge/Unity-2022.3%2B-blue?logo=unity)
-![Arduino](https://img.shields.io/badge/Hardware-Arduino%20Uno%2FNano-00979D?logo=arduino)
+![Unity](https://img.shields.io/badge/Unity-2022.3%2B%20LTS-blue?logo=unity)
+![Hardware](https://img.shields.io/badge/Hardware-ESP32--WROOM--32-red?logo=espressif)
+![Bluetooth](https://img.shields.io/badge/Wireless-Bluetooth%20Classic%20SPP-blue?logo=bluetooth)
 ![C#](https://img.shields.io/badge/Language-C%23-239120?logo=csharp)
 ![Python](https://img.shields.io/badge/Backend-FastAPI-009688?logo=fastapi)
 ![Cloud](https://img.shields.io/badge/Cloud-Render-46E3B7?logo=render)
-![Platform](https://img.shields.io/badge/Platform-Android%20%7C%20Windows-green)
+![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Android-green)
 ![License](https://img.shields.io/badge/License-MIT-brightgreen)
 
 **Transforming upper-limb physical rehabilitation into an engaging, biofeedback-driven 2D space shooter powered by wearable IMU and sEMG sensors.**
@@ -21,8 +22,11 @@
 Traditional upper-extremity physical therapy after stroke, spinal cord injury, or orthopedic surgery often involves repetitive, tedious exercises leading to low patient adherence and subjective clinical evaluations. 
 
 **Re9lay** is an IoT-enabled gamified rehabilitation platform that bridges interactive gaming with clinical neuro-rehabilitation:
-* **Wearable Sensor Glove / Wristband:** An Arduino equipped with an **MPU-9250** (9-DOF IMU) and **MyoWare 2.0 / Surface EMG** captures wrist kinematics and muscle contractions in real time.
+* **Wearable IoT Sensor Glove:** An **ESP32-WROOM-32** equipped with an **MPU-9250** (9-DOF IMU) and **Muscle Sensor v3 / Surface EMG** captures wrist kinematics and muscle contractions in real time.
+* **Onboard High-Speed Bluetooth & MAV DSP:** Streams telemetry wirelessly via onboard Classic Bluetooth (SPP) at **115,200 baud** with **12-bit ADC** resolution ($0 - 4095$), utilizing on-chip windowed Mean Absolute Value (MAV) oversampling at 5kHz.
 * **Biofeedback Gameplay:** Real-time wrist pitch and roll kinematics steer the player's spacecraft relative to an auto-calibrated neutral resting baseline, while active muscle contractions fire defensive lasers.
+* **Mandatory Neuromuscular Relaxation Cycle:** Enforces an active contraction-relaxation cycle before subsequent laser firing can occur, directly inhibiting post-stroke spastic hypertonia.
+* **Clinical Station HUD & ROM Envelopes:** Real-time visual feedback displaying dynamic capacitive EMG bars, peak left/right pitch and peak up/down roll telemetry, and an animated milestone reward system.
 * **Clinically-Safe Dynamic Difficulty Adaptation (DDA):** An automated clinical algorithm tracks patient accuracy across a 10-shot rolling window, progressively adjusting target speed and spawn frequency without causing patient fatigue or frustration.
 * **Cloud Telemetry & PDF Medical Reports:** High-resolution 20Hz session data is streamed and uploaded to a cloud-based **FastAPI** service on Render, generating downloadable PDF clinical analytics for therapists.
 
@@ -31,7 +35,7 @@ Traditional upper-extremity physical therapy after stroke, spinal cord injury, o
 ## 🌟 Key Features
 
 ### 🎮 1. Kinematic Spatial Navigation & Neutral Auto-Calibration (MPU-9250 IMU)
-* **Automatic 2-Second Neutral Baseline Calibration:** At the start of each rehabilitation session, the system automatically records the patient's resting hand position for ~2 seconds, computing reference baseline angles (`pitch0`, `roll0`) via circular mean averaging.
+* **Automatic 2-Second Neutral Baseline Calibration:** At the start of each rehabilitation session, the system automatically records the patient's resting hand position for ~2 seconds, computing reference baseline angles (`pitch0`, `roll0`) via circular mean statistical averaging.
 * **Relative Angular Displacements ($\Delta\text{Pitch}, \Delta\text{Roll}$):** Movement thresholds operate entirely on angular deltas from the calibrated rest posture ($\Delta\theta = \text{NormalizeAngle}(\theta - \theta_0)$), completely eliminating errors caused by sensor orientation shifts or variations in how the glove is worn:
   * **Horizontal Steering (Pitch Delta):** $\Delta\text{Pitch} > +30^\circ$ (Right), $\Delta\text{Pitch} < -30^\circ$ (Left).
   * **Vertical Steering (Roll Delta):** $\Delta\text{Roll} > +40^\circ$ (Up), $\Delta\text{Roll} < -40^\circ$ (Down).
@@ -39,15 +43,27 @@ Traditional upper-extremity physical therapy after stroke, spinal cord injury, o
 * **Simultaneous Diagonal Movement:** Pitch and roll are evaluated independently each frame, allowing responsive, normalized diagonal maneuvering.
 
 ### 💪 2. Neuromuscular Triggering & Relaxation Cycle (sEMG)
-* **Single-Shot Firing:** Firing requires exceeding the muscle contraction threshold (e.g., EMG $> 450$).
-* **Mandatory Relaxation Reset:** To prevent sustained spasticity and muscle fatigue, the player **must consciously relax the muscle** below the rest baseline before firing another shot.
+* **High-Precision 12-Bit EMG:** Auto-detects 12-bit ESP32 ADC data ($0 - 4095$ range) with dynamic threshold scaling ($1600$ default).
+* **Single-Shot Firing:** Firing requires exceeding the muscle contraction threshold ($\text{EMG} \ge \text{Threshold}$).
+* **Mandatory Relaxation Reset:** To prevent sustained spasticity and muscle fatigue, the player **must consciously relax the forearm muscle** below the rest baseline before firing another shot.
 
-### 🧠 3. Adaptive Difficulty Engine (DDA)
+### 🏆 3. Animated Trophy Gamification & Clinical Station HUD
+* **Active Range of Motion (ROM) Telemetry:** Real-time HUD indicators track peak left/right pitch and peak up/down roll envelopes.
+* **Dynamic Capacitive Charge Gauge:** Visualizes real-time muscle contraction status with color-coded feedback (Green = Relaxed/Ready, Red = Contracted/Lockout).
+* **5-Tier Animated Trophy Rack:**
+  * 🥉 **Bronze Trophy** (10 Pts) — 2 Frames (Metallic gleam shimmer)
+  * 🥈 **Silver Trophy** (20 Pts) — 2 Frames (High-contrast silver reflection)
+  * 🥇 **Gold Trophy** (30 Pts) — 2 Frames (Warm radiant gold pulse)
+  * 💠 **Platinum Trophy** (40 Pts) — 2 Frames (Cyan crystal glint)
+  * 💎 **Diamond Trophy** (50 Pts) — 4 Frames (Prismatic multi-stage sparkle)
+* **Celebration Sequence:** Milestone popups feature animated flying trophies that scale, play celebration text, and glide smoothly into the persistent HUD rack.
+
+### 🧠 4. Adaptive Difficulty Engine (DDA)
 * **10-Shot Rolling Window:** Evaluates live hitting performance.
-* **Progressive Challenge:** Achieving $\ge 80\%$ accuracy increases game pace by reducing alien spawn intervals ($5.0\text{s} \rightarrow 4.5\text{s} \rightarrow 4.0\text{s} \rightarrow 3.5\text{s} \rightarrow 3.0\text{s}$).
+* **Progressive Challenge:** Achieving $\ge 80\%$ accuracy increases game pace by reducing alien spawn intervals ($5.0\text{s} \rightarrow 4.5\text{s} \rightarrow 4.0\text{s} \rightarrow 3.5\text{s} \rightarrow 3.0\text{s}$) and increasing velocity ($1.0\times \rightarrow 1.8\times$).
 * **Clinical Safety Ceilings:** Minimum spawn interval clamped at $3.0\text{s}$ to avoid overwhelming the patient. Successful hits are protected and cannot trigger difficulty drops.
 
-### 📊 4. High-Frequency 20Hz Telemetry & Cloud Reporting
+### 📊 5. High-Frequency 20Hz Telemetry & Cloud Reporting
 * **Local Logging:** `SessionLogger.cs` logs timestamped kinematic angles, raw EMG amplitude, player coordinates, and hit/miss events at 20Hz to a local `.csv` file.
 * **FastAPI Cloud Pipeline:** Upon session completion, the session log is automatically uploaded via multipart HTTP POST to our Render backend (`https://report-maker-re9lay.onrender.com`), generating an official clinical PDF report with recovery metrics.
 
@@ -58,24 +74,29 @@ Traditional upper-extremity physical therapy after stroke, spinal cord injury, o
 ```mermaid
 graph TD
     subgraph Wearable Glove / IoT Hardware
-        IMU[MPU-9250 / MPU-6050<br/>Wrist Pitch & Roll] -->|I2C| MCU[Arduino Uno / Nano]
-        EMG[MyoWare sEMG Sensor<br/>Muscle Activation] -->|Analog A0| MCU
-        MCU -->|SoftwareSerial 9600 / USB 115200| BT[HC-05 Bluetooth Module]
+        IMU[MPU-9250 9-DOF IMU<br/>Wrist Pitch & Roll] -->|I2C: SDA=GPIO2, SCL=GPIO15| ESP[ESP32-WROOM-32<br/>Dual-Core 240MHz]
+        BAT[Dual 9V Battery Supply<br/>±9V Split Rails] -->|±Vs Power| EMG[Muscle Sensor v3 sEMG<br/>Differential Bioamp]
+        BAT -->|Center-Tap GND| ESP
+        EMG -->|Analog SIG (0-3.3V Tuned)<br/>ADC1: GPIO34| ESP
+        ESP -->|On-Chip DSP: 32-Sample MAV<br/>Full-Wave Rectification + EMA| DSP[12-Bit Envelope Generator]
+        DSP -->|Bluetooth Classic SPP<br/>115200 Baud| RFCOMM[RFCOMM Wireless Link]
     end
 
-    subgraph Unity Game Engine Re9lay
-        BT -->|RFCOMM SPP / Serial| BIM[BluetoothInputManager.cs]
-        BIM -->|Pitch, Roll| PC[playerController.cs]
-        BIM -->|EMG Trigger & Reset| PC
-        PC -->|Shot Results| DM[DifficultyManager.cs]
-        DM -->|Spawn Rate & Speed| EG[enemyGenerator.cs]
-        BIM & PC & DM -->|20Hz Telemetry| SL[SessionLogger.cs]
-        SL -->|Session CSV| RU[ReportUploader.cs]
+    subgraph Unity Game Client Re9lay
+        RFCOMM -->|Serial / JNI Socket| BIM[BluetoothInputManager.cs]
+        BIM -->|Registry BTHENUM Resolution| REG[Windows PnP / COM Resolver]
+        BIM -->|Angular Deltas ΔPitch, ΔRoll| PC[playerController.cs]
+        BIM -->|12-Bit EMG & Reset State| PC
+        PC -->|Performance Feedback| DM[DifficultyManager.cs]
+        DM -->|Adaptive Spawn & Velocity| EG[enemyGenerator.cs]
+        BIM & PC -->|Active Envelopes & Milestones| HUD[ClinicalStationHUD.cs]
+        BIM & PC & DM -->|20Hz Telemetry Stream| SL[SessionLogger.cs]
     end
 
     subgraph Cloud Medical Analytics
-        RU -->|HTTP POST| RENDER[FastAPI Backend on Render]
-        RENDER -->|Data Processing & Matplotlib| PDF[Clinical PDF Report]
+        SL -->|Session CSV Upload| RU[ReportUploader.cs]
+        RU -->|HTTP POST| FASTAPI[FastAPI Backend on Render]
+        FASTAPI -->|Pandas / Matplotlib / ReportLab| PDF[Medical PDF Report]
     end
 ```
 
@@ -84,39 +105,43 @@ graph TD
 ## 🔌 Hardware Wiring & Bill of Materials
 
 ### Bill of Materials (BOM)
-| Component | Function | Interface |
-| :--- | :--- | :--- |
-| **Arduino Uno / Nano** | Microcontroller unit | USB / 5V Power |
-| **MPU-9250 / MPU-6050** | 9-DOF / 6-DOF Inertial Measurement Unit | I2C (SDA, SCL) |
-| **MyoWare 2.0 / sEMG** | Surface Electromyography Sensor | Analog (A0) |
-| **HC-05** | Bluetooth SPP 2.0 Module | UART (Pins 10, 11) |
-| **Resistors (1kΩ, 2kΩ)** | Voltage divider for HC-05 RX (5V $\rightarrow$ 3.3V) | Breadboard / PCB |
+| Component | Function | Interface | Operating Voltage |
+| :--- | :--- | :--- | :--- |
+| **ESP32-WROOM-32** | Master IoT Microcontroller | Onboard Bluetooth Classic | 3.3V / 5V USB |
+| **MPU-9250** (or MPU-6050) | 9-DOF Inertial Measurement Unit | I2C (SDA, SCL) @ 400kHz | 3.3V |
+| **Muscle Sensor v3 sEMG** | Differential Surface Electromyography | Analog (ADC1) | Dual $\pm 9\text{V}$ Battery Supply |
+| **2x 9V Batteries & Snaps** | Dual Power Supply with Center-Tap GND | Common Reference Ground | $\pm 9\text{V}$ (Split $\pm 3.5\text{V} - \pm 9\text{V}$) |
+| **Power Ground** | System Common Reference Ground | Tied to ESP32 GND | 0V Reference |
 
 ### Pinout Table
-| Module Pin | Arduino Pin | Description |
+| Module Pin | Target Pin | Description |
 | :--- | :--- | :--- |
-| **MPU VCC** | `5V` or `3.3V` | Power supply |
-| **MPU GND** | `GND` | Common Ground |
-| **MPU SDA** | `A4` (Uno) / `SDA` | I2C Serial Data |
-| **MPU SCL** | `A5` (Uno) / `SCL` | I2C Serial Clock |
-| **EMG SIG** | `A0` | Muscle signal analog input |
-| **EMG GND** | `GND` | Reference Ground |
-| **HC-05 VCC** | `5V` | Module power |
-| **HC-05 GND** | `GND` | Common Ground |
-| **HC-05 TX** | `Pin 10` (Arduino RX) | Bluetooth telemetry in |
-| **HC-05 RX** | `Pin 11` (via 1k/2k divider) | Bluetooth telemetry out |
+| **MPU VCC** | `ESP32 3.3V` | Sensor clean power supply |
+| **MPU GND** | `ESP32 GND` | Common Ground |
+| **MPU SDA** | **`GPIO 2` (`D2`)** | I2C Serial Data (custom layout) |
+| **MPU SCL** | **`GPIO 15` (`D15`)** | I2C Serial Clock (custom layout) |
+| **EMG SIG** | **`GPIO 34`** | ADC1 input-only analog channel (12-bit) |
+| **EMG GND** | `ESP32 GND` | **Center-tap common ground** (bonds battery GND to ESP32 GND) |
+| **EMG +Vs** | `Battery 1 (+)` | $+9\text{V}$ positive supply rail |
+| **EMG -Vs** | `Battery 2 (-)` | $-9\text{V}$ negative supply rail |
+| **Battery Mid-point** | `ESP32 GND` | Battery 1 (-) connected to Battery 2 (+) $\rightarrow$ Common GND |
+
+> [!IMPORTANT]
+> **1. Common Ground is Mandatory:** The center connection point between the two 9V batteries (GND) **must be connected to the ESP32's GND pin**. Without this common ground, the analog signal floats and the reading will be permanently stuck at 4095.  
+> **2. Voltage Protection (3.3V Limit):** Because the sensor is powered by $\pm 9\text{V}$, turn the sensor's blue on-board gain potentiometer **counter-clockwise** so that peak voluntary contraction voltages stay under $3.3\text{V}$ to prevent overvoltage saturation.  
+> **3. Why GPIO 34 for EMG?** GPIO 34 is part of **ADC1**. In the ESP32, ADC2 pins are shared with the Wi-Fi and Bluetooth radio and become disabled or unstable during wireless transmission. ADC1 pins are completely isolated, ensuring clean, continuous EMG acquisition.
 
 ---
 
 ## 💻 Software Stack
 
-* **Unity Engine:** 2D Physics, Parallax backgrounds, Custom Immediate GUI, Android JNI plugins.
-* **Firmware:** Arduino C++ (`Firmware/NeuroPlay_Arduino.ino`).
-* **Cloud Reporting:** Python 3.11, FastAPI, ReportLab, Matplotlib, Pandas, Render Cloud Hosting.
+* **Unity Engine:** Unity 2022.3+ LTS, 2D Physics, Immediate GUI, Android JNI, Windows PnP Registry integration.
+* **Firmware:** ESP32 Arduino C++ (`Firmware/Re9lay_ESP32.ino`).
+* **Cloud Reporting Backend:** Python 3.11, FastAPI, ReportLab, Matplotlib, Pandas, hosted on Render.
 * **Communication Protocols:**
-  * **Wireless:** Bluetooth Classic RFCOMM (SPP - Serial Port Profile) at **9600 baud**.
-  * **Wired/Editor:** USB Serial CH340 / FTDI at **115200 baud**.
-  * **Packet Format:** `Pitch,Roll,EMG\n` (e.g. `-1.07,0.99,251`).
+  * **Wireless:** Bluetooth Classic RFCOMM (SPP - Serial Port Profile) at **115,200 baud**.
+  * **Wired/Editor:** USB Serial CP210x / CH340 at **115,200 baud**.
+  * **Packet Format:** `Pitch,Roll,EMG\n` (e.g. `-2.45,12.80,1850`).
 
 ---
 
@@ -124,24 +149,35 @@ graph TD
 
 ```text
 ├── Assets/
+│   ├── Editor/
+│   │   └── WindowsBuildScript.cs     # 1-click Windows 64-bit standalone build menu
 │   ├── Script/
-│   │   ├── BluetoothInputManager.cs  # Cross-platform Bluetooth & Serial communication
-│   │   ├── playerController.cs       # Player movement & single-shot relaxation logic
+│   │   ├── BluetoothInputManager.cs  # Windows registry resolver & Android JNI Bluetooth
+│   │   ├── ClinicalStationHUD.cs     # Real-time ROM envelopes, animated trophy rack & HUD
+│   │   ├── EmgCalibrator.cs          # Interactive rest/max contraction calibration
+│   │   ├── playerController.cs       # Kinematic steering & single-shot relaxation logic
 │   │   ├── DifficultyManager.cs      # 10-shot rolling-window DDA engine
-│   │   ├── GUI.cs                    # Rehabilitation HUD, calibration & device scanning
+│   │   ├── GUI.cs                    # Rehabilitation menu, device selection & calibration
 │   │   ├── SessionLogger.cs          # 20Hz clinical CSV telemetry logger
-│   │   ├── ReportUploader.cs         # Cloud sync & PDF report fetcher
-│   │   ├── enemyGenerator.cs         # Alien spawner controlled by DDA
-│   │   ├── alienScript.cs            # Enemy kinematics & collision detection
+│   │   ├── ReportUploader.cs         # Cloud sync & medical PDF report fetcher
+│   │   ├── enemyGenerator.cs         # Adaptive alien spawner
+│   │   ├── alienScript.cs            # Enemy kinematics & collision handling
 │   │   ├── laserScript.cs            # Player bullet logic & hit registration
-│   │   └── GameSettings.cs           # Global threshold configuration
+│   │   └── GameSettings.cs           # Global threshold & session configuration
 │   ├── Resources/
-│   │   ├── main_menu_logo.png        # In-game branding
-│   │   └── icon_logo.png             # Application logo
+│   │   ├── bronzetrophy_*.png        # Sliced 64x64 Bronze trophy animation frames
+│   │   ├── silvertrophy_*.png        # Sliced 64x64 Silver trophy animation frames
+│   │   ├── goldtrophy_*.png          # Sliced 64x64 Gold trophy animation frames
+│   │   ├── plattrophy_*.png          # Sliced 64x64 Platinum trophy animation frames
+│   │   ├── diamondtrophy_*.png       # Sliced 64x64 Diamond trophy animation frames
+│   │   └── main_menu_logo.png        # In-game branding
 │   └── Sprites/                      # Spaceships, aliens, lasers, HUD assets
+├── Builds/
+│   └── Windows/                      # Standalone 64-bit executable (Re9lay.exe)
 ├── Firmware/
-│   └── NeuroPlay_Arduino.ino         # Arduino MPU9250 & EMG sensor acquisition code
-├── ProjectSettings/                  # Unity Android & PC player settings
+│   ├── Re9lay_ESP32.ino              # Modern ESP32 firmware (I2C SDA=D2, SCL=D15, 115200 baud)
+│   └── NeuroPlay_Arduino.ino         # Legacy Arduino Uno firmware (archived reference)
+├── PROJECT_REPORT.md                 # Full technical project report & clinical documentation
 └── README.md                         # Project documentation
 ```
 
@@ -149,50 +185,64 @@ graph TD
 
 ## 🚀 Getting Started
 
-### 1. Hardware Firmware Setup
-1. Open [`Firmware/NeuroPlay_Arduino.ino`](Firmware/NeuroPlay_Arduino.ino) in the Arduino IDE.
-2. Install required libraries via the Arduino Library Manager:
-   * `MPU9250` (or `MPU6050`)
-   * `Wire` & `SoftwareSerial`
-3. Connect your Arduino via USB, select your board and COM port, and click **Upload**.
-
-### 2. Pairing the HC-05 Module
-1. Power the wearable glove. The HC-05 LED will blink rapidly (2 Hz).
-2. On your Android tablet/phone or PC:
-   * Go to **Bluetooth Settings** $\rightarrow$ **Pair New Device**.
-   * Select **`HC-05`** and enter PIN **`1234`** (or `0000`).
-
-### 3. Running in Unity Editor (Development / Testing)
-1. Open the project in **Unity 2022.3 LTS**.
-2. Open `Assets/Scenes/Main.unity` (or your startup scene).
-3. In the Hierarchy, select `_NeuroPlayManagers` $\rightarrow$ `BluetoothInputManager`:
-   * **To play over USB Cable:** Set `Editor COM Port` to your Arduino's port (e.g., `COM7`) and `Baud Rate` to `115200`.
-   * **To play over Bluetooth:** Set `Editor COM Port` to your Bluetooth outgoing port (e.g., `COM9`) and `Baud Rate` to `9600`.
-   * **Keyboard Simulation Mode:** Check `Use Simulation` to test using **WASD** for movement and **Spacebar** for muscle contraction.
-4. Click **Play**!
-
-### 4. Building for Android
-1. In Unity, go to **File** $\rightarrow$ **Build Settings...**
-2. Switch platform to **Android**.
-3. Under **Player Settings**:
-   * Minimum API Level: **Android 8.0 (API level 26)**
-   * Target API Level: **Android 13.0 / 14.0 (API level 33+)**
-4. Connect your Android device via USB (with Developer Options & USB Debugging enabled) and click **Build and Run**.
-5. When prompted on Android, grant **Nearby Devices / Bluetooth permissions**.
-6. Select your paired **`HC-05`** from the in-game device list to begin therapy!
+### 1. Flashing the ESP32 Firmware
+1. Open [`Firmware/Re9lay_ESP32.ino`](Firmware/Re9lay_ESP32.ino) in the **Arduino IDE**.
+2. Install the **ESP32** board package by Espressif (`Tools` $\rightarrow$ `Board` $\rightarrow$ `Boards Manager...`).
+3. Install the required libraries via the Arduino Library Manager:
+   * **`MPU9250`** by hideakitai (or compatible MPU9250 library)
+   * `Wire` & `BluetoothSerial` (included with ESP32 core)
+4. Select your board: **`ESP32 Dev Module`** (or your specific ESP32-WROOM-32 board).
+5. Connect your ESP32 via USB, select its COM port, and click **Upload**.
 
 ---
 
-## 🎮 Gameplay Controls & Calibration
+### 2. Playing on Windows PC
 
-| Action | Sensor Control (Wearable Glove) | Keyboard Simulation |
-| :--- | :--- | :--- |
-| **Neutral Calibration** | **Hold hand at rest for ~2 seconds** at session start (`pitch0`, `roll0`) | Automatic baseline capture |
-| **Move Left / Right** | Wrist Pitch tilt ($\Delta\text{Pitch} < -30^\circ$ Left, $\Delta\text{Pitch} > +30^\circ$ Right) | `A` / `D` or `Left` / `Right` |
-| **Move Up / Down** | Wrist Roll tilt ($\Delta\text{Roll} > +40^\circ$ Up, $\Delta\text{Roll} < -40^\circ$ Down) | `W` / `S` or `Up` / `Down` |
-| **Diagonal Steering** | Combine Pitch and Roll tilts simultaneously | Multi-key (e.g. `W`+`D`, `S`+`A`) |
-| **Shoot Laser** | Contract forearm muscle (EMG $> \text{threshold}$) | `Spacebar` |
-| **Reload / Ready** | **Consciously relax forearm muscle** below baseline | Release `Spacebar` |
+1. **Power on your ESP32**.
+2. Open Windows **Settings** $\rightarrow$ **Bluetooth & devices** $\rightarrow$ **Add device**.
+3. Select **`Re9lay-Glove`** and pair it.
+4. Launch the game in the **Unity Editor** or run the standalone build (`Builds/Windows/Re9lay.exe`).
+5. On the Main Menu, click **🔍 SCAN PAIRED DEVICES**.
+6. The game automatically queries the Windows registry and displays:
+   $$\mathbf{\bigstar\text{ CONNECT TO Re9lay-Glove (COM9) }\bigstar}$$
+7. Click the starred button to connect!
+
+> [!TIP]
+> **Troubleshooting *"Port error: The port does not exist"***:
+> * Make sure the ESP32 is **powered ON** before connecting. Windows only completes the virtual serial link when the physical device responds to the RFCOMM handshake.
+> * If you see duplicate port numbers or connection errors, remove **`Re9lay-Glove`** in Windows Bluetooth Settings and pair it fresh once.
+
+---
+
+### 3. Playing on Android Tablet / Phone
+
+1. Power on your ESP32.
+2. In your Android device's **Bluetooth Settings**, pair with **`Re9lay-Glove`**.
+3. Install and open the Re9lay APK.
+4. Grant the requested **Nearby Devices / Bluetooth permissions**.
+5. Tap **🔍 SCAN PAIRED DEVICES**, select **`Re9lay-Glove`**, and begin your session!
+
+---
+
+### 4. Testing with Keyboard Simulation
+
+If you do not have the physical glove connected:
+1. In the Unity Inspector on `_NeuroPlayManagers` $\rightarrow$ `BluetoothInputManager`, check **`Use Simulation`**.
+2. Controls:
+   * **`WASD`** or **Arrow Keys**: Steer spacecraft.
+   * **`Spacebar`**: Hold to contract muscle (shoot laser), release to consciously relax (ready next shot).
+
+---
+
+## 🎮 Controls & Clinical Calibration
+
+| Action | Sensor Glove Control | Keyboard Simulation | Clinical Goal |
+| :--- | :--- | :--- | :--- |
+| **Neutral Calibration** | **Hold hand at rest for ~2s** at session start | Automatic | Establishes zero-strain reference baseline |
+| **Move Left / Right** | Wrist Pitch tilt ($\Delta\text{Pitch} < -30^\circ$ / $> +30^\circ$) | `A` / `D` or `←` / `→` | Promotes wrist flexion / extension |
+| **Move Up / Down** | Wrist Roll tilt ($\Delta\text{Roll} > +40^\circ$ / $< -40^\circ$) | `W` / `S` or `↑` / `↓` | Promotes forearm pronation / supination |
+| **Shoot Laser** | Contract forearm muscle ($\text{EMG} \ge \text{Threshold}$) | Hold `Spacebar` | Target voluntary motor unit recruitment |
+| **Reload / Ready** | **Consciously relax forearm muscle** below baseline | Release `Spacebar` | Inhibits spastic co-contraction & hypertonia |
 
 ---
 
@@ -201,25 +251,25 @@ graph TD
 During every rehabilitation session, `SessionLogger.cs` streams 20 data points per second:
 ```csv
 Timestamp,GameTime,PlayerX,PlayerY,Pitch,Roll,EMG,IsContracted,Score,AlienCount,SpawnInterval,SpeedMultiplier
-2026-09-06 23:24:12.102,1.20,0.00,-3.50,-1.07,0.99,251,False,0,1,5.0,1.0
-2026-09-06 23:24:12.152,1.25,0.00,-3.50,-3.58,3.36,233,False,0,1,5.0,1.0
+2026-09-14 14:12:05.102,1.20,0.00,-3.50,-1.07,0.99,1850,False,0,1,5.0,1.0
+2026-09-14 14:12:05.152,1.25,0.00,-3.50,-3.58,3.36,1920,False,0,1,5.0,1.0
 ```
 
 When the session concludes, the log is transmitted to the **Re9lay Cloud API**:
 * **Endpoint:** `POST https://report-maker-re9lay.onrender.com/upload-session`
-* **Outputs:** 
-  * Patient Accuracy & Hit-Rate percentages.
-  * Range of Motion (ROM) in wrist pitch & roll axes.
+* **Clinical Outputs:** 
+  * Patient Accuracy & Target Hit-Rate curves.
+  * Active Range of Motion (ROM) in wrist pitch & roll axes.
   * Muscle contraction latency, peak voluntary contraction, and fatigue curves.
-  * Comprehensive PDF report for clinical records and insurance compliance.
+  * Downloadable PDF clinical report for medical records and insurance compliance.
 
 ---
 
-## 👥 Contributors & Acknowledgments
+## 👥 Contributors & Documentation
 
-* **Lead Developers & Researchers:** Re9lay Development Team
-* **Base 2D Space Shooter Assets:** Inspired by classic arcade space shooter mechanics.
-* **Faculty & Clinical Advisors:** Biomedical Engineering & Rehabilitation Robotics Labs.
+* **Technical Project Report:** Refer to [`PROJECT_REPORT.md`](PROJECT_REPORT.md) for full engineering architecture and clinical trial methodology.
+* **Firmware Migration Guide:** Refer to [`re9lay_esp32_migration_instructions.md`](re9lay_esp32_migration_instructions.md) for hardware setup details.
+* **Lead Developers & Researchers:** Re9lay Development Team.
 
 ---
 

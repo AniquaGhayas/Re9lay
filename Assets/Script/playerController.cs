@@ -23,11 +23,19 @@ public class playerController : MonoBehaviour {
 
 	private Rigidbody2D rb;
 
+	public bool IsTriggerArmed => isTriggerArmed;
+	public bool IsActivating { get; private set; }
+	public bool IsFiringBurst { get; private set; }
+
 	void Start() {
 		rb = GetComponent<Rigidbody2D>();
 		if (rb != null) {
 			rb.gravityScale = 0f;
 			rb.freezeRotation = true;
+		}
+
+		if (GetComponent<ShipAuraController>() == null) {
+			gameObject.AddComponent<ShipAuraController>();
 		}
 	}
 
@@ -92,10 +100,12 @@ public class playerController : MonoBehaviour {
 		// Evaluates shooting from Spacebar key, Fire1 button, or HC-05 EMG contraction
 		bool isSpaceHeld = Input.GetKey(KeyCode.Space) || Input.GetButton("Fire1");
 		bool isEMGContracted = (BluetoothInputManager.Instance != null && BluetoothInputManager.Instance.shoot == 1);
-		bool isActivating = isSpaceHeld || isEMGContracted;
+		IsActivating = isSpaceHeld || isEMGContracted;
+		IsFiringBurst = false;
 
-		if (isActivating) {
+		if (IsActivating) {
 			if (isTriggerArmed) {
+				IsFiringBurst = true;
 				// Fire exactly ONE bullet per contraction
 				if (playerBullet != null) {
 					Vector3 spawnPos = transform.position + new Vector3(playerBulletXOffset, playerBulletYOffset, 0f);

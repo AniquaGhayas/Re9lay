@@ -42,6 +42,10 @@ public class DifficultyManager : MonoBehaviour
     public int TotalSessionHits => totalSessionHits;
     public int TotalSessionAttempts => totalSessionAttempts;
 
+    [Header("Patient Flow Streak & Encouragement")]
+    public int currentFlowStreak = 0;
+    public int maxFlowStreak = 0;
+
     [Header("On-Screen Notification Toast")]
     public string activeToastMessage = "";
     public Color activeToastColor = Color.yellow;
@@ -59,6 +63,11 @@ public class DifficultyManager : MonoBehaviour
     }
 
     public int TotalAttemptsInWindow => recentAttempts.Count;
+
+    public List<int> GetRecentAttemptsList()
+    {
+        return new List<int>(recentAttempts);
+    }
 
     void Awake()
     {
@@ -101,6 +110,8 @@ public class DifficultyManager : MonoBehaviour
         attemptsSinceAdjustment = 0;
         totalSessionHits = 0;
         totalSessionAttempts = 0;
+        currentFlowStreak = 0;
+        maxFlowStreak = 0;
         activeToastMessage = "";
         toastTimer = 0f;
         Debug.Log("[DifficultyManager] Difficulty Reset: Speed 1.0x, Spawn 5.0s, MinSpawn 3.0s");
@@ -117,7 +128,30 @@ public class DifficultyManager : MonoBehaviour
     public void RecordAttempt(bool wasHit)
     {
         totalSessionAttempts++;
-        if (wasHit) totalSessionHits++;
+        if (wasHit)
+        {
+            totalSessionHits++;
+            currentFlowStreak++;
+            if (currentFlowStreak > maxFlowStreak) maxFlowStreak = currentFlowStreak;
+
+            // Trigger positive reinforcement on streak milestones
+            if (currentFlowStreak == 3)
+            {
+                ShowToast("⚡ 3x STREAK! Great rhythm!", Color.cyan);
+            }
+            else if (currentFlowStreak == 5)
+            {
+                ShowToast("🔥 5x STREAK! Smooth flying!", Color.yellow);
+            }
+            else if (currentFlowStreak == 10)
+            {
+                ShowToast("⭐ 10x UNSTOPPABLE STREAK! Masterclass!", new Color(1f, 0.4f, 1f));
+            }
+        }
+        else
+        {
+            currentFlowStreak = 0;
+        }
 
         recentAttempts.Enqueue(wasHit ? 1 : 0);
         if (recentAttempts.Count > WindowSize)
@@ -130,7 +164,7 @@ public class DifficultyManager : MonoBehaviour
         int hits = CurrentHits;
         int total = recentAttempts.Count;
 
-        Debug.Log($"[DifficultyManager] Shot Resolution: {(wasHit ? "HIT" : "MISS")} | Window Accuracy: {hits}/{total} | Session: {TotalSessionHits}/{TotalSessionAttempts}");
+        Debug.Log($"[DifficultyManager] Shot Resolution: {(wasHit ? "HIT" : "MISS")} | Window Accuracy: {hits}/{total} | Session: {TotalSessionHits}/{TotalSessionAttempts} | Streak: {currentFlowStreak}");
 
         // Do not adjust difficulty until at least 5 points have been earned
         int currentScore = (GUI.Instance != null) ? GUI.Instance.currentScore : 0;

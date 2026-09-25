@@ -76,9 +76,10 @@ public class EmgCalibrator : MonoBehaviour
             calibrationCoroutine = null;
         }
 
-        restBaseline = 150f;
-        maxContraction = 750f;
-        sessionThreshold = 400f;
+        bool is12Bit = (BluetoothInputManager.Instance != null && (BluetoothInputManager.Instance.is12BitADC || BluetoothInputManager.Instance.emgValue > 1023));
+        restBaseline = is12Bit ? 600f : 150f;
+        maxContraction = is12Bit ? 3000f : 750f;
+        sessionThreshold = is12Bit ? 1600f : 400f;
         isCalibrated = true;
         currentPhase = CalibrationPhase.Completed;
 
@@ -88,7 +89,7 @@ public class EmgCalibrator : MonoBehaviour
         }
 
         SaveSidecarMetadata();
-        Debug.Log("[EmgCalibrator] Skipped to default threshold: 400");
+        Debug.Log($"[EmgCalibrator] Skipped to default threshold: {sessionThreshold:F0} ({(is12Bit ? "12-bit ESP32" : "10-bit Uno")})");
     }
 
     private IEnumerator CalibrationRoutine()
@@ -135,7 +136,7 @@ public class EmgCalibrator : MonoBehaviour
         // Ensure max is strictly above rest
         if (maxContraction <= restBaseline)
         {
-            maxContraction = restBaseline + 300f;
+            maxContraction = restBaseline + (restBaseline > 500f ? 1000f : 300f);
         }
 
         // PHASE 3: COMPUTE MIDPOINT THRESHOLD
@@ -190,9 +191,9 @@ public class EmgCalibrator : MonoBehaviour
 
             string metaPath = Path.ChangeExtension(csvPath, null) + "_meta.json";
             string json = "{\n" +
-                $"  \"rest_baseline\": {restBaseline:F1},\n" +
-                $"  \"max_contraction\": {maxContraction:F1},\n" +
-                $"  \"emg_threshold\": {sessionThreshold:F1}\n" +
+                $"  \"rest_baseline\": {restBaseline.ToString("F1", System.Globalization.CultureInfo.InvariantCulture)},\n" +
+                $"  \"max_contraction\": {maxContraction.ToString("F1", System.Globalization.CultureInfo.InvariantCulture)},\n" +
+                $"  \"emg_threshold\": {sessionThreshold.ToString("F1", System.Globalization.CultureInfo.InvariantCulture)}\n" +
                 "}";
 
             File.WriteAllText(metaPath, json);

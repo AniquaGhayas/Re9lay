@@ -4,6 +4,7 @@ using System.IO.Ports;
 using System.Threading;
 using System.Globalization;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 #if UNITY_ANDROID
 using UnityEngine.Android;
@@ -14,10 +15,10 @@ public class BluetoothInputManager : MonoBehaviour
     public static BluetoothInputManager Instance { get; private set; }
 
     [Header("Bluetooth Device Targeting")]
-    public string targetDeviceName = "HC-05";
+    public string targetDeviceName = "Re9lay-Glove";
     public string targetMACAddress = "";
     public string editorCOMPort = "COM4";
-    public int baudRate = 9600;
+    public int baudRate = 115200;
 
     [Header("Current Sensor Data")]
     public float pitch = 0f;
@@ -25,6 +26,7 @@ public class BluetoothInputManager : MonoBehaviour
     public int emgValue = 0;
     public int shoot = 0;
     public bool isContracted = false;
+    public bool is12BitADC = false;
 
     [Header("Connection Status")]
     public bool isConnected = false;
@@ -48,6 +50,14 @@ public class BluetoothInputManager : MonoBehaviour
     public float orientationCalibrationTimer = 0f;
     private List<float> calibPitchSamples = new List<float>();
     private List<float> calibRollSamples = new List<float>();
+
+    [Header("Live Relative Angles & Peak Envelopes (ROM Telemetry)")]
+    public float currentDeltaPitch = 0f;
+    public float currentDeltaRoll = 0f;
+    public float peakLeftPitch = 0f;
+    public float peakRightPitch = 0f;
+    public float peakUpRoll = 0f;
+    public float peakDownRoll = 0f;
 
     private float nextLogTime = 0f;
     private readonly object lockObj = new object();
@@ -76,7 +86,7 @@ public class BluetoothInputManager : MonoBehaviour
         ScanPairedDevices();
         StartOrientationCalibration();
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
         if (!useSimulation)
         {
             StartEditorSerialThread();
@@ -148,15 +158,32 @@ public class BluetoothInputManager : MonoBehaviour
         {
             connectionStatus = "Scan error: " + ex.Message;
         }
-#elif UNITY_EDITOR
+#elif UNITY_EDITOR || UNITY_STANDALONE_WIN
         try
         {
             string[] ports = SerialPort.GetPortNames();
             if (ports != null)
             {
+                List<string> labeledPorts = new List<string>();
                 foreach (string p in ports)
                 {
-                    if (!pairedDevices.Contains(p)) pairedDevices.Add(p);
+                    string label = GetFriendlyPortLabel(p);
+                    labeledPorts.Add(label);
+                }
+
+                // Prioritize Re9lay / Glove / HC-05 devices to the top of the list
+                labeledPorts.Sort((a, b) =>
+                {
+                    bool aPref = a.IndexOf("Re9lay", StringComparison.OrdinalIgnoreCase) >= 0 || a.IndexOf("Glove", StringComparison.OrdinalIgnoreCase) >= 0 || a.IndexOf("HC-05", StringComparison.OrdinalIgnoreCase) >= 0;
+                    bool bPref = b.IndexOf("Re9lay", StringComparison.OrdinalIgnoreCase) >= 0 || b.IndexOf("Glove", StringComparison.OrdinalIgnoreCase) >= 0 || b.IndexOf("HC-05", StringComparison.OrdinalIgnoreCase) >= 0;
+                    if (aPref && !bPref) return -1;
+                    if (!aPref && bPref) return 1;
+                    return a.CompareTo(b);
+                });
+
+                foreach (string lp in labeledPorts)
+                {
+                    if (!pairedDevices.Contains(lp)) pairedDevices.Add(lp);
                 }
             }
         }
@@ -183,8 +210,8 @@ public class BluetoothInputManager : MonoBehaviour
         btThread = new Thread(AndroidBluetoothWorkerLoop);
         btThread.IsBackground = true;
         btThread.Start();
-#elif UNITY_EDITOR
-        editorCOMPort = deviceName;
+#elif UNITY_EDITOR || UNITY_STANDALONE_WIN
+        editorCOMPort = ExtractCOMPort(deviceName);
         stopBTThread = false;
         btThread = new Thread(EditorSerialWorkerLoop);
         btThread.IsBackground = true;
@@ -243,12 +270,38 @@ public class BluetoothInputManager : MonoBehaviour
             }
         }
 
+        // Compute live relative angles from neutral baseline
+        if (isOrientationCalibrated)
+        {
+            currentDeltaPitch = NormalizeAngle(pitch - pitch0);
+            currentDeltaRoll = NormalizeAngle(roll - roll0);
+        }
+        else
+        {
+            currentDeltaPitch = pitch;
+            currentDeltaRoll = roll;
+        }
+
+        // Track live peak Range of Motion (ROM) envelopes
+        if (currentDeltaPitch < peakLeftPitch) peakLeftPitch = currentDeltaPitch;
+        if (currentDeltaPitch > peakRightPitch) peakRightPitch = currentDeltaPitch;
+        if (currentDeltaRoll > peakUpRoll) peakUpRoll = currentDeltaRoll;
+        if (currentDeltaRoll < peakDownRoll) peakDownRoll = currentDeltaRoll;
+
         if (Time.time >= nextLogTime)
         {
             string modeStr = isConnected ? $"Bluetooth ({targetDeviceName})" : "Editor Simulation Mode (WASD/Spacebar)";
             Debug.Log($"📡 [BluetoothInputManager] [{modeStr}] Telemetry -> Pitch: {pitch:F1}°, Roll: {roll:F1}°, EMG: {emgValue}, ShootState: {shoot}");
             nextLogTime = Time.time + 3.0f;
         }
+    }
+
+    public void ResetPeakEnvelopes()
+    {
+        peakLeftPitch = 0f;
+        peakRightPitch = 0f;
+        peakUpRoll = 0f;
+        peakDownRoll = 0f;
     }
 
 #if UNITY_ANDROID && !UNITY_EDITOR
@@ -280,7 +333,7 @@ public class BluetoothInputManager : MonoBehaviour
                                 string devName = dev.Call<string>("getName");
                                 string devAddr = dev.Call<string>("getAddress");
 
-                                if (!string.IsNullOrEmpty(devName) && devName.Equals(targetDeviceName, StringComparison.OrdinalIgnoreCase))
+                                if (!string.IsNullOrEmpty(devName) && (devName.Equals(targetDeviceName, StringComparison.OrdinalIgnoreCase) || devName.Contains("Re9lay") || devName.Contains("Glove") || devName.Equals("HC-05", StringComparison.OrdinalIgnoreCase)))
                                 {
                                     targetDevice = dev;
                                     break;
@@ -387,7 +440,159 @@ public class BluetoothInputManager : MonoBehaviour
     }
 #endif
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
+    public static string GetFriendlyPortLabel(string portName)
+    {
+        if (string.IsNullOrEmpty(portName)) return "";
+        try
+        {
+            // 1. Check Bluetooth paired devices in BTHENUM
+            using (Microsoft.Win32.RegistryKey bthEnum = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Enum\BTHENUM"))
+            {
+                if (bthEnum != null)
+                {
+                    foreach (string serviceName in bthEnum.GetSubKeyNames())
+                    {
+                        using (Microsoft.Win32.RegistryKey serviceKey = bthEnum.OpenSubKey(serviceName))
+                        {
+                            if (serviceKey == null) continue;
+                            foreach (string deviceId in serviceKey.GetSubKeyNames())
+                            {
+                                using (Microsoft.Win32.RegistryKey devParams = serviceKey.OpenSubKey(deviceId + @"\Device Parameters"))
+                                {
+                                    if (devParams == null) continue;
+                                    object pName = devParams.GetValue("PortName");
+                                    if (pName != null && string.Equals(pName.ToString(), portName, StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        string mac = null;
+                                        object uniqueId = devParams.GetValue("Bluetooth_UniqueID");
+                                        if (uniqueId != null)
+                                        {
+                                            Match m = Regex.Match(uniqueId.ToString(), @"#([0-9A-Fa-f]{12})_");
+                                            if (m.Success) mac = m.Groups[1].Value.ToLower();
+                                        }
+                                        if (string.IsNullOrEmpty(mac))
+                                        {
+                                            Match m2 = Regex.Match(deviceId, @"&([0-9A-Fa-f]{12})_");
+                                            if (m2.Success) mac = m2.Groups[1].Value.ToLower();
+                                        }
+
+                                        if (!string.IsNullOrEmpty(mac))
+                                        {
+                                            using (Microsoft.Win32.RegistryKey bthDev = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Services\BTHPORT\Parameters\Devices\" + mac))
+                                            {
+                                                if (bthDev != null)
+                                                {
+                                                    object rawName = bthDev.GetValue("FriendlyName");
+                                                    byte[] rawBytes = rawName as byte[];
+                                                    string rawStr = rawName as string;
+                                                    if (rawName == null || (rawBytes != null && rawBytes.Length <= 1) || (rawStr != null && string.IsNullOrEmpty(rawStr)))
+                                                    {
+                                                        rawName = bthDev.GetValue("Name");
+                                                        rawBytes = rawName as byte[];
+                                                        rawStr = rawName as string;
+                                                    }
+
+                                                    if (rawBytes != null)
+                                                    {
+                                                        string name = System.Text.Encoding.UTF8.GetString(rawBytes).Trim('\0', ' ');
+                                                        if (!string.IsNullOrEmpty(name)) return $"{name} ({portName})";
+                                                    }
+                                                    else if (!string.IsNullOrEmpty(rawStr))
+                                                    {
+                                                        return $"{rawStr.Trim()} ({portName})";
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 2. Check USB connected serial devices (e.g. ESP32 via USB cable)
+            using (Microsoft.Win32.RegistryKey usbKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Enum\USB"))
+            {
+                if (usbKey != null)
+                {
+                    foreach (string vidPid in usbKey.GetSubKeyNames())
+                    {
+                        using (Microsoft.Win32.RegistryKey vidKey = usbKey.OpenSubKey(vidPid))
+                        {
+                            if (vidKey == null) continue;
+                            foreach (string instId in vidKey.GetSubKeyNames())
+                            {
+                                using (Microsoft.Win32.RegistryKey devParams = vidKey.OpenSubKey(instId + @"\Device Parameters"))
+                                {
+                                    if (devParams == null) continue;
+                                    object pName = devParams.GetValue("PortName");
+                                    if (pName != null && string.Equals(pName.ToString(), portName, StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        using (Microsoft.Win32.RegistryKey instKey = vidKey.OpenSubKey(instId))
+                                        {
+                                            if (instKey != null)
+                                            {
+                                                object fn = instKey.GetValue("FriendlyName");
+                                                if (fn != null && !string.IsNullOrEmpty(fn.ToString()))
+                                                {
+                                                    return $"{fn} ({portName})";
+                                                }
+                                                object dd = instKey.GetValue("DeviceDesc");
+                                                if (dd != null && !string.IsNullOrEmpty(dd.ToString()))
+                                                {
+                                                    string desc = dd.ToString();
+                                                    int semi = desc.LastIndexOf(';');
+                                                    if (semi >= 0 && semi < desc.Length - 1) desc = desc.Substring(semi + 1);
+                                                    return $"{desc} ({portName})";
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        catch { }
+        return portName;
+    }
+
+    public static string ExtractCOMPort(string deviceLabel)
+    {
+        if (string.IsNullOrEmpty(deviceLabel)) return "";
+        Match m = Regex.Match(deviceLabel, @"\((COM\d+)\)", RegexOptions.IgnoreCase);
+        if (m.Success) return m.Groups[1].Value.ToUpper();
+        Match m2 = Regex.Match(deviceLabel, @"\b(COM\d+)\b", RegexOptions.IgnoreCase);
+        if (m2.Success) return m2.Groups[1].Value.ToUpper();
+        return deviceLabel.Trim();
+    }
+
+    public static string FindPortForDevice(string searchKeyword)
+    {
+        try
+        {
+            string[] ports = SerialPort.GetPortNames();
+            if (ports != null)
+            {
+                foreach (string p in ports)
+                {
+                    string label = GetFriendlyPortLabel(p);
+                    if (label.IndexOf(searchKeyword, StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        return p;
+                    }
+                }
+            }
+        }
+        catch { }
+        return null;
+    }
+
     private void StartEditorSerialThread()
     {
         stopBTThread = false;
@@ -403,14 +608,26 @@ public class BluetoothInputManager : MonoBehaviour
             string[] ports = SerialPort.GetPortNames();
             if (ports == null || ports.Length == 0)
             {
+                connectionStatus = "No serial/COM ports found";
                 Thread.Sleep(3000);
                 continue;
             }
 
-            string activePort = editorCOMPort;
-            if (string.IsNullOrEmpty(activePort) || Array.IndexOf(ports, activePort) < 0)
+            string activePort = ExtractCOMPort(editorCOMPort);
+
+            // If activePort is unset, default, or not found in ports, auto-detect Re9lay-Glove
+            if (string.IsNullOrEmpty(activePort) || Array.IndexOf(ports, activePort) < 0 || activePort == "COM4")
             {
-                activePort = ports[0];
+                string autoPort = FindPortForDevice("Re9lay");
+                if (string.IsNullOrEmpty(autoPort)) autoPort = FindPortForDevice("Glove");
+                if (!string.IsNullOrEmpty(autoPort) && Array.IndexOf(ports, autoPort) >= 0)
+                {
+                    activePort = autoPort;
+                }
+                else if (Array.IndexOf(ports, activePort) < 0)
+                {
+                    activePort = ports[0];
+                }
             }
 
             SerialPort sp = null;
@@ -420,7 +637,8 @@ public class BluetoothInputManager : MonoBehaviour
                 sp.ReadTimeout = 1500;
                 sp.Open();
                 isConnected = true;
-                connectionStatus = "Connected to " + activePort;
+                string friendly = GetFriendlyPortLabel(activePort);
+                connectionStatus = "Connected to " + friendly;
 
                 while (!stopBTThread && sp.IsOpen)
                 {
@@ -441,7 +659,14 @@ public class BluetoothInputManager : MonoBehaviour
             catch (Exception ex)
             {
                 isConnected = false;
-                connectionStatus = "Port error: " + ex.Message;
+                if (ex.Message.IndexOf("does not exist", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    connectionStatus = $"Cannot open {activePort}: Device offline or unready. Ensure ESP32 is powered ON.";
+                }
+                else
+                {
+                    connectionStatus = "Port error: " + ex.Message;
+                }
                 Thread.Sleep(3000);
             }
             finally
@@ -531,12 +756,15 @@ public class BluetoothInputManager : MonoBehaviour
             // D/Right: deltaPitch = +45 (> 30) -> RIGHT
             // A/Left:  deltaPitch = -45 (< -30) -> LEFT
             // Neutral: deltaPitch = 0
-            pitch = pitch0 + ((h > 0) ? 45.0f : ((h < 0) ? -45.0f : 0f));
+            float targetPitch = pitch0 + ((h > 0) ? 45.0f : ((h < 0) ? -45.0f : 0f));
 
             // W/Up:    deltaRoll = +50 (> 40) -> UP
             // S/Down:  deltaRoll = -50 (< -40) -> DOWN
             // Neutral: deltaRoll = 0
-            roll = roll0 + ((v > 0) ? 50.0f : ((v < 0) ? -50.0f : 0f));
+            float targetRoll = roll0 + ((v > 0) ? 50.0f : ((v < 0) ? -50.0f : 0f));
+
+            pitch = Mathf.Lerp(pitch, targetPitch, Time.deltaTime * 10f);
+            roll = Mathf.Lerp(roll, targetRoll, Time.deltaTime * 10f);
         }
 
         if (Input.GetKey(KeyCode.Space) || Input.GetButton("Fire1"))
@@ -553,7 +781,13 @@ public class BluetoothInputManager : MonoBehaviour
 
     public void EvaluateShootState(int threshold)
     {
-        if (emgValue >= threshold)
+        int effectiveThresh = threshold;
+        if (is12BitADC && threshold <= 1023 && (EmgCalibrator.Instance == null || !EmgCalibrator.Instance.isCalibrated))
+        {
+            effectiveThresh = threshold * 4; // Scale 400 -> 1600 for uncalibrated 12-bit ESP32
+        }
+
+        if (emgValue >= effectiveThresh)
         {
             shoot = 1;
             isContracted = true;
@@ -633,7 +867,11 @@ public class BluetoothInputManager : MonoBehaviour
             {
                 if (float.TryParse(parts[0], NumberStyles.Any, CultureInfo.InvariantCulture, out float parsedPitch)) pitch = parsedPitch;
                 if (float.TryParse(parts[1], NumberStyles.Any, CultureInfo.InvariantCulture, out float parsedRoll)) roll = parsedRoll;
-                if (int.TryParse(parts[2], out int parsedEMG)) emgValue = parsedEMG;
+                if (int.TryParse(parts[2], out int parsedEMG))
+                {
+                    emgValue = parsedEMG;
+                    if (emgValue > 1023) is12BitADC = true;
+                }
 
                 isConnected = true;
                 connectionStatus = "Connected to " + targetDeviceName;
