@@ -112,31 +112,35 @@ The Re9lay ecosystem operates across three interconnected functional layers:
 
 ```mermaid
 graph TD
-    subgraph Wearable Glove / IoT Hardware Layer
-        IMU[MPU-9250 9-DOF IMU<br/>Wrist Pitch & Roll] -->|I2C: SDA=GPIO2, SCL=GPIO15<br/>Fast-Mode 400kHz| ESP[ESP32-WROOM-32<br/>Dual-Core 240MHz]
-        BAT[Dual 9V Battery Supply<br/>±9V Split Rails] -->|±Vs Power Rails| EMG[Muscle Sensor v3 sEMG<br/>Differential Bioamp]
+
+    subgraph Wearable_Glove_IoT_Hardware
+        IMU[MPU-9250 9-DOF IMU - Wrist Pitch and Roll] -->|I2C SDA GPIO2 SCL GPIO15 - 400kHz| ESP[ESP32-WROOM-32 - Dual-Core 240MHz]
+        BAT[Dual 9V Battery Supply - Split Rails] -->|Power Rails| EMG[Muscle Sensor v3 sEMG - Differential Bioamp]
         BAT -->|Center-Tap GND| ESP
-        EMG -->|Analog SIG (0-3.3V Tuned)<br/>ADC1: GPIO34| ESP
-        ESP -->|On-Chip DSP: 32-Sample MAV<br/>Full-Wave Rectification + EMA| DSP[12-Bit Envelope Generator]
-        DSP -->|Bluetooth Classic SPP<br/>115200 Baud @ 40Hz| BT_LINK[RFCOMM Wireless Link]
+        EMG -->|Analog SIG 0-3.3V - ADC1 GPIO34| ESP
+        ESP -->|32-Sample MAV - Full-Wave Rectification and EMA| DSP[12-Bit Envelope Generator]
+        DSP -->|Bluetooth Classic SPP - 115200 Baud - 40Hz| BT_LINK[RFCOMM Wireless Link]
     end
 
-    subgraph Unity Game Client Layer Re9lay
-        BT_LINK -->|RFCOMM Serial / JNI Stream| BIM[BluetoothInputManager.cs]
+    subgraph Unity_Game_Client_Re9lay
+        BT_LINK -->|RFCOMM Serial or JNI Stream| BIM[BluetoothInputManager.cs]
         BIM -->|Win32 Registry Enumeration| REG[Windows PnP COM Resolver]
-        BIM -->|Raw Kinematics & Muscle Envelope| CALIB[EmgCalibrator.cs & Circular Baseline]
-        CALIB -->|Normalized Angular Deltas ΔPitch, ΔRoll| PC[playerController.cs]
-        CALIB -->|Hysteresis State Shoot / Lockout| PC
-        PC -->|Live Hit / Miss Telemetry| DM[DifficultyManager.cs]
-        DM -->|Adaptive Velocity & Spawn Rate| EG[enemyGenerator.cs]
-        BIM & PC -->|ROM Peak Envelopes & Trophy Milestones| HUD[ClinicalStationHUD.cs]
-        BIM & PC & DM -->|20Hz Telemetry Stream| SL[SessionLogger.cs]
+        BIM -->|Raw Kinematics and Muscle Envelope| CALIB[EmgCalibrator.cs - Circular Baseline]
+        CALIB -->|Normalized Angular Deltas Pitch and Roll| PC[playerController.cs]
+        CALIB -->|Hysteresis Shoot and Lockout State| PC
+        PC -->|Live Hit and Miss Telemetry| DM[DifficultyManager.cs]
+        DM -->|Adaptive Velocity and Spawn Rate| EG[enemyGenerator.cs]
+        BIM -->|ROM Peak Envelopes and Trophy Milestones| HUD[ClinicalStationHUD.cs]
+        PC -->|ROM Peak Envelopes and Trophy Milestones| HUD
+        BIM -->|20Hz Telemetry Stream| SL[SessionLogger.cs]
+        PC -->|20Hz Telemetry Stream| SL
+        DM -->|20Hz Telemetry Stream| SL
     end
 
-    subgraph Cloud Medical Analytics Layer
+    subgraph Cloud_Medical_Analytics
         SL -->|Session CSV Multipart HTTP POST| RU[ReportUploader.cs]
         RU -->|FastAPI Web Service on Render| FASTAPI[FastAPI Processing Microservice]
-        FASTAPI -->|Pandas & SciPy Signal Processing| ANALYTICS[Kinematic & Muscle Analytics]
+        FASTAPI -->|Pandas and SciPy Signal Processing| ANALYTICS[Kinematic and Muscle Analytics]
         ANALYTICS -->|ReportLab PDF Compiler| PDF[Clinical PDF Medical Report]
     end
 ```
