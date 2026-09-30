@@ -73,30 +73,34 @@ Traditional upper-extremity physical therapy after stroke, spinal cord injury, o
 
 ```mermaid
 graph TD
+
     subgraph Wearable Glove / IoT Hardware
-        IMU[MPU-9250 9-DOF IMU<br/>Wrist Pitch & Roll] -->|I2C: SDA=GPIO2, SCL=GPIO15| ESP[ESP32-WROOM-32<br/>Dual-Core 240MHz]
-        BAT[Dual 9V Battery Supply<br/>±9V Split Rails] -->|±Vs Power| EMG[Muscle Sensor v3 sEMG<br/>Differential Bioamp]
+        IMU[MPU-9250 9-DOF IMU - Wrist Pitch & Roll] -->|I2C: SDA=GPIO2, SCL=GPIO15| ESP[ESP32-WROOM-32 - Dual-Core 240MHz]
+        BAT[Dual 9V Battery Supply - Split Rails] -->|Power| EMG[Muscle Sensor v3 sEMG - Differential Bioamp]
         BAT -->|Center-Tap GND| ESP
-        EMG -->|Analog SIG (0-3.3V Tuned)<br/>ADC1: GPIO34| ESP
-        ESP -->|On-Chip DSP: 32-Sample MAV<br/>Full-Wave Rectification + EMA| DSP[12-Bit Envelope Generator]
-        DSP -->|Bluetooth Classic SPP<br/>115200 Baud| RFCOMM[RFCOMM Wireless Link]
+        EMG -->|Analog SIG 0-3.3V - ADC1 GPIO34| ESP
+        ESP -->|32-Sample MAV - Full-Wave Rectification + EMA| DSP[12-Bit Envelope Generator]
+        DSP -->|Bluetooth Classic SPP - 115200 Baud| RFCOMM[RFCOMM Wireless Link]
     end
 
-    subgraph Unity Game Client Re9lay
+    subgraph Unity Game Client - Re9lay
         RFCOMM -->|Serial / JNI Socket| BIM[BluetoothInputManager.cs]
         BIM -->|Registry BTHENUM Resolution| REG[Windows PnP / COM Resolver]
-        BIM -->|Angular Deltas ΔPitch, ΔRoll| PC[playerController.cs]
-        BIM -->|12-Bit EMG & Reset State| PC
+        BIM -->|Angular Deltas Pitch and Roll| PC[playerController.cs]
+        BIM -->|12-Bit EMG and Reset State| PC
         PC -->|Performance Feedback| DM[DifficultyManager.cs]
-        DM -->|Adaptive Spawn & Velocity| EG[enemyGenerator.cs]
-        BIM & PC -->|Active Envelopes & Milestones| HUD[ClinicalStationHUD.cs]
-        BIM & PC & DM -->|20Hz Telemetry Stream| SL[SessionLogger.cs]
+        DM -->|Adaptive Spawn and Velocity| EG[enemyGenerator.cs]
+        BIM -->|Active Envelopes and Milestones| HUD[ClinicalStationHUD.cs]
+        PC -->|Active Envelopes and Milestones| HUD
+        BIM -->|20Hz Telemetry Stream| SL[SessionLogger.cs]
+        PC -->|20Hz Telemetry Stream| SL
+        DM -->|20Hz Telemetry Stream| SL
     end
 
     subgraph Cloud Medical Analytics
         SL -->|Session CSV Upload| RU[ReportUploader.cs]
         RU -->|HTTP POST| FASTAPI[FastAPI Backend on Render]
-        FASTAPI -->|Pandas / Matplotlib / ReportLab| PDF[Medical PDF Report]
+        FASTAPI -->|Pandas Matplotlib ReportLab| PDF[Medical PDF Report]
     end
 ```
 
