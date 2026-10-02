@@ -1,17 +1,17 @@
-# 🚀 Re9lay — Gamified IoT Neuro-Rehabilitation System
+# 🚀 Re9lay — Gamified EMG-IoT Wearable for Athletic Muscle Activation & Injury Recovery
 
 <div align="center">
 
+![SIH2026](https://img.shields.io/badge/SIH%202026-Problem%20ID%20SIH26213-orange?style=flat-square)
+![Category](https://img.shields.io/badge/Category-Hardware-brightgreen?style=flat-square)
+![Bucket](https://img.shields.io/badge/Bucket-Fitness%20%26%20Sports-blue?style=flat-square)
 ![Unity](https://img.shields.io/badge/Unity-2022.3%2B%20LTS-blue?logo=unity)
 ![Hardware](https://img.shields.io/badge/Hardware-ESP32--WROOM--32-red?logo=espressif)
 ![Bluetooth](https://img.shields.io/badge/Wireless-Bluetooth%20Classic%20SPP-blue?logo=bluetooth)
-![C#](https://img.shields.io/badge/Language-C%23-239120?logo=csharp)
-![Python](https://img.shields.io/badge/Backend-FastAPI-009688?logo=fastapi)
-![Cloud](https://img.shields.io/badge/Cloud-Render-46E3B7?logo=render)
-![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Android-green)
+![Language](https://img.shields.io/badge/Language-C%23%20%7C%20C%2B%2B%20%7C%20Python-239120)
 ![License](https://img.shields.io/badge/License-MIT-brightgreen)
 
-**Transforming upper-limb physical rehabilitation into an engaging, biofeedback-driven 2D space shooter powered by wearable IMU and sEMG sensors.**
+**Transforming athletic conditioning, sports injury recovery, and muscle activation tracking into an engaging, biofeedback-driven 2D space exergaming platform powered by wearable IMU and sEMG sensors.**
 
 </div>
 
@@ -19,16 +19,16 @@
 
 ## 📖 Overview
 
-Traditional upper-extremity physical therapy after stroke, spinal cord injury, or orthopedic surgery often involves repetitive, tedious exercises leading to low patient adherence and subjective clinical evaluations. 
+In athletic conditioning and sports medicine, **muscle activation (%MVC)** and **range of motion (ROM)** are the fundamental determinants of physical performance and safe return-to-play. Following soft-tissue injuries (such as tennis elbow, wrist ligament sprains, rotator cuff strains, or post-fracture immobilization), athletes must undergo high-repetition neuromuscular conditioning to rebuild voluntary muscle recruitment and prevent re-injury. However, conventional home rehabilitation regimens suffer from high attrition due to monotony and lack of real-time biofeedback.
 
-**Re9lay** is an IoT-enabled gamified rehabilitation platform that bridges interactive gaming with clinical neuro-rehabilitation:
+**Re9lay** is an IoT-enabled smart wearable exergaming platform designed for **athletic muscle activation tracking, return-to-play recovery, and grip/forearm conditioning**:
 * **Wearable IoT Sensor Glove:** An **ESP32-WROOM-32** equipped with an **MPU-9250** (9-DOF IMU) and **Muscle Sensor v3 / Surface EMG** captures wrist kinematics and muscle contractions in real time.
 * **Onboard High-Speed Bluetooth & MAV DSP:** Streams telemetry wirelessly via onboard Classic Bluetooth (SPP) at **115,200 baud** with **12-bit ADC** resolution ($0 - 4095$), utilizing on-chip windowed Mean Absolute Value (MAV) oversampling at 5kHz.
-* **Biofeedback Gameplay:** Real-time wrist pitch and roll kinematics steer the player's spacecraft relative to an auto-calibrated neutral resting baseline, while active muscle contractions fire defensive lasers.
-* **Mandatory Neuromuscular Relaxation Cycle:** Enforces an active contraction-relaxation cycle before subsequent laser firing can occur, directly inhibiting post-stroke spastic hypertonia.
-* **Clinical Station HUD & ROM Envelopes:** Real-time visual feedback displaying dynamic capacitive EMG bars, peak left/right pitch and peak up/down roll telemetry, and an animated milestone reward system.
-* **Clinically-Safe Dynamic Difficulty Adaptation (DDA):** An automated clinical algorithm tracks patient accuracy across a 10-shot rolling window, progressively adjusting target speed and spawn frequency without causing patient fatigue or frustration.
-* **Cloud Telemetry & PDF Medical Reports:** High-resolution 20Hz session data is streamed and uploaded to a cloud-based **FastAPI** service on Render, generating downloadable PDF clinical analytics for therapists.
+* **Biofeedback Exergaming:** Real-time wrist pitch and roll kinematics steer the player's spacecraft, while voluntary isometric muscle contractions fire defensive lasers.
+* **Mandatory Neuromuscular Relaxation Cycle:** Enforces an active contraction-relaxation cycle before subsequent laser firing can occur, building healthy antagonist muscle recovery and preventing forearm cramping.
+* **Athletic Telemetry HUD & ROM Envelopes:** Real-time visual feedback displaying dynamic capacitive EMG bars, peak left/right pitch and peak up/down roll telemetry, fatigue warnings, and an animated milestone reward system.
+* **Adaptive Progressive Overload (DDA):** An automated difficulty algorithm tracks shot accuracy across a 10-shot rolling window, progressively adjusting target speed and spawn frequency to maintain an optimal training zone.
+* **Limb Symmetry Index (LSI) & Biomechanics Reports:** 20Hz session data is logged and processed by Python/Matplotlib into standardized PDF telemetry reports, calculating **Rep Count, Time Under Tension (TUT), %MVC Peak Power, LDLJ Movement Smoothness**, and the gold-standard sports medicine metric: **Limb Symmetry Index (LSI)**.
 
 ---
 
@@ -73,34 +73,30 @@ Traditional upper-extremity physical therapy after stroke, spinal cord injury, o
 
 ```mermaid
 graph TD
-
     subgraph Wearable Glove / IoT Hardware
-        IMU[MPU-9250 9-DOF IMU - Wrist Pitch & Roll] -->|I2C: SDA=GPIO2, SCL=GPIO15| ESP[ESP32-WROOM-32 - Dual-Core 240MHz]
-        BAT[Dual 9V Battery Supply - Split Rails] -->|Power| EMG[Muscle Sensor v3 sEMG - Differential Bioamp]
+        IMU[MPU-9250 9-DOF IMU<br/>Wrist Pitch & Roll] -->|I2C: SDA=GPIO2, SCL=GPIO15| ESP[ESP32-WROOM-32<br/>Dual-Core 240MHz]
+        BAT[Dual 9V Battery Supply<br/>±9V Split Rails] -->|±Vs Power| EMG[Muscle Sensor v3 sEMG<br/>Differential Bioamp]
         BAT -->|Center-Tap GND| ESP
-        EMG -->|Analog SIG 0-3.3V - ADC1 GPIO34| ESP
-        ESP -->|32-Sample MAV - Full-Wave Rectification + EMA| DSP[12-Bit Envelope Generator]
-        DSP -->|Bluetooth Classic SPP - 115200 Baud| RFCOMM[RFCOMM Wireless Link]
+        EMG -->|Analog SIG (0-3.3V Tuned)<br/>ADC1: GPIO34| ESP
+        ESP -->|On-Chip DSP: 32-Sample MAV<br/>Full-Wave Rectification + EMA| DSP[12-Bit Envelope Generator]
+        DSP -->|Bluetooth Classic SPP<br/>115200 Baud| RFCOMM[RFCOMM Wireless Link]
     end
 
-    subgraph Unity Game Client - Re9lay
+    subgraph Unity Game Client Re9lay
         RFCOMM -->|Serial / JNI Socket| BIM[BluetoothInputManager.cs]
         BIM -->|Registry BTHENUM Resolution| REG[Windows PnP / COM Resolver]
-        BIM -->|Angular Deltas Pitch and Roll| PC[playerController.cs]
-        BIM -->|12-Bit EMG and Reset State| PC
+        BIM -->|Angular Deltas ΔPitch, ΔRoll| PC[playerController.cs]
+        BIM -->|12-Bit EMG & Reset State| PC
         PC -->|Performance Feedback| DM[DifficultyManager.cs]
-        DM -->|Adaptive Spawn and Velocity| EG[enemyGenerator.cs]
-        BIM -->|Active Envelopes and Milestones| HUD[ClinicalStationHUD.cs]
-        PC -->|Active Envelopes and Milestones| HUD
-        BIM -->|20Hz Telemetry Stream| SL[SessionLogger.cs]
-        PC -->|20Hz Telemetry Stream| SL
-        DM -->|20Hz Telemetry Stream| SL
+        DM -->|Adaptive Spawn & Velocity| EG[enemyGenerator.cs]
+        BIM & PC -->|Active Envelopes & Milestones| HUD[ClinicalStationHUD.cs]
+        BIM & PC & DM -->|20Hz Telemetry Stream| SL[SessionLogger.cs]
     end
 
     subgraph Cloud Medical Analytics
         SL -->|Session CSV Upload| RU[ReportUploader.cs]
         RU -->|HTTP POST| FASTAPI[FastAPI Backend on Render]
-        FASTAPI -->|Pandas Matplotlib ReportLab| PDF[Medical PDF Report]
+        FASTAPI -->|Pandas / Matplotlib / ReportLab| PDF[Medical PDF Report]
     end
 ```
 

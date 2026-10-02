@@ -39,3 +39,6 @@ sysinfo.txt
 *.aab
 *.unitypackage
 *.log
+__pycache__/
+*.py[cod]
+*$py.class
